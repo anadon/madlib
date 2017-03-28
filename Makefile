@@ -5,8 +5,8 @@ CPP=g++
 CC=gcc
 LIBS=-pthread
 
-INCLUDE="$(shell pwd)/include"
-OLIB="lib/madlib.a lib/madlib.so"
+INCLUDE=$(shell pwd)/include
+OLIB=lib/madlib.a lib/madlib.so
 TEST_PROG=""
 
 COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include
@@ -27,7 +27,7 @@ install:
 clean:
 	cd src ; make clean
 	cd test ; make clean
-	rm -f "$(OLIB)"
+	rm -f $(OLIB)
 
 #$(EXEC):$(OLIB) $(MAINOBJECT)
 #	$(CPP) $(CPPFLAGS) -flto $(MAINOBJECT) $(LIBS) $(OLIB) -o $(EXEC)
