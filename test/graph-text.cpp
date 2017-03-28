@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <unordered_map>
-#include <graph.t.hpp>
+#include <graph.tpp>
 
 #include "gtest/gtest.h"
 
@@ -79,9 +79,9 @@ TEST(GRAPH, VERTEX_ADD){
   graph<int, int> *tg1;
   tg1 = new graph<int, int>();
   
-  tg.addVertex(0);
+  tg1->addVertex(0);
   
-  EXPECT_EQ(1, tg.getNumVertexes());
+  EXPECT_EQ(1, tg1->getNumVertexes());
   
   delete tg1;
   
