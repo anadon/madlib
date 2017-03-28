@@ -57,8 +57,13 @@ void *rankHelper(void *protoArgs);
 ////////////////////////////////////////////////////////////////////////
 
 
+/***********************************************************************
+From expression data, construct a upper-diagonal section of a
+correlation matrix, omitting the x=y entries.
+***********************************************************************/
 void calculateRankCorrelationMatrix(f64 **expressionData, 
                                       csize_t numRows, csize_t numCols){
+
   RHS RHSinstructions = {
       expressionData,
       numRows,
@@ -77,22 +82,23 @@ void *rankHelper(void *protoArgs){
   csize_t denominator = arg->denominator;
 
   const RHS *args = (RHS*) arg->specifics;
-  f64 **geneCorrData = args->expressionData;
+  f64 **expressionData = args->expressionData;
   csize_t numGenes = args->numRows;
   csize_t corrVecLeng = args->numCols;
 
+  csize_t minimum = (numGenes * numerator) / denominator;
+  csize_t maximum = (numGenes * (numerator+1)) / denominator;
 
   tmpPtr = malloc(sizeof(*toSort) * corrVecLeng);
   toSort = (std::pair<f64, size_t>*) tmpPtr;
 
-  for(size_t i = (numGenes * numerator) / denominator;
-                    i < (numGenes * (numerator+1)) / denominator; i++){
+  for(size_t i = minimum; i < maximum; i++){
     for(size_t j = 0; j < corrVecLeng; j++){
-      toSort[j] = std::pair<f64, size_t>(geneCorrData[i][j], j);
+      toSort[j] = std::pair<f64, size_t>(expressionData[i][j], j);
     }
     sortDoubleSizeTPairLowToHigh(toSort, corrVecLeng);
     for(size_t j = 0; j < corrVecLeng; j++){
-      geneCorrData[i][toSort[j].second] = j;
+      expressionData[i][toSort[j].second] = j;
     }
   }
 
@@ -100,3 +106,8 @@ void *rankHelper(void *protoArgs){
 
   return NULL;
 }
+
+
+////////////////////////////////////////////////////////////////////////
+//END///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////

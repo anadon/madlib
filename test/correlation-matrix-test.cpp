@@ -19,14 +19,16 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef RANK_MATRIX_HPP
-#define RANK_MATRIX_HPP
+#ifndef KENDALL_CORRELATION_MATRIX_HPP
+#define KENDALL_CORRELATION_MATRIX_HPP
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include "short-primatives.h"
+#include <kendall-correlation-matrix.hpp>
+#include <pearson-correlation-matrix.hpp>
+#include <spearman-correlation-matrix.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 //PUBLIC FUNCTION DECLARATIONS /////////////////////////////////////////
@@ -34,9 +36,19 @@
 
 /***********************************************************************
  * //TODO doc
- **********************************************************************/ 
-void calculateRankCorrelationMatrix(f64 **expressionData, 
-                                      csize_t numRows, csize_t numCols);
+ **********************************************************************/
+f64** calculateKendallsTauCorrelationCorrelationMatrix(
+                f64 **expressionData, csize_t numRows, csize_t numCols,
+            csize_t *againstRows = NULL, csize_t againstRowsLength = 0);
+
+f64** calculatePearsonCorrelationMatrix(f64 **expressionData,
+          csize_t numRows, csize_t numCols, csize_t *againstRows = NULL,
+                                        csize_t againstRowsLength = 0);
+
+
+extern f64** calculateSpearmanCorrelationMatrix(f64 **expressionData,
+          csize_t numRows, csize_t numCols, csize_t *againstRows = NULL,
+                                          csize_t againstRowsLength = 0);
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////

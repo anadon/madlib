@@ -24,7 +24,6 @@
 ////////////////////////////////////////////////////////////////////////
 
 
-#include "correlation-matrix.hpp"
 #include "pearson-correlation-matrix.hpp"
 #include "quickmerge.hpp"
 #include "simple-thread-dispatch.hpp"

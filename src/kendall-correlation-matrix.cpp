@@ -23,7 +23,7 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include "correlation-matrix.hpp"
+#include "rank-matrix.hpp"
 #include "kendall-correlation-matrix.hpp"
 #include "simple-thread-dispatch.hpp"
 #include "quickmerge.hpp"

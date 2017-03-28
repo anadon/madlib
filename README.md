@@ -78,8 +78,10 @@ expression file to create clusters from uses the following format:
 
 ##Build Requirements####################################################
 gcc-libs
-
 libc
+glibc or argp
+git
+gcc
 
 ##Installation##########################################################
 > make install
