@@ -37,7 +37,7 @@
 /***********************************************************************
  * //TODO doc
  **********************************************************************/
-f64** calculateKendallsTauCorrelationCorrelationMatrix(
+/*f64** calculateKendallsTauCorrelationCorrelationMatrix(
                 f64 **expressionData, csize_t numRows, csize_t numCols,
             csize_t *againstRows = NULL, csize_t againstRowsLength = 0);
 
@@ -48,7 +48,7 @@ f64** calculatePearsonCorrelationMatrix(f64 **expressionData,
 
 extern f64** calculateSpearmanCorrelationMatrix(f64 **expressionData,
           csize_t numRows, csize_t numCols, csize_t *againstRows = NULL,
-                                          csize_t againstRowsLength = 0);
+                                          csize_t againstRowsLength = 0);*/
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
