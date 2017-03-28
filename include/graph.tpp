@@ -28,19 +28,522 @@
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
-
-#include "graph.hpp"
-
-////////////////////////////////////////////////////////////////////////
-//NAMESPACE USING///////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-
-using std::unordered_map;
-using std::cout;
-using std::endl;
+#include <unordered_map>
 
 ////////////////////////////////////////////////////////////////////////
-//FUNCTION DEFINITIONS//////////////////////////////////////////////////
+//CLASS DECLARATIONS////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+template <typename T, typename U> class edge;
+template <typename T, typename U> class vertex;
+
+////////////////////////////////////////////////////////////////////////
+//CLASS DEFINITIONS/////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+/*******************************************************************//**
+ *  Moderately complete edge implementation.
+ **********************************************************************/
+template <typename T, typename U> class edge{
+  public:
+  vertex<T, U> *left, *right;
+  U weight;
+  size_t edgeID, leftEdgeIndex, rightEdgeIndex;
+
+
+/*******************************************************************//**
+ *  Make a new edge between two verticies with a given weight.
+ *
+ * @param[in,out] newLeft Left vertex to connect.
+ * @param[in,out] newRight Right vertex to connect.
+ * @param[in] newWeight Weight value.
+ * @param[in] edgeIndex Index of this edge in the containing graph.
+ **********************************************************************/
+  edge(vertex<T, U> *newLeft, vertex<T, U> *newRight, U newWeight,
+                                                const size_t edgeIndex);
+
+
+/*******************************************************************//**
+ *  Basic deconstructor.
+ **********************************************************************/
+  ~edge();
+
+
+/*******************************************************************//**
+ *  Given a connected vertex, tell what the other connected vertex is.
+ **********************************************************************/
+  vertex<T, U>* other(const vertex<T, U> *side);
+};
+
+
+/*******************************************************************//**
+ *  A moderately complete and well formed vertex
+ **********************************************************************/
+template <typename T, typename U> class vertex{
+  private:
+  edge<T, U> **edges;
+  size_t numEdges, edgesSize;
+  std::unordered_map<vertex<T, U>*, edge<T, U>*> connected;
+
+  public:
+  size_t vertexIndex;
+  T value;
+
+/*******************************************************************//**
+ *  Make a vertex with basic data about itself
+ *
+ * @param[in] index Index the vertex will be located at in graph
+ * @param[in] data Data the vertex is meant to represent
+ **********************************************************************/
+  vertex(size_t index, T data);
+
+
+/*******************************************************************//**
+ *  Basic destructor.  All edges must have been removed by graph prior
+ * to deletion.
+ *
+ * \pre All edges must have been removed already.
+ **********************************************************************/
+  ~vertex();
+
+
+/*******************************************************************//**
+ *  Register an edge on called vertex.
+ *
+ * @param[in,out] toRegister Edge to register and register with by
+                             returning to it what index it is in the
+                             called vertex.
+ **********************************************************************/
+  size_t addEdge(edge<T, U> *toRegister);
+
+
+/*******************************************************************//**
+ *  Get array of stored edges.
+ **********************************************************************/
+  edge<T, U>** getEdges();
+
+
+/*******************************************************************//**
+ *  Get array of stored edges.
+ **********************************************************************/
+  const edge<T, U>** getEdges() const;
+
+
+/*******************************************************************//**
+ *  Get number of stored edges.
+ **********************************************************************/
+  size_t getNumEdges() const;
+
+
+/*******************************************************************//**
+ *  Given an edge, remove references from it in called vertex
+ *
+ * @param[in,out] toRemove Edge to de-register in called vertex.
+ **********************************************************************/
+  void removeEdge(edge<T, U> *toRemove);
+
+
+/*******************************************************************//**
+ *  Suggest number of edges to be able to store.  Use this to optimize
+ * memory management.
+ *
+ * @param[in] suggestSize Suggested number of edges to accomidate.  Can
+                          be used to increase or decrease allocated
+                          size.
+ **********************************************************************/
+  void hintNumEdges(const size_t suggestSize);
+
+
+/*******************************************************************//**
+ *  Minimize allocated space to fit current number of edges.
+ **********************************************************************/
+  void shrinkToFit();
+
+
+/*******************************************************************//**
+ *  Tell if contents of vertexes are the same, but not nessicarily the
+ * same vertex from a single graph.
+ **********************************************************************/
+  bool operator==(const vertex<T, U> &other) const;
+  
+  
+/*******************************************************************//**
+ * Tell if there is an edge connecting this vertex to another vertex
+ **********************************************************************/
+  bool areConnected(vertex<T, U> *other) const;
+
+
+  private:
+
+/*******************************************************************//**
+ *  Make sure than when adding an edge there is enough space.
+ *
+ * @param[in] size make sure vertex can accomidate at least size edges.
+ **********************************************************************/
+  void ensureEdgeCapacity(const size_t size);
+
+};
+
+
+/*******************************************************************//**
+ *  A simple unidirectional graph implementation
+ **********************************************************************/
+template <typename T, typename U> class graph{
+  private:
+  vertex<T, U> **vertexArray;
+  edge<T, U> **edgeArray;
+  size_t numVertexes, numEdges;
+  size_t vertexArraySize, edgeArraySize;
+  std::unordered_map<T, size_t, std::hash<T>> geneNameToNodeID;
+
+/*GRAPH OPERATIONS*****************************************************/
+  public:
+
+/*******************************************************************//**
+ *  Basic constructor.
+ **********************************************************************/
+  graph();
+
+
+/*******************************************************************//**
+ *  Handles the deallocation of edges and vertexes (but not nesicarily
+ * the user defined values they hold) before self deletion.
+ **********************************************************************/
+  ~graph();
+
+
+/*******************************************************************//**
+ *  Copy the contents of one graph to another.
+ **********************************************************************/
+  graph<T, U> operator=(const graph<T, U> &other);
+
+
+/*******************************************************************//**
+ *  Minimize the memory used to hold vertexes and edges.
+ **********************************************************************/
+  void shrinkToFit();
+
+/*EDGE OPERATIONS******************************************************/
+  public:
+
+/*******************************************************************//**
+ *  Create and register a new edge.
+ *
+ * @param[in,out] left A vertex to connect with an edge.
+ * @param[in,out] right A vertex to connect with an edge.
+ * @param[in] newWeight Value new edge will hold.
+ **********************************************************************/
+  edge<T, U>* addEdge(vertex<T, U> *left, vertex<T, U> *right,
+                                                          U newWeight);
+
+
+/*******************************************************************//**
+ *  Copy and register a new edge from another edge (possibly in another
+ * graph).
+ *
+ * @param[in] toAdd edge to replicate.
+ *
+ * TODO -- can toAdd be constant?
+ **********************************************************************/
+  edge<T, U>* addEdge(edge<T, U> &toAdd);
+
+
+/*******************************************************************//**
+ *  Get array of edges in graph.
+ **********************************************************************/
+  edge<T, U>** getEdges();
+
+
+/*******************************************************************//**
+ *  Get array of edges in graph.
+ **********************************************************************/
+  const edge<T, U>** getEdges() const;
+
+
+/*******************************************************************//**
+ *  Get number of edges in graph.
+ **********************************************************************/
+  size_t getNumEdges() const;
+
+
+/*******************************************************************//**
+ *  Suggest number of edges gaph should be able to hold.  Used to help
+ * memory allocation and management.
+ *
+ * @param[in,out] suggestSize Suggested number of edges graph should
+ *                            have capacity for.
+ **********************************************************************/
+  void hintNumEdges(const size_t suggestSize);
+
+
+/*******************************************************************//**
+ *  Safely remove an edge from the graph.  All other methods of edge
+ * removal will corrupt graph data.
+ *
+ * @param[in,out] toRemove Edge to de-register from it's connected
+ *                         verticies and the graph.
+ **********************************************************************/
+  U removeEdge(edge<T, U> *toRemove);
+
+
+/*******************************************************************//**
+ *  Minimize the space needed to hold current number of edges.
+ **********************************************************************/
+  void shrinkEdgeCapacityToFit();
+
+  private:
+
+/*******************************************************************//**
+ *  Ensure that the graph has capacity for size number of edges.
+ *
+ * @param[in] size Number of edges the graph should have capacity to
+ *                 hold.
+ **********************************************************************/
+  void ensureEdgeCapacity(const size_t size);
+
+/*VERTEX OPERATIONS****************************************************/
+  public:
+
+/*******************************************************************//**
+ *  Construct and register vertex in graph.
+ *
+ * @param[in] newValue Value the new vertex will hold.
+ **********************************************************************/
+  vertex<T, U>* addVertex(T newValue);
+
+
+/*******************************************************************//**
+ *  Copy and register vertex in graph.
+ *
+ * @param[in,out] newVertex Vertex to copy contents of, but not edges.
+ **********************************************************************/
+  vertex<T, U>* addVertex(vertex<T, U> *newVertex);
+
+
+/*******************************************************************//**
+ *  Get the edges which hold the contents equal to testValue.
+ *
+ * @param[in] testValue Data which a vertex in the called graph should
+ *                      hold.
+ **********************************************************************/
+  vertex<T, U>* getVertexForValue(const T &testValue);
+
+
+/*******************************************************************//**
+ *  Get array of vertexes in graph;
+ **********************************************************************/
+  vertex<T, U>** getVertexes();
+
+
+/*******************************************************************//**
+ *  Get number of vertexes in graph;
+ **********************************************************************/
+  size_t getNumVertexes() const;
+
+
+/*******************************************************************//**
+ *  Suggest number of vertexes graph should have capacity to hold.
+ *
+ * @param[in] suggestSize Number of vertexes graph should have capacity
+ *                        to hold.
+ **********************************************************************/
+  void hintNumVertexes(const size_t suggestSize);
+
+
+/*******************************************************************//**
+ *  Remove the registered vertex from graph after removing all of its
+ * edges, and return the data to held.
+ *
+ * @param[in,out] toRemove Vertex in called graph which should be
+ *                         removed.
+ **********************************************************************/
+  T removeVertex(const vertex<T, U> *toRemove);
+
+
+/*******************************************************************//**
+ *  Minimize the memory used to hold vertexes in called graph.
+ **********************************************************************/
+  void shrinkVertexCapacityToFit();
+
+  private:
+
+/*******************************************************************//**
+ *  Ensure the graph has capacity for size vertexes.
+ *
+ * @param[in] size Number of vertexes graph should be able to hold.
+ **********************************************************************/
+  void ensureVertexCapacity(const size_t size);
+
+};
+
+
+////////////////////////////////////////////////////////////////////////
+//EDGE FUNCTION DEFINITIONS/////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+template <typename T, typename U> edge<T, U>::
+        edge(vertex<T, U> *newLeft, vertex<T, U> *newRight, U newWeight, 
+                                                      size_t edgeIndex): 
+                                                          left(newLeft), 
+                                                        right(newRight), 
+                                                      weight(newWeight),
+                                                      edgeID(edgeIndex){
+  leftEdgeIndex = left->addEdge(this);
+  rightEdgeIndex = right->addEdge(this);
+}
+
+
+template <typename T, typename U> edge<T, U>::~edge(){
+  left->removeEdge(this);
+  right->removeEdge(this);
+}
+
+
+template <typename T, typename U> vertex<T, U>* edge<T, U>::
+                                        other(const vertex<T, U> *side){
+  if(side == left)        return right;
+  else if(side == right)  return left;
+  else                    raise(SIGABRT);
+  return ( vertex<T, U>* ) NULL;
+}
+
+////////////////////////////////////////////////////////////////////////
+//VERTEX FUNCTION DEFINITIONS///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+template <typename T, typename U> vertex<T, U>::vertex(size_t index,
+                                                                T data):  
+                                                    vertexIndex(index), 
+                                                            value(data){
+  numEdges = edgesSize = 0;
+  edges = (edge<T, U>**) NULL;
+}
+
+
+template <typename T, typename U> inline size_t
+                                      vertex<T, U>::getNumEdges() const{
+  return numEdges;
+}
+
+
+template <typename T, typename U> vertex<T, U>::~vertex(){
+  if(0 != numEdges) raise(SIGABRT);
+}
+
+
+template <typename T, typename U> size_t vertex<T, U>::addEdge(
+                                                edge<T, U> *toRegister){
+  ensureEdgeCapacity(numEdges+1);
+  edges[numEdges] = toRegister;
+  std::pair<vertex<T, U>*, edge<T, U>* > toInsert;
+  toInsert = std::pair<vertex<T, U>*, edge<T, U>* >(
+                                    toRegister->other(this), toRegister);
+  connected.insert(toInsert);
+  numEdges++;
+
+  return numEdges-1;
+}
+
+
+template <typename T, typename U> void vertex<T, U>::removeEdge(
+                                                  edge<T, U> *toRemove){
+  void *memCheck;
+  edge<T, U> *tmp;
+  size_t targetEdgeIndex = 0;
+
+
+  numEdges--;
+
+  //check if this is the right or left of the edge, error if edge
+  //doesn't connect this node/vertex
+  if(toRemove->leftEdgeIndex <= numEdges
+                        && toRemove == edges[toRemove->leftEdgeIndex]){
+    targetEdgeIndex = toRemove->leftEdgeIndex;
+  }else if(toRemove->rightEdgeIndex <= numEdges
+                        && toRemove == edges[toRemove->rightEdgeIndex]){
+    targetEdgeIndex = toRemove->rightEdgeIndex;
+  }else{
+    raise(SIGABRT);
+  }
+
+  //swap edge this is removing to the end
+  tmp = edges[numEdges];
+  edges[numEdges] = edges[targetEdgeIndex];
+  edges[targetEdgeIndex] = tmp;
+
+  //update the swapped edge's location in this structure so it still
+  //knows where it is in this vertex/node
+  if(this == edges[targetEdgeIndex]->left)
+    edges[targetEdgeIndex]->leftEdgeIndex = targetEdgeIndex;
+  else
+    edges[targetEdgeIndex]->rightEdgeIndex = targetEdgeIndex;
+
+  //deallocate the last edge pointer (but don't actually delete --
+  //that's the network's job).
+  if(0 < numEdges){
+    memCheck = realloc(edges, numEdges * sizeof(*edges));
+    edges = (edge<T, U>**) memCheck;
+  }else{
+    free(edges);
+    edges = NULL;
+  }
+  edgesSize = numEdges;
+  
+  connected.erase(toRemove->other(this));
+}
+
+
+template <typename T, typename U> inline bool vertex<T, U>::operator==(
+                                      const vertex<T, U> &other) const{
+  return (value == other.value);
+}
+
+
+template <typename T, typename U> edge<T, U>** vertex<T, U>::getEdges(){
+  return edges;
+}
+
+
+template <typename T, typename U> const edge<T, U>**
+                                        vertex<T, U>::getEdges() const{
+  return (const edge<T, U>**) edges;
+}
+
+
+template <typename T, typename U> void vertex<T, U>::hintNumEdges(
+                                              const size_t suggestSize){
+  void *tmpPtr;
+
+  if(suggestSize <= numEdges) return;
+
+  tmpPtr = realloc(edges, sizeof(*edges) * suggestSize);
+  if(NULL == tmpPtr) raise(SIGABRT);
+  edges = (edge<T, U>**) tmpPtr;
+
+  edgesSize = suggestSize;
+}
+
+
+template <typename T, typename U> void vertex<T, U>::shrinkToFit(){
+  hintNumEdges(numEdges);
+}
+
+
+template <typename T, typename U> void vertex<T, U>::ensureEdgeCapacity(
+                                                    const size_t size){
+  while(size > edgesSize)
+    hintNumEdges(1 + (edgesSize << 1));
+}
+
+
+template <typename T, typename U> bool vertex<T, U>::areConnected(
+                                            vertex<T, U> *other) const{
+  return connected.count(other);
+}
+
+////////////////////////////////////////////////////////////////////////
+//GRAPH FUNCTION DEFINITIONS////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
 template <typename T, typename U> graph<T, U>::graph(){
@@ -119,9 +622,11 @@ template <typename T, typename U> T graph<T, U>::removeVertex(
 }
 
 
-/*template <typename T, typename U> T graph<T, U>::removeVertex(T value){
+/*
+template <typename T, typename U> T graph<T, U>::removeVertex(T value){
   return removeVertex(getVertexForValue(value));
-}*/
+}
+//*/
 
 
 template <typename T, typename U> vertex<T, U>* graph<T, U>::addVertex(
@@ -178,7 +683,8 @@ template <typename T, typename U>const edge<T, U>**
 }
 
 
-template <typename T, typename U> size_t graph<T, U>::getNumEdges() const{
+template <typename T, typename U> size_t graph<T, U>::getNumEdges() 
+                                                                  const{
   return numEdges;
 }
 
@@ -227,7 +733,7 @@ template <typename T, typename U> vertex<T, U>*
 
 
 template <typename T, typename U> void graph<T, U>::hintNumEdges(
-                                                  csize_t suggestSize){
+                                              const size_t suggestSize){
   void *memCheck;
 
   if(suggestSize <= numEdges) return;
@@ -239,14 +745,15 @@ template <typename T, typename U> void graph<T, U>::hintNumEdges(
     edgeArray = (edge<T, U>**) memCheck;
     edgeArraySize = suggestSize;
   }else{
-    fprintf(stderr, "ERROR: Could not allocate edges\n"); fflush(stderr);
+    fprintf(stderr, "ERROR: Could not allocate edges\n"); 
+    fflush(stderr);
     raise(SIGABRT);
   }
 }
 
 
 template <typename T, typename U> void graph<T, U>::hintNumVertexes(
-                                                  csize_t suggestSize){
+                                              const size_t suggestSize){
   void *memCheck;
 
   if(suggestSize <= numVertexes) return;
@@ -284,7 +791,7 @@ template <typename T, typename U> void graph<T, U>::shrinkToFit(){
 
 
 template <typename T, typename U> void graph<T, U>::ensureEdgeCapacity(
-                                                          csize_t size){
+                                                    const size_t size){
   void *memCheck;
   size_t nextSize;
 
