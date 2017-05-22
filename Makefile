@@ -77,6 +77,7 @@ clean:
 
 $(OLIB):$(shell find src -type f) $(shell find include -type f)
 	cd src ; make
+	mkdir lib
 	mv src/madlib.so lib/
 	mv src/madlib.a lib/
 
