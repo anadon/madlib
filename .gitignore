@@ -2,3 +2,5 @@
 *.a
 test.out
 gmon.out
+*.gch
+madlib.*
