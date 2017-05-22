@@ -71,13 +71,14 @@ clean:
 	cd src ; make clean
 	cd test ; make clean
 	rm -f $(OLIB)
+	rm -rf lib
 
 #$(EXEC):$(OLIB) $(MAINOBJECT)
 #	$(CPP) $(CPPFLAGS) -flto $(MAINOBJECT) $(LIBS) $(OLIB) -o $(EXEC)
 
 $(OLIB):$(shell find src -type f) $(shell find include -type f)
 	cd src ; make
-	mkdir lib
+	mkdir -p lib
 	mv src/madlib.so lib/
 	mv src/madlib.a lib/
 
