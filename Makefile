@@ -18,9 +18,9 @@ CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99 -I $(INCLUDE)
 
 all:$(OLIB)
 
-test:$(OLIB) $(TEST_PROG)
+test:debug $(TEST_PROG)
 
-debug:
+debug:$(OLIB)
 
 install:
 
@@ -39,6 +39,5 @@ $(OLIB):$(shell find src -type f) $(shell find include -type f)
 
 $(TEST_PROG): $(OLIB)
 	cd test ; make
-	echo "Error, build commands not completed."
 
 

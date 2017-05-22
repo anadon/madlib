@@ -26,7 +26,8 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include "short-primatives.h"
+//#include "short-primatives.h"
+#include <unistd.h>
 
 ////////////////////////////////////////////////////////////////////////
 //PUBLIC FUNCTION DECLARATIONS//////////////////////////////////////////
@@ -37,8 +38,11 @@
  * Correlation is calculated using Spearman's correlation coefficient.
  *
  **********************************************************************/
-void calculateRankCorrelationMatrix(f64 **expressionData, 
-                                      csize_t numRows, csize_t numCols);
+
+//namespace {
+void calculateRankCorrelationMatrix(double **expressionData, 
+                            const size_t numRows, const size_t numCols);
+//}
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////

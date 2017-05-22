@@ -224,8 +224,8 @@ void *correlationHelperBruteForce(void *protoArgs){
   //TODO: optimize index calculation by moving x and y into their own
   //loops and just use the WToXY to establish start and end.  Also 
   //include primer loops
-  pair<size_t, size_t> startXY = results->WToXY(minimum);
-  pair<size_t, size_t> endXY = results->WToXY(maximum);
+  pair<size_t, size_t> startXY = results->WtoXY(minimum);
+  pair<size_t, size_t> endXY = results->WtoXY(maximum);
   csize_t tmpSY = startXY.second;
   
   for(size_t x = startXY.first; x < numGenes; x++){

@@ -17,14 +17,12 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef UPPER_DIAGONAL_SQUARE_MATRIX_HPP
-#define UPPER_DIAGONAL_SQUARE_MATRIX_HPP
-
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include <upper-diagonal-matrix.hpp>
+#include <upper-diagonal-square-matrix.tpp>
+#include <vector>
 
 #include "gtest/gtest.h"
 
@@ -37,39 +35,39 @@
 
 TEST(UpperDiagonalMatrixTest, DataIntegrity){
   
-  const int sideLength = 100;
-  UpperDiagonalSquareMatrix<int> *testDataStructure;
-  testDataStructure = new UpperDiagonalSquareMatrix<int>(sideLength);
-  vector<int> filled(testDataStructure.numberOfElements(), -1);
+  const size_t sideLength = 100;
+  UpperDiagonalSquareMatrix<size_t> *testDataStructure;
+  testDataStructure = new UpperDiagonalSquareMatrix<size_t>(sideLength);
+  std::vector<size_t> filled(testDataStructure->numberOfElements(), -1);
 
-  int count = 0;
-  for(int y = 0; y < sideLength; y++){
-    for(int x = y; x < sideLength; x++){
-      testDataStructure.setValueAtIndex(x, y, filled[testDataStructure.XYtoW(x, y)] = testDataStructure.XYtoW(y, x));
-      EXPECT_EQ(testDataStructure.getValueAtIndex(x, y), testDataStructure.getValueAtIndex(x, y));
-      EXPECT_EQ(testDataStructure.getValueAtIndex(x, y), filled[testDataStructure.XYtoW(x, y)]);
-      EXPECT_EQ(testDataStructure.XYtoW(x, y), testDataStructure.XYtoW(y, x));
+  //size_t count = 0;
+  for(size_t y = 0; y < sideLength; y++){
+    for(size_t x = y; x < sideLength; x++){
+      testDataStructure->setValueAtIndex(x, y, filled[testDataStructure->XYtoW(x, y)] = testDataStructure->XYtoW(y, x));
+      EXPECT_EQ(testDataStructure->getValueAtIndex(x, y), testDataStructure->getValueAtIndex(x, y));
+      EXPECT_EQ(testDataStructure->getValueAtIndex(x, y), filled[testDataStructure->XYtoW(x, y)]);
+      EXPECT_EQ(testDataStructure->XYtoW(x, y), testDataStructure->XYtoW(y, x));
     }
   }
   
-  EXPECT_EQ(filled[0], 0);
-  for(int w = 1; w < filled.size(); w++){
+  EXPECT_EQ(filled[0], (size_t)0);
+  for(size_t w = 1; w < filled.size(); w++){
     EXPECT_EQ(filled[w-1], filled[w]-1);
   }
   
-  testDataStructure.zeroData();
+  testDataStructure->zeroData();
   
-  for(int x = 0; x < testDataStructure.getSideLength(); x++){
-    for(int y = 0; y < testDataStructure.getSideLength(); y++){
-      EXPECT_EQ(testDataStructure.getValueAtIndex(x, y), 0);
+  for(size_t x = 0; x < testDataStructure->getSideLength(); x++){
+    for(size_t y = 0; y < testDataStructure->getSideLength(); y++){
+      EXPECT_EQ(testDataStructure->getValueAtIndex(x, y), (size_t)0);
     }
   }
   
-  testDataStructure.fill(1);
+  testDataStructure->fill(1);
   
-  for(int x = 0; x < testDataStructure.getSideLength(); x++){
-    for(int y = 0; y < testDataStructure.getSideLength(); y++){
-      EXPECT_EQ(testDataStructure.getValueAtIndex(x, y), 1);
+  for(size_t x = 0; x < testDataStructure->getSideLength(); x++){
+    for(size_t y = 0; y < testDataStructure->getSideLength(); y++){
+      EXPECT_EQ(testDataStructure->getValueAtIndex(x, y), (size_t)1);
     }
   }
   
@@ -82,5 +80,3 @@ TEST(UpperDiagonalMatrixTest, DataIntegrity){
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
-#endif

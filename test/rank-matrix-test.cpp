@@ -19,16 +19,16 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef RANK_MATRIX_HPP
-#define RANK_MATRIX_HPP
-
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include "rank-matrix.hpp"
+//#include <rank-matrix.hpp>
+#include "include/rank-matrix.hpp"
 
 #include "gtest/gtest.h"
+#include <stdio.h>
+#include <algorithm>
 
 ////////////////////////////////////////////////////////////////////////
 //PUBLIC FUNCTION DECLARATIONS /////////////////////////////////////////
@@ -51,10 +51,11 @@
 
 ***********************************************************************/
 
-static int rows = 12;
-static int cols = 10;
+static const size_t rows = 12;
+static const size_t cols = 10;
 
-static double testMatrix[][] = {
+/*
+static double testMatrix[12][10] = {
   {0,0,0,0,0,0,0,0,0,0},
   {1,1,1,1,1,1,1,1,1,1},
   {0,1,2,3,4,5,6,7,8,9},
@@ -68,8 +69,10 @@ static double testMatrix[][] = {
   {5,6,7,8,9,0,1,2,3,4},
   {0.5,0.6,0.7,0.8,0.9,0.0,0.1,0.2,0.3,0.4}
 };
+//*/
 
-const static double expectMatrix[][] = {
+
+const static double expectMatrix[12][10] = {
   {0,1,2,3,4,5,6,7,8,9},
   {0,1,2,3,4,5,6,7,8,9},
   {0,1,2,3,4,5,6,7,8,9},
@@ -83,18 +86,62 @@ const static double expectMatrix[][] = {
   {5,6,7,8,9,0,1,2,3,4},
   {5,6,7,8,9,0,1,2,3,4}
 };
+//*/
 
-calculateRankCorrelationMatrix(testMatrix, rows, cols);
 
-
-TEST(RankMatrixTest, GeneralCheck){
+TEST(RANK_MATRIX_TEST, GENERAL_CHECK){  
+  double **testMatrix;
+  
+  testMatrix = (double**) malloc(sizeof(*testMatrix) * rows);
+  
+  
+  double testMatrixRow0[] = {0,0,0,0,0,0,0,0,0,0};
+  testMatrix[0] = testMatrixRow0;
+  double testMatrixRow1[] = {1,1,1,1,1,1,1,1,1,1};
+  testMatrix[1] = testMatrixRow1;
+  double testMatrixRow2[] = {0,1,2,3,4,5,6,7,8,9};
+  testMatrix[2] = testMatrixRow2;
+  double testMatrixRow3[] = {0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9};
+  testMatrix[3] = testMatrixRow3;
+  double testMatrixRow4[] = {9,8,7,6,5,4,3,2,1,0};
+  testMatrix[4] = testMatrixRow4;
+  double testMatrixRow5[] = {0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.0};
+  testMatrix[5] = testMatrixRow5;
+  double testMatrixRow6[] = {1,0,3,2,5,4,7,6,9,8};
+  testMatrix[6] = testMatrixRow6;
+  double testMatrixRow7[] = {0.1,0.0,0.3,0.2,0.5,0.4,0.7,0.6,0.9,0.8};
+  testMatrix[7] = testMatrixRow7;
+  double testMatrixRow8[] = {0,2,1,4,3,6,5,8,7,9};
+  testMatrix[8] = testMatrixRow8;
+  double testMatrixRow9[] = {0.0,0.2,0.1,0.4,0.3,0.6,0.5,0.8,0.7,0.9};
+  testMatrix[9] = testMatrixRow9;
+  double testMatrixRow10[] = {5,6,7,8,9,0,1,2,3,4};
+  testMatrix[10] = testMatrixRow10;
+  double testMatrixRow11[] = {0.5,0.6,0.7,0.8,0.9,0.0,0.1,0.2,0.3,0.4};
+  testMatrix[11] = testMatrixRow11;
+  
+  
+  //fprintf(stdout, "Going into calculateRankCorrelationMatrix()\n");
+  //fflush(stdout);
+  
   calculateRankCorrelationMatrix(testMatrix, rows, cols);
   
-  for(int y = 0; y < rows; y++){
-    for(int x = 0; x < cols; x++){
+  //fprintf(stdout, "came out of calculateRankCorrelationMatrix()\n");
+  //fflush(stdout);
+  
+  EXPECT_EQ(1, 1);
+  
+  for(size_t y = 0; y < rows; y++){
+    for(size_t x = 0; x < cols; x++){
       EXPECT_EQ(testMatrix[y][x], expectMatrix[y][x]);
+      //fprintf(stdout, "{testMatrix[%zu][%zu], expectMatrix[%zu][%zu]} = "
+      //                    "{%lf, %lf}\n", y, x, y, x, testMatrix[y][x], 
+      //                                              expectMatrix[y][x]);
+      //fflush(stdout);
     }
   }
+  
+  free(testMatrix);
   
 }
 
@@ -102,4 +149,3 @@ TEST(RankMatrixTest, GeneralCheck){
 //END///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#endif

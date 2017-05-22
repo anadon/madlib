@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <tgmath.h>
+#include <string.h>
 
 #include "upper-diagonal-square-matrix.hpp"
 
@@ -39,7 +40,7 @@ using std::endl;
 
 //NOTE: tested and mathematically confirmed correct
 template<typename T> size_t UpperDiagonalSquareMatrix<T>::
-                                              XYToW(size_t z, size_t u){
+                                              XYtoW(size_t z, size_t u){
   size_t x = z > u ? z : u;
   size_t y = z <= u? z : u;
   return (y*n)+x-(y*(y-1)/2)-y;
@@ -47,7 +48,7 @@ template<typename T> size_t UpperDiagonalSquareMatrix<T>::
 
 
 template<typename T> std::pair<size_t, size_t> 
-                        UpperDiagonalSquareMatrix<T>::WToXY(csize_t w){
+                        UpperDiagonalSquareMatrix<T>::WtoXY(csize_t w){
   size_t x, y;
   if(w >= numberOfElements()){
     return std::pair<size_t, size_t>(-1, -1);
@@ -99,9 +100,9 @@ template <typename T> T UpperDiagonalSquareMatrix<T>
   if(x >=n || y >= n) return oneDMatrix[-1];
   
   if(x >= y)
-    return oneDMatrix[XYToW(x, y)];
+    return oneDMatrix[XYtoW(x, y)];
   else
-    return oneDMatrix[XYToW(y, x)];
+    return oneDMatrix[XYtoW(y, x)];
 }
 
 
@@ -110,9 +111,9 @@ template <typename T> T* UpperDiagonalSquareMatrix<T>
   if(x >=n || y >= n) return NULL;
   
   if(x >= y)
-    return &oneDMatrix[XYToW(x, y)];
+    return &oneDMatrix[XYtoW(x, y)];
   else
-    return &oneDMatrix[XYToW(y, x)];
+    return &oneDMatrix[XYtoW(y, x)];
 }
 
 
@@ -121,9 +122,9 @@ template <typename T> void UpperDiagonalSquareMatrix<T>
   if(x >=n || y >= n) oneDMatrix[-1] = -1;
   
   if(x >= y)
-    oneDMatrix[XYToW(x, y)] = value;
+    oneDMatrix[XYtoW(x, y)] = value;
   else
-    oneDMatrix[XYToW(y, x)] = value;
+    oneDMatrix[XYtoW(y, x)] = value;
 }
 
 template <typename T> size_t UpperDiagonalSquareMatrix<T>

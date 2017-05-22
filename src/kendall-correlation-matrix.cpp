@@ -140,8 +140,8 @@ void *tauCorrelationHelperBruteForce(void *protoArgs){
   csize_t maximum = (results->numberOfElements() * (numerator+1)) 
                                                           / denominator;
   
-  pair<size_t, size_t> startXY = results->WToXY(minimum);
-  pair<size_t, size_t> endXY = results->WToXY(maximum);
+  pair<size_t, size_t> startXY = results->WtoXY(minimum);
+  pair<size_t, size_t> endXY = results->WtoXY(maximum);
   csize_t tmpSY = startXY.second;
   
   for(size_t x = startXY.first; x < numRows; x++){
