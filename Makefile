@@ -49,8 +49,8 @@ test:debug $(TEST_PROG)
 	cd test; make
 
 install:$(OLOB)
-	install $(TEMPLATES) $(HEADERS) -t $(DESTDIR)/usr/include
-	install -s lib/madlib.a \
+	install -D $(TEMPLATES) $(HEADERS) -t $(DESTDIR)/usr/include
+	install -D -s lib/madlib.a \
 	           $(DESTDIR)/usr/lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION)
 	ln -s lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION) \
 	      $(DESTDIR)/usr/lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION)
@@ -58,7 +58,7 @@ install:$(OLOB)
 	      $(DESTDIR)/usr/lib/madlib.a.$(MAJOR_VERSION)
 	ln -s lib/madlib.a.$(MAJOR_VERSION) \
 	      $(DESTDIR)/usr/lib/madlib.a
-	install -s lib/madlib.so \
+	install -D -s lib/madlib.so \
 	           $(DESTDIR)/usr/lib/madlib.so.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION)
 	ln -s lib/madlib.so.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION) \
 	      $(DESTDIR)/usr/lib/madlib.so.$(MAJOR_VERSION).$(MINOR_VERSION)
