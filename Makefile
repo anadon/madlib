@@ -19,18 +19,18 @@ LIBS=-pthread
 INCLUDE=$(shell pwd)/include
 OLIB=lib/madlib.a lib/madlib.so
 
-TEMPLATES=graph.tpp                                                    \
-          upper-diagonal-square-matrix.tpp
+TEMPLATES=include/graph.tpp                                                    \
+          include/upper-diagonal-square-matrix.tpp
 
-HEADERS=diagnostics.hpp                                                \
-        kendall-correlation-matrix.hpp                                 \
-        pearson-correlation-matrix.hpp                                 \
-        quickmerge.hpp                                                 \
-        rank-matrix.hpp                                                \
-        short-primatives.h                                             \
-        simple-thread-dispatch.hpp                                     \
-        spearman-correlation-matrix.hpp                                \
-        statistics.h
+HEADERS=include/diagnostics.hpp                                                \
+        include/kendall-correlation-matrix.hpp                                 \
+        include/pearson-correlation-matrix.hpp                                 \
+        include/quickmerge.hpp                                                 \
+        include/rank-matrix.hpp                                                \
+        include/short-primatives.h                                             \
+        include/simple-thread-dispatch.hpp                                     \
+        include/spearman-correlation-matrix.hpp                                \
+        include/statistics.h
 
 
 COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include
@@ -49,7 +49,7 @@ test:debug $(TEST_PROG)
 	cd test; make
 
 install:$(OLOB)
-	install -C include /usr/include
+	install $(TEMPLATES) $(HEADERS) -t /usr/include
 	install -s lib/madlib.a /usr/lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION)
 	ln -s lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION) \
 	      /usr/lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION)
