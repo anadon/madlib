@@ -11,6 +11,7 @@
 4................................................................Credits
 
 ##Description###########################################################
+
 This is a library I've created which is suitable to housing and testing
 various algorithms or datastructures which I have found missing or
 lacking amongst the current breadth of C++ libraries.  My focus is on
@@ -37,4 +38,5 @@ Install:
 
 
 ##Credits###############################################################
+
 Primary Author: Josh Marshall <jrmarsha@mtu.edu>
