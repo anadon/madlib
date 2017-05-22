@@ -1,92 +1,40 @@
-########################################################################
-@@@  @@@       @@@  @    @ @  @@@  @@@  @@@  @@@
- @   @         @    @    @ @  @     @   @    @ @
- @   @@@  @@@  @    @    @ @  @@@   @   @@@  @@
- @   @         @    @    @ @    @   @   @    @ @
- @   @         @@@  @@@  @@@  @@@   @   @@@  @ @
-#TF-cluster#############################################################
+#Marshall's Algorithms and Datastructures Library#######################
 
 ##Table of Contents#####################################################
 
 1............................................................Description
 
-2..................................................................Usage
+2.............................................Build and Use Requirements
 
-3...........................................................File Formats
+3........................................Build, Debug, and Install Steps
 
-4...............................................................Building
-
-5.....................................................Build Requirements
-
-6...........................................................Installation
-
-7................................................................Credits
+4................................................................Credits
 
 ##Description###########################################################
-TF-cluster is a tool made to cluster data, originally designed to find
-interesting transcription factor co-expressions.
+This is a library I've created which is suitable to housing and testing
+various algorithms or datastructures which I have found missing or
+lacking amongst the current breadth of C++ libraries.  My focus is on
+bioinformatics related works, but I have taken some pains to make then
+general.
 
-##Usage#################################################################
-> ./triple-link-pthread -1 <FLOAT> -2 <FLOAT> -3 <FLOAT> -t <FILE PATH>
-> -e <FILE PATH> -k <INTEGER> -c <"spearman" || "pearson"> 
+##Build and Use Requirements############################################
 
-Prints to stderr various status messages.  Results are printed to stdout
-in the following format:
-```
-cluster 1:
-<gene 1.1>
-<gene 1.2>
-...
-<gene 1.M1>
+Building Requirements: gcc-libs g++, libc, git, make
 
-cluster 2:
-...
+Use Requirements: libc
 
-cluster N:
-<gene N.1>
-...
-<gene N.MN>
-```
+##Build, Debug, and Install#############################################
 
-##File Formats##########################################################
+Build:
+>$ make
 
-The settings file is no longer used, instead using command line 
-arguments.
+Debug:
+>$ make debug
+>$ ./test/test.out
 
-All input files expect UNIX standard line terminators.
+Install:
+># make install
 
-The expression file used to generate the correlation matrix follows the
-format below:
-```
-<NAME 1> <EXPRESSION COEFFICIENT 1> <EC 2> ... <EC M>
-<NAME 2> <EXPRESSION COEFFICIENT 1> <EC 2> ... <EC M>
-...
-<NAME N> <EXPRESSION COEFFICIENT 1> <EC 2> ... <EC M>
-```
-
-The transcription file, used to specify transcriptions factors from the
-expression file to create clusters from uses the following format:
-```
-<NAME 1>
-<NAME 2>
-...
-<NAME N>
-```
-
-##Building##############################################################
-> make
-
-##Build Requirements####################################################
-gcc-libs
-libc
-glibc or argp
-git
-gcc
-
-##Installation##########################################################
-> make install
 
 ##Credits###############################################################
-Programmer: Josh Marshall <jrmarsha@mtu.edu>
-
-Professor:  Hairong Wei at hairong@mtu.edu
+Primary Author: Josh Marshall <jrmarsha@mtu.edu>
