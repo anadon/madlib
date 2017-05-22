@@ -8,7 +8,9 @@
 
 3........................................Build, Debug, and Install Steps
 
-4................................................................Credits
+4.....................................................Available Features
+
+5................................................................Credits
 
 ##Description###########################################################
 
@@ -36,6 +38,19 @@ Debug:
 Install:
 > \# make install
 
+##Available Features####################################################
+
+Algorithms:
+>Pearson Correlation Matrix generation
+>Kendall Correlation Matrix generation
+>Spearman Correlation Matrix generation
+>Simple Semi-Automated Thread dispatcher using pthreads
+>Various statistical functions
+>Quick-Merge Sort
+
+Datastructures:
+>Upper DIagonal Square Matrix template, memory optimized
+>Undirected Graph, Vertex, and Edge templates
 
 ##Credits###############################################################
 
