@@ -33,7 +33,7 @@ Debug:
 >$ ./test/test.out
 
 Install:
-># make install
+> \# make install
 
 
 ##Credits###############################################################
