@@ -1,4 +1,4 @@
-# Marshall's Algorithms and Datastructures Library
+# Marshall's Algorithms and Datastructures Library######################
 
 ##Table of Contents#####################################################
 
