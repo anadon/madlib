@@ -1,6 +1,8 @@
-# Marshall's Algorithms and Datastructures Library######################
+# Marshall's Algorithms and Datastructures Library
+########################################################################
 
-##Table of Contents#####################################################
+### Table of Contents
+########################################################################
 
 1............................................................Description
 
@@ -12,7 +14,8 @@
 
 5................................................................Credits
 
-## Description#########################################################
+## Description
+########################################################################
 
 This is a library I've created which is suitable to housing and testing
 various algorithms or datastructures which I have found missing or
@@ -20,13 +23,15 @@ lacking amongst the current breadth of C++ libraries.  My focus is on
 bioinformatics related works, but I have taken some pains to make then
 general.
 
-## Build and Use Requirements###########################################
+## Build and Use Requirements
+########################################################################
 
 Building Requirements: gcc-libs g++, libc, git, make
 
 Use Requirements: libc
 
-## Build, Debug, and Install############################################
+## Build, Debug, and Install
+########################################################################
 
 Build:
 >$ make
@@ -38,7 +43,8 @@ Debug:
 Install:
 > \# make install
 
-## Available Features###################################################
+## Available Features
+########################################################################
 
 Algorithms:
 >Pearson Correlation Matrix generation
@@ -52,6 +58,7 @@ Datastructures:
 >Upper DIagonal Square Matrix template, memory optimized
 >Undirected Graph, Vertex, and Edge templates
 
-## Credits##############################################################
+## Credits
+########################################################################
 
 Primary Author: Josh Marshall <jrmarsha@mtu.edu>
