@@ -2,6 +2,8 @@ Add the SA-IS algorithm
 
 Add Doxygen to the project to build documentation
 
+Add python 2, python3, perl, lua, java build targets if possible.
+
 Add skiplists template, then convert sparse-bitpacked-array to C++ and use the sparse lists
 
 Add highly optimized perfect alignment algorithm
