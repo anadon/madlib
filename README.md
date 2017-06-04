@@ -47,16 +47,17 @@ Install:
 ########################################################################
 
 Algorithms:
->Pearson Correlation Matrix generation
->Kendall Correlation Matrix generation
->Spearman Correlation Matrix generation
->Simple Semi-Automated Thread dispatcher using pthreads
->Various statistical functions
->Quick-Merge Sort
+>(C++) Pearson Correlation Matrix generation
+>(C++) Kendall Correlation Matrix generation
+>(C++) Spearman Correlation Matrix generation
+>(C++) Simple Semi-Automated Thread dispatcher using pthreads
+>(C) Various statistical functions
+>(C++) Quick-Merge Sort
 
 Datastructures:
->Upper DIagonal Square Matrix template, memory optimized
->Undirected Graph, Vertex, and Edge templates
+>(C++) Upper DIagonal Square Matrix template, memory optimized
+>(C++) Undirected Graph, Vertex, and Edge templates
+>(C) bitpacked array, and sparse bitpacked array
 
 ## Credits
 ########################################################################
