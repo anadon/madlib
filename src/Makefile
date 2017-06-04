@@ -20,7 +20,8 @@ SOURCES=diagnostics.cpp                                                \
         rank-matrix.cpp                                                \
         simple-thread-dispatch.cpp                                     \
         spearman-correlation-matrix.cpp                                \
-        statistics.c
+        statistics.c                                                   \
+        sparse-bitpacked-array.c
 
 OBJECTS= diagnostics.o                                                 \
          kendall-correlation-matrix.o                                  \
@@ -29,7 +30,8 @@ OBJECTS= diagnostics.o                                                 \
          rank-matrix.o                                                 \
          simple-thread-dispatch.o                                      \
          spearman-correlation-matrix.o                                 \
-         statistics.o
+         statistics.o                                                  \
+         sparse-bitpacked-array.o
 
 
 all:$(STATIC_LIB) $(DYNAMIC_LIB)

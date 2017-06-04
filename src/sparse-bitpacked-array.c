@@ -29,8 +29,15 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include <bitpacked-array.h>
+#include <errno.h>
 #include <sparse-bitpacked-array.h>
 #include <stdlib.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 //Due to this code being untested, runtime tests and checking are always
 //enabled.
@@ -160,7 +167,7 @@ size_t findSegmentIndex(const SparseBitpackedArray *input,
 
   low = 0;
   high = input->numSegments-1;
-  toReturn = -1;
+  toReturn = (size_t) -1;
 
   while(low < high){
     size_t mid = (low+high) / 2;
@@ -296,14 +303,14 @@ void sparseSetBitAtIndex(SparseBitpackedArray *input,
     input->segments[segIndex].terminalIndex = ((index >> 3) + 1) << 3;
 
     #ifdef DEBUG
-    if(segIndex < numSegments-1 &&
+    if(segIndex < input->numSegments-1 &&
                                 input->segments[segIndex].terminalIndex >
                                 input->segments[segIndex+1].startIndex){
       //likely compound errors, print error message and terminate
       fprintf(stderr, "Sparse Bitpacked Array segment overlap "
                                             "detected, terminating\n");
       fflush(stderr);
-      exit(-ESEGFAULT);
+      exit(-EFAULT);
     }
     #endif
 
@@ -567,4 +574,8 @@ void optimizeSparseBitpackedArray(SparseBitpackedArray *toOptimise){
 #ifdef UNDEF_DEBUG
 #undef DEBUG
 #undef UNDEF_DEBUG
+#endif
+
+#ifdef __cplusplus
+}
 #endif

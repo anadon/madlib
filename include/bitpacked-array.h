@@ -35,6 +35,11 @@
 #define UNDEF_DEBUG
 #endif
 
+#ifdef DEBUG
+#include <stdio.h>
+#include <stdlib.h>
+#endif
+
 ////////////////////////////////////////////////////////////////////////
 //TYPEDEF'S/////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -72,16 +77,18 @@ unsigned char getBitAtIndex(const bitArray *toRead, size_t index){
 void setBitAtIndex(bitArray *toModify, const size_t index,
                                             const unsigned char value){
   #ifdef DEBUG
-  value = (value != 0);
+  const unsigned char usableValue = (value != 0);
+  #else
+  const unsigned char usableValue = value;
   #endif
 
   //if(value) toModify[index>>4] |= (1 << (index & 0xf));
   //else      toModify[index>>4] = ~((~toModify[index>>4]) |
   //                                              (1 << (index & 0xf)));
-  toModify[index>>3] ^= (-((signed char)value) ^ toModify[index>>3]) &
-                                                  (1 << (index & 0x7));
+  toModify[index>>3] ^= (-((signed char)usableValue) ^ 
+                            toModify[index>>3]) & (1 << (index & 0x7));
   #ifdef DEBUG
-  if(value != getBitAtIndex(toModify, index){
+  if(value != getBitAtIndex(toModify, index)){
     fprintf(stderr, "setBitAtIndex() failure\n");
     fflush(stderr);
     exit(-1);
