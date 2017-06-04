@@ -68,7 +68,7 @@
 */
 
 TEST(GRAPH, CREATION){
-  
+
   graph<int, int> *tg1;
   tg1 = new graph<int, int>();
   delete tg1;
@@ -78,13 +78,13 @@ TEST(GRAPH, CREATION){
 TEST(GRAPH, VERTEX_ADD){
   graph<int, int> *tg1;
   tg1 = new graph<int, int>();
-  
+
   tg1->addVertex(0);
-  
+
   EXPECT_EQ(1, tg1->getNumVertexes());
-  
+
   delete tg1;
-  
+
 }
 
 ////////////////////////////////////////////////////////////////////////

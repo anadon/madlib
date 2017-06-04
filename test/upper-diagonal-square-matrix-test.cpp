@@ -34,7 +34,7 @@
 
 
 TEST(UpperDiagonalMatrixTest, DataIntegrity){
-  
+
   const size_t sideLength = 100;
   UpperDiagonalSquareMatrix<size_t> *testDataStructure;
   testDataStructure = new UpperDiagonalSquareMatrix<size_t>(sideLength);
@@ -49,28 +49,28 @@ TEST(UpperDiagonalMatrixTest, DataIntegrity){
       EXPECT_EQ(testDataStructure->XYtoW(x, y), testDataStructure->XYtoW(y, x));
     }
   }
-  
+
   EXPECT_EQ(filled[0], (size_t)0);
   for(size_t w = 1; w < filled.size(); w++){
     EXPECT_EQ(filled[w-1], filled[w]-1);
   }
-  
+
   testDataStructure->zeroData();
-  
+
   for(size_t x = 0; x < testDataStructure->getSideLength(); x++){
     for(size_t y = 0; y < testDataStructure->getSideLength(); y++){
       EXPECT_EQ(testDataStructure->getValueAtIndex(x, y), (size_t)0);
     }
   }
-  
+
   testDataStructure->fill(1);
-  
+
   for(size_t x = 0; x < testDataStructure->getSideLength(); x++){
     for(size_t y = 0; y < testDataStructure->getSideLength(); y++){
       EXPECT_EQ(testDataStructure->getValueAtIndex(x, y), (size_t)1);
     }
   }
-  
+
   delete testDataStructure;
 
 }
