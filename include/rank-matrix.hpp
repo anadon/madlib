@@ -3,15 +3,15 @@
 /***********************************************************************
     This file is part of "Marshall's  Datastructures and Algorithms".
 
-    "Marshall's  Datastructures and Algorithms" is free software: you 
-    can redistribute it and/or modify it under the terms of the GNU 
+    "Marshall's  Datastructures and Algorithms" is free software: you
+    can redistribute it and/or modify it under the terms of the GNU
     General Public License as published by the Free Software Foundation,
-    either version 3 of the License, or (at your option) any later 
+    either version 3 of the License, or (at your option) any later
     version.
 
-    "Marshall's  Datastructures and Algorithms" is distributed in the 
-    hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
-    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    "Marshall's  Datastructures and Algorithms" is distributed in the
+    hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
     PURPOSE.  See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
@@ -26,23 +26,28 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-//#include "short-primatives.h"
 #include <unistd.h>
+
 
 ////////////////////////////////////////////////////////////////////////
 //PUBLIC FUNCTION DECLARATIONS//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-/***********************************************************************
- *  Heavily optimized method to calculate a correlation matrix.
- * Correlation is calculated using Spearman's correlation coefficient.
+/*******************************************************************//**
+ * \brief Heavily optimized method to convert a matix of coefficients
+ * into a matrix of ranks, such that the ordering of values in columns
+ * becomes their value, maintaining relative high to low ordering.
  *
+ * @param[in] expressionData
+ *
+ * @param[in] numRows expressionData[numRows][]
+ *
+ * @param[in] numCols expressionData[][numCols]
+ *
+ * TODO: document maxMatch usage
  **********************************************************************/
-
-//namespace {
-void calculateRankCorrelationMatrix(double **expressionData, 
-                            const size_t numRows, const size_t numCols);
-//}
+void calculateRankMatrix(double **expressionData, const size_t numRows,
+                                                  const size_t numCols);
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////

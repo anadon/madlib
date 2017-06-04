@@ -3,15 +3,15 @@
 /***********************************************************************
     This file is part of "Marshall's  Datastructures and Algorithms".
 
-    "Marshall's  Datastructures and Algorithms" is free software: you 
-    can redistribute it and/or modify it under the terms of the GNU 
+    "Marshall's  Datastructures and Algorithms" is free software: you
+    can redistribute it and/or modify it under the terms of the GNU
     General Public License as published by the Free Software Foundation,
-    either version 3 of the License, or (at your option) any later 
+    either version 3 of the License, or (at your option) any later
     version.
 
-    "Marshall's  Datastructures and Algorithms" is distributed in the 
-    hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
-    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    "Marshall's  Datastructures and Algorithms" is distributed in the
+    hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
     PURPOSE.  See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
@@ -89,12 +89,12 @@ const static double expectMatrix[12][10] = {
 //*/
 
 
-TEST(RANK_MATRIX_TEST, GENERAL_CHECK){  
+TEST(RANK_MATRIX_TEST, GENERAL_CHECK){
   double **testMatrix;
-  
+
   testMatrix = (double**) malloc(sizeof(*testMatrix) * rows);
-  
-  
+
+
   double testMatrixRow0[] = {0,0,0,0,0,0,0,0,0,0};
   testMatrix[0] = testMatrixRow0;
   double testMatrixRow1[] = {1,1,1,1,1,1,1,1,1,1};
@@ -119,30 +119,30 @@ TEST(RANK_MATRIX_TEST, GENERAL_CHECK){
   testMatrix[10] = testMatrixRow10;
   double testMatrixRow11[] = {0.5,0.6,0.7,0.8,0.9,0.0,0.1,0.2,0.3,0.4};
   testMatrix[11] = testMatrixRow11;
-  
-  
+
+
   //fprintf(stdout, "Going into calculateRankCorrelationMatrix()\n");
   //fflush(stdout);
-  
-  calculateRankCorrelationMatrix(testMatrix, rows, cols);
-  
+
+  calculateRankMatrix(testMatrix, rows, cols);
+
   //fprintf(stdout, "came out of calculateRankCorrelationMatrix()\n");
   //fflush(stdout);
-  
+
   EXPECT_EQ(1, 1);
-  
+
   for(size_t y = 0; y < rows; y++){
     for(size_t x = 0; x < cols; x++){
       EXPECT_EQ(testMatrix[y][x], expectMatrix[y][x]);
       //fprintf(stdout, "{testMatrix[%zu][%zu], expectMatrix[%zu][%zu]} = "
-      //                    "{%lf, %lf}\n", y, x, y, x, testMatrix[y][x], 
+      //                    "{%lf, %lf}\n", y, x, y, x, testMatrix[y][x],
       //                                              expectMatrix[y][x]);
       //fflush(stdout);
     }
   }
-  
+
   free(testMatrix);
-  
+
 }
 
 ////////////////////////////////////////////////////////////////////////

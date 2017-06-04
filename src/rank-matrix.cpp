@@ -3,15 +3,15 @@
 /***********************************************************************
     This file is part of "Marshall's  Datastructures and Algorithms".
 
-    "Marshall's  Datastructures and Algorithms" is free software: you 
-    can redistribute it and/or modify it under the terms of the GNU 
+    "Marshall's  Datastructures and Algorithms" is free software: you
+    can redistribute it and/or modify it under the terms of the GNU
     General Public License as published by the Free Software Foundation,
-    either version 3 of the License, or (at your option) any later 
+    either version 3 of the License, or (at your option) any later
     version.
 
-    "Marshall's  Datastructures and Algorithms" is distributed in the 
-    hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
-    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+    "Marshall's  Datastructures and Algorithms" is distributed in the
+    hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
     PURPOSE.  See the GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
@@ -56,14 +56,8 @@ void *rankHelper(void *protoArgs);
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-
-/***********************************************************************
-From expression data, construct a upper-diagonal section of a
-correlation matrix, omitting the x=y entries.
-***********************************************************************/
-void calculateRankCorrelationMatrix(f64 **expressionData, 
+void calculateRankMatrix(f64 **expressionData,
                                       csize_t numRows, csize_t numCols){
-
   RHS RHSinstructions = {
       expressionData,
       numRows,
@@ -94,7 +88,7 @@ void *rankHelper(void *protoArgs){
 
   for(size_t i = minimum; i < maximum; i++){
     for(size_t j = 0; j < corrVecLeng; j++){
-      toSort[j] = std::pair<f64, size_t>(expressionData[i][j], j);
+      toSort[j] = std::pair<cf64, size_t>(expressionData[i][j], j);
     }
     sortDoubleSizeTPairLowToHigh(toSort, corrVecLeng);
     for(size_t j = 0; j < corrVecLeng; j++){
