@@ -1,6 +1,6 @@
 CPP=g++
 CC=gcc
-LIBS=-pthread 
+LIBS=-pthread
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
@@ -30,14 +30,12 @@ EXEC=test.out
 SOURCES=graph-test.cpp                                                 \
         quickmerge-test.cpp                                            \
         rank-matrix-test.cpp                                           \
-        run-tests.cpp                                                  \
         statistics-test.cpp                                            \
         upper-diagonal-square-matrix-test.cpp
 
 OBJECTS=graph-test.o                                                   \
         quickmerge-test.o                                              \
         rank-matrix-test.o                                             \
-        run-tests.o                                                    \
         statistics-test.o                                              \
         upper-diagonal-square-matrix-test.o
 
@@ -72,6 +70,7 @@ clean:
 	rm -f gmon.out
 	rm -f *.o
 	rm -f $(TESTS) gtest.a gtest_main.a
+	rm -f *.a
 
 
 # For simplicity and to avoid depending on Google Test's
