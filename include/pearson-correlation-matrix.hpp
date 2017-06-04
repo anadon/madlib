@@ -27,15 +27,31 @@
 
 #include "short-primatives.h"
 
+
 ////////////////////////////////////////////////////////////////////////
 //PUBLIC FUNCTION DECLARATIONS//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-
-/***********************************************************************
- * TODO doc
-***********************************************************************/
-f64** calculatePearsonCorrelationMatrix(f64 **expressionData,
+/*******************************************************************//**
+ * \brief From expression data, construct a upper-diagonal section of a
+ * correlation matrix, omitting the x=y entries using the Pearson
+ * Correlation Coefficient.
+ *
+ * @param[in] expressionData A number of rows monitoring a variable over
+ * a number of columns reporting samples for that variable.
+ *
+ * @param[in] numRows expressionData[numRows][]
+ *
+ * @param[in] numCols expressionData[][numCols]
+ *
+ * @param[in] againstRows An optional argument to limit calculation to a
+ * set of rows.
+ *
+ * @param[in] againstRowsLength The number of samples to calculate in
+ * againstRows.
+ *
+ **********************************************************************/
+f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
           csize_t numRows, csize_t numCols, csize_t *againstRows = NULL,
                                         csize_t againstRowsLength = 0);
 

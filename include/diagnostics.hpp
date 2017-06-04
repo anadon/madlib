@@ -32,27 +32,29 @@
 #include "short-primatives.h"
 #include "upper-diagonal-square-matrix.tpp"
 
-////////////////////////////////////////////////////////////////////////
-//NAMESPACE USING///////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-
-using std::queue;
-using std::string;
-using std::vector;
 
 ////////////////////////////////////////////////////////////////////////
 //GLOBAL FUNCTION DEFINITIONS///////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-void printCoincidenceMatrix(UpperDiagonalSquareMatrix<u8> *matrix, 
-                                cu8 maxMatch, const vector<string> TFs);
-
-
-
+/*******************************************************************//**
+ * \brief A specific function to print the contents of a correlation
+ * matrix.
+ *
+ * @param[in] matrix The object which contains the correlations of
+ * indexed genes (often transcription factors, but not nessicarily).
+ *
+ * @param[in] maxMatch
+ *
+ * @param[in] TFs Gene names indexed and used in matrix.
+ *
+ * TODO: document maxMatch usage
+ **********************************************************************/
+void printCoincidenceMatrix(UpperDiagonalSquareMatrix<u8> *matrix,
+                      cu8 maxMatch, const std::vector<std::string> TFs);
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
 
 #endif

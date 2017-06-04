@@ -42,9 +42,7 @@ using std::vector;
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-
-
-void printCoincidenceMatrix(UpperDiagonalSquareMatrix<u8> *matrix, 
+void printCoincidenceMatrix(UpperDiagonalSquareMatrix<u8> *matrix,
                                 cu8 maxMatch, const vector<string> TFs){
   f64 **mtr;
   size_t n = matrix->getSideLength();
@@ -70,8 +68,6 @@ void printCoincidenceMatrix(UpperDiagonalSquareMatrix<u8> *matrix,
   free(mtr);
   cout << endl << endl;
 }
-
-
 
 
 ////////////////////////////////////////////////////////////////////////

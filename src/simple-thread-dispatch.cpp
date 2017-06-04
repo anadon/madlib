@@ -18,6 +18,7 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
+
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -33,40 +34,46 @@
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-
 void autoThreadLauncher(void* (*func)(void*), void *sharedArgs){
   void *tmpPtr;
-  
+
+  #ifdef DEBUG
+  csize_t numCPUs = 1;
+  #else
   csize_t numCPUs = std::thread::hardware_concurrency();
-  //csize_t numCPUs = 1;
-  
-  
+  #endif
+
+
   struct multithreadLoad *instructions;
   tmpPtr = malloc(sizeof(*instructions) * numCPUs);
   instructions = (struct multithreadLoad*) tmpPtr;
-  
+
   for(size_t i = 0; i < numCPUs; i++){
     instructions[i] = {i, numCPUs, sharedArgs};
   }
-  
+
   if(numCPUs < 2){
     func((void*) instructions);
   }else{
     int *toIgnore;
     pthread_t *workers;
-    
+
     tmpPtr = malloc(sizeof(*workers) * numCPUs);
     workers = (pthread_t*) tmpPtr;
-  
+
     for(size_t i = 0; i < numCPUs; i++)
       pthread_create(&workers[i], NULL, func, (void*) &instructions[i]);
-      
+
     for(size_t i = 0; i < numCPUs; i++)
       pthread_join(workers[i], (void**) &toIgnore);
-    
+
     free(workers);
   }
-  
+
   free(instructions);
 }
 
+
+////////////////////////////////////////////////////////////////////////
+//END///////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////

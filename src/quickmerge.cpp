@@ -17,9 +17,6 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef QUICKMERGE_HPP
-#define QUICKMERGE_HPP
-
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -35,23 +32,48 @@
 //PRIVATE FUNCTION DECLARATIONS/////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-
+/*******************************************************************//**
+ * \brief Merge helper
+ *
+ * @param[in, out] toSort Content to sort
+ *
+ * @param[in] leftIndex Left merge start index
+ *
+ * @param[in] rightIndex Right merge start index
+ *
+ * @param[in] endIndex Terminal index to act on
+ *
+ * @param[in] sortSpace Memory space to use to sort
+ *
+ **********************************************************************/
 void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
                                     std::pair<f64, size_t> *sortSpace);
 
 
+/*******************************************************************//**
+ * \brief Merge helper
+ *
+ * @param[in, out] toSort Content to sort
+ *
+ * @param[in] leftIndex Left merge start index
+ *
+ * @param[in] rightIndex Right merge start index
+ *
+ * @param[in] endIndex Terminal index to act on
+ *
+ * @param[in] sortSpace Memory space to use to sort
+ *
+ **********************************************************************/
 void sortDoubleSizeTPairLowToHighHelper(std::pair<f64, size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
                                     std::pair<f64, size_t> *sortSpace);
-
 
 
 ////////////////////////////////////////////////////////////////////////
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-//TODO: retest
 void sortDoubleSizeTPairHighToLow(std::pair<f64, size_t> *toSort,
                                                           csize_t size){
   size_t decreasingStart, decreasingEnd;
@@ -163,7 +185,7 @@ void sortDoubleSizeTPairLowToHigh(std::pair<f64, size_t> *toSort,
     }
   }
 
-  
+
   size_t *indiciesOfInterest;
   tmpPtr = malloc(sizeof(*indiciesOfInterest) * size);
   indiciesOfInterest = (size_t*) tmpPtr;
@@ -183,7 +205,7 @@ void sortDoubleSizeTPairLowToHigh(std::pair<f64, size_t> *toSort,
   size_t *newIndiciesOfInterest;
   tmpPtr = malloc(sizeof(*newIndiciesOfInterest) * size);
   newIndiciesOfInterest = (size_t*) tmpPtr;
-  
+
   while(IOISize > 2){
     size_t NIOISize = 0;
     for(i = 0; i < IOISize-2; i+=2){
@@ -233,5 +255,3 @@ void sortDoubleSizeTPairLowToHighHelper(std::pair<f64, size_t> *toSort,
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
-#endif

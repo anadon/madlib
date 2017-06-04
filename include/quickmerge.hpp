@@ -28,24 +28,42 @@
 
 #include "short-primatives.h"
 
-using std::pair;
-using std::size_t;
-
 
 ////////////////////////////////////////////////////////////////////////
-//FUNCTION DECLARATIONS/////////////////////////////////////////////////
+//PUBLIC FUNCTION DECLARATIONS//////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-
-void sortDoubleSizeTPairHighToLow(pair<f64, size_t> *toSort,
+/*******************************************************************//**
+ * \brief A highly optimized comparison based sort, which sorts inputs
+ * from high to low.
+ *
+ * @param[in, out] toSort the dataset to sort.  Ordering is modified,
+ * but contents are not.
+ *
+ * @param[in] size Number of elements in toSort.
+ *
+ **********************************************************************/
+void sortDoubleSizeTPairHighToLow(std::pair<f64, std::size_t> *toSort,
                                                           csize_t size);
 
 
-void sortDoubleSizeTPairLowToHigh(pair<f64, size_t> *toSort,
+/*******************************************************************//**
+ * \brief A highly optimized comparison based sort, which sorts inputs
+ * from low to high.
+ *
+ * @param[in, out] toSort the dataset to sort.  Ordering is modified,
+ * but contents are not.
+ *
+ * @param[in] size Number of elements in toSort.
+ *
+ **********************************************************************/
+void sortDoubleSizeTPairLowToHigh(std::pair<f64, std::size_t> *toSort,
                                                           csize_t size);
+
+
+#endif
+
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
-#endif

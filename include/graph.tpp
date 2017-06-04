@@ -166,8 +166,8 @@ template <typename T, typename U> class vertex{
  * same vertex from a single graph.
  **********************************************************************/
   bool operator==(const vertex<T, U> &other) const;
-  
-  
+
+
 /*******************************************************************//**
  * Tell if there is an edge connecting this vertex to another vertex
  **********************************************************************/
@@ -383,10 +383,10 @@ template <typename T, typename U> class graph{
 ////////////////////////////////////////////////////////////////////////
 
 template <typename T, typename U> edge<T, U>::
-        edge(vertex<T, U> *newLeft, vertex<T, U> *newRight, U newWeight, 
-                                                      size_t edgeIndex): 
-                                                          left(newLeft), 
-                                                        right(newRight), 
+        edge(vertex<T, U> *newLeft, vertex<T, U> *newRight, U newWeight,
+                                                      size_t edgeIndex):
+                                                          left(newLeft),
+                                                        right(newRight),
                                                       weight(newWeight),
                                                       edgeID(edgeIndex){
   leftEdgeIndex = left->addEdge(this);
@@ -413,8 +413,8 @@ template <typename T, typename U> vertex<T, U>* edge<T, U>::
 ////////////////////////////////////////////////////////////////////////
 
 template <typename T, typename U> vertex<T, U>::vertex(size_t index,
-                                                                T data):  
-                                                    vertexIndex(index), 
+                                                                T data):
+                                                    vertexIndex(index),
                                                             value(data){
   numEdges = edgesSize = 0;
   edges = (edge<T, U>**) NULL;
@@ -489,7 +489,7 @@ template <typename T, typename U> void vertex<T, U>::removeEdge(
     edges = NULL;
   }
   edgesSize = numEdges;
-  
+
   connected.erase(toRemove->other(this));
 }
 
@@ -600,7 +600,7 @@ template <typename T, typename U> T graph<T, U>::removeVertex(
   if(NULL == toRemove)  raise(SIGABRT);
   if(nodeIndex >= numVertexes)  raise(SIGABRT);
   if(toRemove != target)  raise(SIGABRT);
-  
+
   while(target->getNumEdges())
     removeEdge(target->getEdges()[target->getNumEdges()-1]);
 
@@ -683,7 +683,7 @@ template <typename T, typename U>const edge<T, U>**
 }
 
 
-template <typename T, typename U> size_t graph<T, U>::getNumEdges() 
+template <typename T, typename U> size_t graph<T, U>::getNumEdges()
                                                                   const{
   return numEdges;
 }
@@ -745,7 +745,7 @@ template <typename T, typename U> void graph<T, U>::hintNumEdges(
     edgeArray = (edge<T, U>**) memCheck;
     edgeArraySize = suggestSize;
   }else{
-    fprintf(stderr, "ERROR: Could not allocate edges\n"); 
+    fprintf(stderr, "ERROR: Could not allocate edges\n");
     fflush(stderr);
     raise(SIGABRT);
   }

@@ -27,23 +27,16 @@
 
 #include "short-primatives.h"
 
-////////////////////////////////////////////////////////////////////////
-//STRUCT DECLARATIONS///////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-
-//TODO: add doc
-/***********************************************************************
- * 
- **********************************************************************/
-struct multithreadLoad;
-
 
 ////////////////////////////////////////////////////////////////////////
 //STRUCT DEFINITIONS////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+/***********************************************************************
+ * A structure to fractionalize work loads between threads.
+ **********************************************************************/
 struct multithreadLoad{
-  size_t numerator;
+  size_t numerator;//can't be const because of some internal workings
   size_t denominator;
   void *specifics;
 };
@@ -53,8 +46,16 @@ struct multithreadLoad{
 //FUNCTION DECLARATIONS/////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-//TODO: add doc
-/***********************************************************************
+/*******************************************************************//**
+ * \brief Automatically and easily multithread a stupidly parallelizable
+ * job by passing in a worker function able to operate on a
+ * multithreadLoad struct, and a set of shared data passed in as a
+ * (void*).
+ *
+ * @param[in] func Worker function able to operate over fractionalized
+ * portions of a shared dataset.
+ *
+ * @param[in] sharedArgs The shared dataset for the worker function.
  *
  **********************************************************************/
 void autoThreadLauncher(void* (*func)(void*), void *sharedArgs);

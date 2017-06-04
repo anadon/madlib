@@ -39,78 +39,78 @@ template<typename T> class UpperDiagonalSquareMatrix{
   private:
   T *oneDMatrix;
   size_t n;
-  
+
   public:
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   size_t XYtoW(size_t z, size_t y);
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   std::pair<size_t, size_t> WtoXY(csize_t w);
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   size_t numberOfElements();
-  
+
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   UpperDiagonalSquareMatrix();
-  
+
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   UpperDiagonalSquareMatrix(size_t sideLength);
-  
+
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   ~UpperDiagonalSquareMatrix();
-  
+
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   T getValueAtIndex(size_t x, size_t y);
-  
+
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   T* getReferenceForIndex(size_t x, size_t y);
-  
+
 
 /***********************************************************************
- * 
+ *
  **********************************************************************/
   void setValueAtIndex(size_t x, size_t y, T value);
-  
-  
+
+
 /***********************************************************************
- * 
+ *
  **********************************************************************/
     size_t getSideLength();
-  
-  
+
+
 /***********************************************************************
- * 
+ *
  **********************************************************************/
     void fill(T value);
-  
-  
+
+
 /***********************************************************************
- * 
+ *
  **********************************************************************/
     void zeroData();
-  
+
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -125,17 +125,17 @@ template<typename T> size_t UpperDiagonalSquareMatrix<T>::
 }
 
 
-template<typename T> std::pair<size_t, size_t> 
+template<typename T> std::pair<size_t, size_t>
                         UpperDiagonalSquareMatrix<T>::WtoXY(csize_t w){
   size_t x, y;
   if(w >= numberOfElements()){
     return std::pair<size_t, size_t>(-1, -1);
   }
-  
+
   csize_t wPrime = numberOfElements() - w - 1;
   y = n - floorl(0.5 + sqrtl(1L+8*wPrime)/2);
   x = w - ((n*y) - (y * (y+1))/2);
-  
+
   return std::pair<size_t, size_t>(x, y);
 }
 
@@ -158,12 +158,12 @@ template<typename T> UpperDiagonalSquareMatrix<T>
   //  throw 22;
   //}
   n = sideLength;
-  
+
   void *tmpPtr;
   size_t allocSize = sizeof(T) * numberOfElements();
   tmpPtr = malloc(allocSize);
   oneDMatrix = (T*) tmpPtr;
-  
+
 }
 
 
@@ -176,7 +176,7 @@ template <typename T> UpperDiagonalSquareMatrix<T>
 template <typename T> T UpperDiagonalSquareMatrix<T>
                         ::getValueAtIndex(size_t x, size_t y){
   if(x >=n || y >= n) return oneDMatrix[-1];
-  
+
   if(x >= y)
     return oneDMatrix[XYtoW(x, y)];
   else
@@ -187,7 +187,7 @@ template <typename T> T UpperDiagonalSquareMatrix<T>
 template <typename T> T* UpperDiagonalSquareMatrix<T>
                         ::getReferenceForIndex(size_t x, size_t y){
   if(x >=n || y >= n) return NULL;
-  
+
   if(x >= y)
     return &oneDMatrix[XYtoW(x, y)];
   else
@@ -198,7 +198,7 @@ template <typename T> T* UpperDiagonalSquareMatrix<T>
 template <typename T> void UpperDiagonalSquareMatrix<T>
                     ::setValueAtIndex(size_t x, size_t y, T value){
   if(x >=n || y >= n) oneDMatrix[-1] = -1;
-  
+
   if(x >= y)
     oneDMatrix[XYtoW(x, y)] = value;
   else
