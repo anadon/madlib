@@ -9,3 +9,8 @@ Add skiplists template, then convert sparse-bitpacked-array to C++ and use the s
 Add highly optimized perfect alignment algorithm
 
 Add a 2D matrix which uses skiplists in rows and columns
+
+fix up private/public members in edge<>
+
+Re-evaluate Upper-diagonal-square-matrix functions to make index 
+correlation more regular, make getSize()  a const_expr if applicable.
