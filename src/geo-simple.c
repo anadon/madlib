@@ -679,11 +679,27 @@ static const  unordered_map<std::string, int (*func)(const char*, struct GEOSimp
   {"!Sample_table_begin",             NULL} };
 
 
-char* getValueStartFromPair(const char *line){
-  while(*line == ' ' || *line == '\t') line++;
-  while(*line != ' ' && *line != '\t') line++;
-  while(*line == ' ' || *line == '\t' || *line == '=') line++;
-  return strdup(line);
+std::pair<std::string, std::string> getKeyValuePair(const char *line){
+  char *linePtr = strdup(line);
+  char *key = strtok(line, "=");
+  char *value = strtok(NULL, "=");
+  
+  while(isspace(*key)) key++;
+  while(isspace(*value)) value++;
+  
+  char *endPtr = key + strlen(key) - 1;
+  while(endPtr > str && isspace(*endPtr)) endPtr--;
+  *(endPtr+1) = 0;
+  
+  char *endPtr = value + strlen(value) - 1;
+  while(endPtr > str && isspace(*endPtr)) endPtr--;
+  *(endPtr+1) = 0;
+  
+  std::pair<std::string, std::string> toReturn = {std::string(key), std::string(value)};
+  
+  free(linePtr);
+   
+  return toReturn;
 }
 
 
