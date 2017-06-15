@@ -785,6 +785,8 @@ typedef struct GEOSimpleFile simpleFile;
 
 simpleFile getDefaultGEOSimpleFile();
 
+int verifyGEOSimpleString(const simpleFile *toVerify);
+
 int readGEOSimpleString(const char *contents, simpleFile &processed);
 
 int writeGEOSimpleString(char **pth, const simpleFile &contents);
