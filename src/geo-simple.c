@@ -9,23 +9,7 @@
    * used only as an internal reference within a given file. The 
    * identifier will not appear on final GEO records. 
    ********************************************************************/
-int parse_PLATFORM(const char* toParse, struct GEOSimpleFile *parseTo){
-  if(NULL != parseTo->PLATFORM) return -EINVAL;
-
-  char *line = strdup(toParse);
-  char *lineMemoryPtr = line;
-  
-  line += strlen("PLATFORM");
-  while(*line == ' ' || *line == '\t') line++; 
-  
-  if(!strcmp("", line)) return -EINVAL;
-  
-  parseTo->PLATFORM = strdup(line);
-  
-  free(lineMemoryPtr);
-  
-  return 0;
-}
+int parse_PLATFORM(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_title
    * Number per file   : 1
@@ -38,23 +22,7 @@ int parse_PLATFORM(const char* toParse, struct GEOSimpleFile *parseTo){
    * [institution/lab]-[species]-[number of features]-[version], e.g. 
    * "FHCRC Mouse 15K v1.0".
    ********************************************************************/
-int parse_Platform_title(const char* toParse, struct GEOSimpleFile *parseTo){
-  if(NULL != parseTo->Platform_title) return -EINVAL;
-
-  char *line = strdup(toParse);
-  char *lineMemoryPtr = line;
-  
-  line += strlen("Platform_title");
-  while(*line == ' ' || *line == '\t') line++; 
-  
-  if(!strcmp("", line)) return -EINVAL;
-  
-  parseTo->Platform_title = strdup(line);
-  
-  free(lineMemoryPtr);
-  
-  return 0;
-}
+int parse_Platform_title(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_distribution
    * Number per file   : 1
@@ -65,7 +33,7 @@ int parse_Platform_title(const char* toParse, struct GEOSimpleFile *parseTo){
    * Use 'virtual' only if creating a virtual definition for MPSS, 
    * SARST, or RT-PCR data.
    ********************************************************************/
-int parse_Platform_distribution(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_distribution(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_technology
    * Number per file   : 1
@@ -76,7 +44,7 @@ int parse_Platform_distribution(const char* toParse, struct GEOSimpleFile *parse
    * Notes: Select the category that best describes the Platform 
    * technology.
    ********************************************************************/
-int parse_Platform_technology(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_technology(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_organism
    * Number per file   : [1, Infinity)
@@ -85,7 +53,7 @@ int parse_Platform_technology(const char* toParse, struct GEOSimpleFile *parseTo
    * Notes: Identify the organism(s) from which the features on the 
    * Platform were designed or derived.
    ********************************************************************/
-int parse_Platform_organism(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_organism(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_manufacturer
    * Number per file   : 1
@@ -94,7 +62,7 @@ int parse_Platform_organism(const char* toParse, struct GEOSimpleFile *parseTo);
    * Notes: Provide the name of the company, facility or laboratory 
    * where the array was manufactured or produced.
    ********************************************************************/
-int parse_Platform_manufacturer(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_manufacturer(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_manufacture_protocol
    * Number per file   : [1, Infinity)
@@ -107,7 +75,7 @@ int parse_Platform_manufacturer(const char* toParse, struct GEOSimpleFile *parse
    * thoroughly describe the protocol; it is strongly recommended that 
    * complete protocol descriptions are provided within your submission.
    ********************************************************************/
-int parse_Platform_manufacture_protocol(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_manufacture_protocol(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_catalog_number
    * Number per file   : [0, Infinity)
@@ -116,7 +84,7 @@ int parse_Platform_manufacture_protocol(const char* toParse, struct GEOSimpleFil
    * Notes:Provide the manufacturer catalog number for 
    * commercially-available arrays.
    ********************************************************************/
-int parse_Platform_catalog_number(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_catalog_number(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_web_link
    * Number per file   : [0, Infinity)
@@ -126,7 +94,7 @@ int parse_Platform_catalog_number(const char* toParse, struct GEOSimpleFile *par
    * information about the array. Please restrict to Web sites that you 
    * know are stable.
    ********************************************************************/
-int parse_Platform_web_link(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_web_link(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_support
    * Number per file   : [0, 1]
@@ -135,7 +103,7 @@ int parse_Platform_web_link(const char* toParse, struct GEOSimpleFile *parseTo);
    * Notes: Provide the surface type of the array, e.g., glass, 
    * nitrocellulose, nylon, silicon, unknown.
    ********************************************************************/
-int parse_Platform_support(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_support(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_coating
    * Number per file   : [0, 1]
@@ -144,7 +112,7 @@ int parse_Platform_support(const char* toParse, struct GEOSimpleFile *parseTo);
    * Notes: Provide the coating of the array, e.g., aminosilane, quartz, 
    * polysine, unknown.
    ********************************************************************/
-int parse_Platform_coating(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_coating(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_description
    * Number per file   : [0, Infinity)
@@ -154,7 +122,7 @@ int parse_Platform_coating(const char* toParse, struct GEOSimpleFile *parseTo);
    * in another field, e.g., array and/or feature physical dimensions, 
    * element grid system.
    ********************************************************************/
-int parse_Platform_description(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_description(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_contributor
    * Number per file   : [0, Infinity)
@@ -166,7 +134,7 @@ int parse_Platform_description(const char* toParse, struct GEOSimpleFile *parseT
    * cannot contain spaces; middleinitial, if present, is one character; 
    * lastname is at least two characters and can contain spaces. 
    ********************************************************************/
-int parse_Platform_contributor(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_contributor(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_pubmed_id
    * Number per file   : [0, Infinity)
@@ -175,7 +143,7 @@ int parse_Platform_contributor(const char* toParse, struct GEOSimpleFile *parseT
    * Notes: Specify a valid PubMed identifier (PMID) that references a 
    * published article that describes the array.
    ********************************************************************/
-int parse_Platform_pubmed_id(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_pubmed_id(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_geo_accession
    * Number per file   : [0, 1]
@@ -184,7 +152,7 @@ int parse_Platform_pubmed_id(const char* toParse, struct GEOSimpleFile *parseTo)
    * Notes: A valid Platform accession number (GPLxxx) Only use for 
    * performing updates to existing GEO records.
    ********************************************************************/
-int parse_Platform_geo_accession(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Platform_geo_accession(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : ^SAMPLE
    * Number per file   : 1
@@ -194,7 +162,7 @@ int parse_Platform_geo_accession(const char* toParse, struct GEOSimpleFile *pars
    * used only as an internal reference within a given file. The 
    * identifier will not appear on final GEO records.
    ********************************************************************/
-int parse_SAMPLE(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_SAMPLE(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_title
    * Number per file   : 1
@@ -206,7 +174,7 @@ int parse_SAMPLE(const char* toParse, struct GEOSimpleFile *parseTo);
    * [biomaterial]-[condition(s)]-[replicate number], e.g., 
    * Muscle_exercised_60min_rep2.
    ********************************************************************/
-int parse_Sample_title(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_title(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_supplementary_file
    * Number per file   : [1, Infinity)
@@ -221,7 +189,7 @@ int parse_Sample_title(const char* toParse, struct GEOSimpleFile *parseTo);
    * facilitates the unambiguous interpretation of data and potential 
    * verification of conclusions as set forth in the MIAME guidelines.
    ********************************************************************/
-int parse_Sample_supplementary_file(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_supplementary_file(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_table
    * Number per file   : [0, 1]
@@ -243,7 +211,7 @@ int parse_Sample_supplementary_file(const char* toParse, struct GEOSimpleFile *p
    * All external files should be zipped or tarred together with the 
    * SOFT file at time of submission.
    ********************************************************************/
-int parse_Sample_table(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_table(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_source_name_ch[n]
    * Number per file   : 1 per channel
@@ -253,7 +221,7 @@ int parse_Sample_table(const char* toParse, struct GEOSimpleFile *parseTo);
    * experimental variable(s), e.g., vastus lateralis muscle, exercised, 
    * 60 min.
    ********************************************************************/
-int parse_Sample_source_name_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_source_name_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_organism_ch[n]
    * Number per file   : [1, Infinity)
@@ -262,7 +230,7 @@ int parse_Sample_source_name_ch(const char* toParse, struct GEOSimpleFile *parse
    * Notes: Use standard NCBI Taxonomy nomenclature Identify the 
    * organism(s) from which the biological material was derived.
    ********************************************************************/
-int parse_Sample_organism_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_organism_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_characteristics_ch[n]
    * Number per file   : [1, Infinity)
@@ -277,7 +245,7 @@ int parse_Sample_organism_ch(const char* toParse, struct GEOSimpleFile *parseTo)
    * characteristics fields as necessary to thoroughly describe your 
    * Samples.
    ********************************************************************/
-int parse_Sample_characteristics_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_characteristics_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_biomaterial_provider_ch[n]
    * Number per file   : [0, Infinity)
@@ -286,7 +254,7 @@ int parse_Sample_characteristics_ch(const char* toParse, struct GEOSimpleFile *p
    * Notes: Specify the name of the company, laboratory or person that 
    * provided the biological material.
    ********************************************************************/
-int parse_Sample_biomaterial_provider_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_biomaterial_provider_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_treatment_protocol_ch[n]
    * Number per file   : [0, Infinity)
@@ -298,7 +266,7 @@ int parse_Sample_biomaterial_provider_ch(const char* toParse, struct GEOSimpleFi
    * recommended that complete protocol descriptions are provided within 
    * your submission.
    ********************************************************************/
-int parse_Sample_treatment_protocol_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_treatment_protocol_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_growth_protocol_ch[n]
    * Number per file   : [0, Infinity)
@@ -310,7 +278,7 @@ int parse_Sample_treatment_protocol_ch(const char* toParse, struct GEOSimpleFile
    * strongly recommended that complete protocol descriptions are 
    * provided within your submission.
    ********************************************************************/
-int parse_Sample_growth_protocol_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_growth_protocol_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_molecule_ch[n]
    * Number per file   : 1 per channel
@@ -319,7 +287,7 @@ int parse_Sample_growth_protocol_ch(const char* toParse, struct GEOSimpleFile *p
    * 
    * Notes:
    ********************************************************************/
-int parse_Sample_molecule_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_molecule_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_extract_protocol_ch[n]
    * Number per file   : [1, Infinity)
@@ -330,7 +298,7 @@ int parse_Sample_molecule_ch(const char* toParse, struct GEOSimpleFile *parseTo)
    * protocol; it is strongly recommended that complete protocol 
    * descriptions are provided within your submission.
    ********************************************************************/
-int parse_Sample_extract_protocol_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_extract_protocol_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_label_ch[n]
    * Number per file   : 1 per channel
@@ -339,7 +307,7 @@ int parse_Sample_extract_protocol_ch(const char* toParse, struct GEOSimpleFile *
    * 
    * Notes:
    ********************************************************************/
-int parse_Sample_label_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_label_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_label_protocol_ch[n]
    * Number per file   : [1, Infinty)
@@ -350,7 +318,7 @@ int parse_Sample_label_ch(const char* toParse, struct GEOSimpleFile *parseTo);
    * protocol; it is strongly recommended that complete protocol 
    * descriptions are provided within your submission.
    ********************************************************************/
-int parse_Sample_label_protocol_ch(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_label_protocol_ch(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_hyb_protocol
    * Number per file   : [1, Infinity)
@@ -362,7 +330,7 @@ int parse_Sample_label_protocol_ch(const char* toParse, struct GEOSimpleFile *pa
    * protocol; it is strongly recommended that complete protocol 
    * descriptions are provided within your submission.
    ********************************************************************/
-int parse_Sample_hyb_protocol(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_hyb_protocol(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_scan_protocol
    * Number per file   : [1, Infinity)
@@ -373,7 +341,7 @@ int parse_Sample_hyb_protocol(const char* toParse, struct GEOSimpleFile *parseTo
    * thoroughly describe the protocol; it is strongly recommended that 
    * complete protocol descriptions are provided within your submission.
    ********************************************************************/
-int parse_Sample_scan_protocol(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_scan_protocol(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_data_processing
    * Number per file   : [1, Infinity)
@@ -385,7 +353,7 @@ int parse_Sample_scan_protocol(const char* toParse, struct GEOSimpleFile *parseT
    * (e.g., MAS5.0), and scaling parameters. You can include as much 
    * text as you need to thoroughly describe the processing procedures.
    ********************************************************************/
-int parse_Sample_data_processing(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_data_processing(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_description
    * Number per file   : [0, Infinity)
@@ -395,7 +363,7 @@ int parse_Sample_data_processing(const char* toParse, struct GEOSimpleFile *pars
    * fields, or paste in broad descriptions that cannot be easily 
    * dissected into the other fields.
    ********************************************************************/
-int parse_Sample_description(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_description(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_platform_id
    * Number per file   : 1
@@ -408,7 +376,7 @@ int parse_Sample_description(const char* toParse, struct GEOSimpleFile *parseTo)
    * the same SOFT file.  To identify the accession number of an 
    * existing commercial Platform in GEO, use the FIND PLATFORM tool.
    ********************************************************************/
-int parse_Sample_platform_id(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_platform_id(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_geo_accession
    * Number per file   : [0, 1]
@@ -417,7 +385,7 @@ int parse_Sample_platform_id(const char* toParse, struct GEOSimpleFile *parseTo)
    * Notes: a valid Sample accession number (GSMxxx).  Only use for 
    * performing updates to existing GEO records.
    ********************************************************************/
-int parse_Sample_geo_accession(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_geo_accession(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_anchor
    * Number per file   : 1
@@ -426,7 +394,7 @@ int parse_Sample_geo_accession(const char* toParse, struct GEOSimpleFile *parseT
    * Notes: SAGE enzyme anchor, usually NlaIII or Sau3A   Use for SAGE 
    * submissions only.
    ********************************************************************/
-int parse_Sample_anchor(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_anchor(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_type
    * Number per file   : 1
@@ -434,7 +402,7 @@ int parse_Sample_anchor(const char* toParse, struct GEOSimpleFile *parseTo);
    * 
    * Notes: SAGE   Use for SAGE submissions only.
    ********************************************************************/
-int parse_Sample_type(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_type(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_tag_count
    * Number per file   : 1
@@ -442,7 +410,7 @@ int parse_Sample_type(const char* toParse, struct GEOSimpleFile *parseTo);
    * 
    * Notes: Use for SAGE submissions only.
    ********************************************************************/
-int parse_Sample_tag_count(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_tag_count(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_tag_length
    * Number per file   : 1
@@ -451,7 +419,7 @@ int parse_Sample_tag_count(const char* toParse, struct GEOSimpleFile *parseTo);
    * 
    * Notes: Use for SAGE submissions only.
    ********************************************************************/
-int parse_Sample_tag_length(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Sample_tag_length(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : ^SERIES
    * Number per file   : 1
@@ -461,7 +429,7 @@ int parse_Sample_tag_length(const char* toParse, struct GEOSimpleFile *parseTo);
    * used only as an internal reference within a given file. The 
    * identifier will not appear on final GEO records.
    ********************************************************************/
-int parse_SERIES(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_SERIES(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_title
    * Number per file   : 1
@@ -470,7 +438,7 @@ int parse_SERIES(const char* toParse, struct GEOSimpleFile *parseTo);
    * 
    * Notes: Provide a unique title that describes the overall study.
    ********************************************************************/
-int parse_Series_title(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_title(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_summary
    * Number per file   : [1, Infinity)
@@ -480,7 +448,7 @@ int parse_Series_title(const char* toParse, struct GEOSimpleFile *parseTo);
    * abstract from the associated publication may be suitable. You can 
    * include as much text as you need to thoroughly describe the study.
    ********************************************************************/
-int parse_Series_summary(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_summary(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_overall_design
    * Number per file   : 1
@@ -490,7 +458,7 @@ int parse_Series_summary(const char* toParse, struct GEOSimpleFile *parseTo);
    * how many Samples are analyzed, if replicates are included, are 
    * there control and/or reference Samples, dye-swaps, etc.
    ********************************************************************/
-int parse_Series_overall_design(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_overall_design(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_pubmed_id
    * Number per file   : [0, Infinity)
@@ -501,7 +469,7 @@ int parse_Series_overall_design(const char* toParse, struct GEOSimpleFile *parse
    * information is not available at the time of submission - it can be 
    * added later once the data are published.
    ********************************************************************/
-int parse_Series_pubmed_id(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_pubmed_id(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_web_link
    * Number per file   : [0, Infinity)
@@ -511,7 +479,7 @@ int parse_Series_pubmed_id(const char* toParse, struct GEOSimpleFile *parseTo);
    * information about the study. Please restrict to Web sites that you 
    * know are stable.
    ********************************************************************/
-int parse_Series_web_link(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_web_link(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_contributor
    * Number per file   : [0, Infinity)
@@ -523,7 +491,7 @@ int parse_Series_web_link(const char* toParse, struct GEOSimpleFile *parseTo);
    * cannot contain spaces; middleinitial, if present, is one character; 
    * lastname is at least two characters and can contain spaces.   
    ********************************************************************/
-int parse_Series_contributor(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_contributor(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_variable_[n]
    * Number per file   : [0, Infinity)
@@ -554,7 +522,7 @@ int parse_Series_variable(const char *toParse, struct GEOSimpleFile *toParse);
    * records or downloads, but will be used to assemble corresponding 
    * GEO DataSet records.
    ********************************************************************/
-int parse_Series_variable_description(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_variable_description(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_variable_sample_list_[n]
    * Number per file   : [0, Infinity)
@@ -568,7 +536,7 @@ int parse_Series_variable_description(const char* toParse, struct GEOSimpleFile 
    * records or downloads, but will be used to assemble corresponding 
    * GEO DataSet records.
    ********************************************************************/
-int parse_Series_variable_sample_list(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_variable_sample_list(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_repeats_[n]
    * Number per file   : [0, Infinity)
@@ -583,7 +551,7 @@ int parse_Series_variable_sample_list(const char* toParse, struct GEOSimpleFile 
    * records or downloads, but will be used to assemble corresponding 
    * GEO DataSet records.
    ********************************************************************/
-int parse_Series_repeats(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_repeats(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_repeats_sample_list_[n]
    * Number per file   : [0, Infinity)
@@ -597,7 +565,7 @@ int parse_Series_repeats(const char* toParse, struct GEOSimpleFile *parseTo);
    * records or downloads, but will be used to assemble corresponding 
    * GEO DataSet records.
    ********************************************************************/
-int parse_Series_repeats_sample_list(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_repeats_sample_list(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_sample_id
    * Number per file   : [1, Infinity)
@@ -608,7 +576,7 @@ int parse_Series_repeats_sample_list(const char* toParse, struct GEOSimpleFile *
    * already exists in GEO, or reference the ^Sample identifiers if they 
    * are being submitted in the same file.
    ********************************************************************/
-int parse_Series_sample_id(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_sample_id(const std::string toParse, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_geo_accession
    * Number per file   : [0, 1]
@@ -617,11 +585,11 @@ int parse_Series_sample_id(const char* toParse, struct GEOSimpleFile *parseTo);
    * Notes: A valid Series accession number (GSExxx)   Only use for 
    * performing updates to existing GEO records.
    ********************************************************************/
-int parse_Series_geo_accession(const char* toParse, struct GEOSimpleFile *parseTo);
+int parse_Series_geo_accession(const std::string toParse, struct GEOSimpleFile *parseTo);
 
 
 
-static const  unordered_map<std::string, int (*func)(const char*, struct GEOSimpleFile*)> platformParseLookup = {
+static const  unordered_map<std::string, int (*func)(const std::string, struct GEOSimpleFile*)> platformParseLookup = {
   {"^PLATFORM",                       parse_PLATFORM},
   {"!Platform_title",                 parse_Platform_title},
   {"!Platform_distribution",          parse_Platform_distribution},
@@ -783,28 +751,38 @@ int aceptableASCIIString(const char *str){
       case 125 : 
       case 126 : str++; break;
       default  : return 0;
+    }
   }
   return 1;
 }
 
 
-std::pair<std::string, std::string> getKeyValuePair(const char *line){
+//TODO: test like a SOB
+std::pair<std::string, std::string> getKeyValuePair(const std::string value){
   std::pair<std::string, std::string> toReturn;
+  char *tmp;
+  
   toReturn = std::pair<std::string, std::string>(std::string(""), std::string(""));
   
   if(!aceptableASCIIString(line)) return toReturn;
   
   if(!strlen(line)) return toReturn;
   
-  char *linePtr = strdup(line);
-  char *key = strtok(line, "=");
+  tmp = strpbrk(line, "=");
+  if(!tmp)  return toReturn;
+  if(1 > strlen(tmp)) return toReturn;
+  
+  std::string valuePtr = strdup(line);
+  tmp = strpbrk(linePtr, "=");
+  *tmp = 0;
+  char *key = linePtr;
   
   if(strlen(key) < 2){
     free(linePtr);
     return toReturn;
   }
   
-  char *value = key+2;
+  char *value = tmp+1;
   
   while(isspace(*key)) key++;
   while(isspace(*value)) value++;
@@ -843,12 +821,11 @@ std::pair<std::string, std::string> getKeyValuePair(const char *line){
    * used only as an internal reference within a given file. The 
    * identifier will not appear on final GEO records. 
    ********************************************************************/
-int valid_PLATFORM(const std::string value, struct GEOSimpleFile *parseTo){
-  if(NULL != parseTo->PLATFORM) return -EINVAL;
-  if(!value.size()) return -EINVAL;
+int parse_PLATFORM(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->PLATFORM) return EINVAL;
 
-  parseTo->PLATFORM = strdup(value.c_str());
-
+  parseTo->PLATFORM = value.c_str();
+  
   return 0;
 }
 
@@ -859,13 +836,13 @@ int valid_PLATFORM(const std::string value, struct GEOSimpleFile *parseTo){
    * unique within local file and over all previously submitted 
    * Platforms for that submitter.
    ********************************************************************/
-int valid_Platform_title(const std::string value, struct GEOSimpleFile *parseTo){
-  if(NULL != parseTo->Platform_title) return -EINVAL;
+int parse_Platform_title(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Platform_title) return -EINVAL;
   if(!value.length()) return -EINVAL;
   
-  if(value.size() > 120)  return -EINVAL;
+  if(value.size() > 120)  return EINVAL;
   
-  parseTo->Platform_title = strdup(value.c_str());
+  parseTo->Platform_title = value.c_str();
   
   return 0;
 }
@@ -876,9 +853,16 @@ int valid_Platform_title(const std::string value, struct GEOSimpleFile *parseTo)
    * Value constraints : in {commercial, non-commercial, 
    *                     custom-commercial}
    ********************************************************************/
-int valid_Platform_distribution(const char *line, struct GEOSimpleFile *parseTo){
-  if(NULL != parseTo->Platform_distribution) return -EINVAL;
+int parse_Platform_distribution(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Platform_distribution) return EINVAL;
   
+  if(value != "commercial") &&
+     value != "non-commercial") &&
+     value != "custom-commercial")) return EINVAL;
+  
+  parseTo->Platform_distribution = value;
+  
+  return 0;
 }
 
 
@@ -888,43 +872,90 @@ int valid_Platform_distribution(const char *line, struct GEOSimpleFile *parseTo)
    *                     in situ oligonucleotide, antibody, tissue, 
    *                     SARST, RT-PCR, or MPSS}
    ********************************************************************/
-int valid_Platform_technology(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_technology(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Platform_technology) return EINVAL;
+  
+  if(value != "spotted DNA/cDNA") &&
+     value != "spotted oligonucleotide") &&
+     value != "in situ oligonucleotide") &&
+     value != "antibody") &&
+     value != "tissue") &&
+     value != "SARST") &&
+     value != "RT-PCR") &&
+     value != "MPSS")) return EINVAL;
+  
+  parseTo->Platform_technology = value;
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Platform_organism
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Platform_organism(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_organism(const std::string value, struct GEOSimpleFile *parseTo){
+  
+  parseTo->Platform_organism.push_back(value);
+  
+  return 0;
+}
 
   /* Label/Key         : !Platform_manufacturer
    * Number per file   : 1
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Platform_manufacturer(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_manufacturer(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Platform_manufacturer) return EINVAL;
+  
+  parseTo->Platform_manufacturer = value;
+  
+  if(NULL == parseTo->Platform_manufacturer) return ENOMEM;
+  
+  return 0;
+}
 
   /* Label/Key         : !Platform_manufacture_protocol
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Platform_manufacture_protocol(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_manufacture_protocol(const std::string value, struct GEOSimpleFile *parseTo){
+  
+  parseTo->Platform_manufacture_protocol.push_back(value);
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Platform_catalog_number
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Platform_catalog_number(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_catalog_number(const std::string value, struct GEOSimpleFile *parseTo){
+  parseTo->Platform_catalog_number.push_back(value);
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Platform_web_link
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, valid URL
    ********************************************************************/
-int valid_Platform_web_link(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_web_link(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_support
    * Number per file   : [0, 1]
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Platform_support(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_support(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Platform_support) return EINVAL;
+  
+  parseTo->Platform_support = value;
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Platform_coating
    * Number per file   : [0, 1]
@@ -933,13 +964,25 @@ int valid_Platform_support(const char *line, struct GEOSimpleFile *parseTo);
    * Notes: Provide the coating of the array, e.g., aminosilane, quartz, 
    * polysine, unknown.
    ********************************************************************/
-int valid_Platform_coating(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_coating(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Platform_coating) return EINVAL;
+  
+  parseTo->Platform_coating = value;
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Platform_description
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Platform_description(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_description(const std::string value, struct GEOSimpleFile *parseTo){
+  parseTo->Platform_description.push_back(value);
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Platform_contributor
    * Number per file   : [0, Infinity)
@@ -951,51 +994,77 @@ int valid_Platform_description(const char *line, struct GEOSimpleFile *parseTo);
    * cannot contain spaces; middleinitial, if present, is one character; 
    * lastname is at least two characters and can contain spaces. 
    ********************************************************************/
-int valid_Platform_contributor(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_contributor(const std::string value, struct GEOSimpleFile *parseTo);
+  
 
   /* Label/Key         : !Platform_pubmed_id
    * Number per file   : [0, Infinity)
    * Value constraints : Integer, valid PubMed identifier (PMID)
    ********************************************************************/
-int valid_Platform_pubmed_id(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_pubmed_id(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Platform_geo_accession
    * Number per file   : [0, 1]
    * Value constraints : Integer, valid Platform accession number 
    *                     (GPLxxx)
    ********************************************************************/
-int valid_Platform_geo_accession(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Platform_geo_accession(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : ^SAMPLE
    * Number per file   : 1
    * Value constraints : ASCII, Unique within file
    ********************************************************************/
-int valid_SAMPLE(const char *line, struct GEOSimpleFile *parseTo);
+int parse_SAMPLE(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->SAMPLE) return EINVAL;
+  
+  parseTo->SAMPLE = value;
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Sample_title
    * Number per file   : 1
    * Value constraints : ASCII, [1-120] characters, unqiue in file and
    *                     submitter.
    ********************************************************************/
-int valid_Sample_title(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_title(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Sample_title)  return EINVAL;
+  
+  parseTo->SAMPLE = value;
+  
+  return 0;
+}
+
 
   /* Label/Key         : !Sample_supplementary_file
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
+   * 
+   * TODO: path verification?
    ********************************************************************/
-int valid_Sample_supplementary_file(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_supplementary_file(const std::string value, struct GEOSimpleFile *parseTo){
+  parseTo->Sample_supplementary_file.push_back(value);
+  
+  return 0;
+}
+  
 
   /* Label/Key         : !Sample_table
    * Number per file   : [0, 1]
    * Value constraints : ASCII
+   * 
+   * TODO: should sample_table work this way?
    ********************************************************************/
-int valid_Sample_table(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_table(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_source_name_ch[n]
    * Number per file   : 1 per channel
    * Value constraints : ASCII
+   * 
+   * TODO: channels need to work differently; sub-structure?
    ********************************************************************/
-int valid_Sample_source_name_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_source_name_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_organism_ch[n]
    * Number per file   : [1, Infinity)
@@ -1003,20 +1072,24 @@ int valid_Sample_source_name_ch(const char *line, struct GEOSimpleFile *parseTo)
    * 
    * TODO: extensive verification -- way too hard and time consuming for
    * v1.
+   * 
+   * TODO: involves channels
    ********************************************************************/
-int valid_Sample_organism_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_organism_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_characteristics_ch[n]
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, "STRING1: STRING2" tag-value format
+   * 
+   * TODO: channels
    ********************************************************************/
-int valid_Sample_characteristics_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_characteristics_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_biomaterial_provider_ch[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Sample_biomaterial_provider_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_biomaterial_provider_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_treatment_protocol_ch[n]
    * Number per file   : [0, Infinity)
@@ -1027,135 +1100,161 @@ int valid_Sample_biomaterial_provider_ch(const char *line, struct GEOSimpleFile 
    * need to thoroughly describe the protocol; it is strongly 
    * recommended that complete protocol descriptions are provided within 
    * your submission.
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_treatment_protocol_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_treatment_protocol_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_growth_protocol_ch[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_growth_protocol_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_growth_protocol_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_molecule_ch[n]
    * Number per file   : 1 per channel
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_molecule_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_molecule_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_extract_protocol_ch[n]
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_extract_protocol_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_extract_protocol_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_label_ch[n]
    * Number per file   : 1 per channel
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_label_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_label_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_label_protocol_ch[n]
    * Number per file   : [1, Infinty)
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_label_protocol_ch(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_label_protocol_ch(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_hyb_protocol
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_hyb_protocol(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_hyb_protocol(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_scan_protocol
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_scan_protocol(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_scan_protocol(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_data_processing
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_data_processing(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_data_processing(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_description
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
+   * 
+   * TODO: Channel support needed
    ********************************************************************/
-int valid_Sample_description(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_description(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_platform_id
    * Number per file   : 1
    * Value constraints : ASCII, (GPLxxx) if the Platform already 
    *                     exists in GEO, else ^Platform
    ********************************************************************/
-int valid_Sample_platform_id(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_platform_id(const std::string value, struct GEOSimpleFile *parseTo){
+  if(std::string("") != parseTo->Sample_platform_id) return EINVAL;
+  
+  parseTo->Sample_platform_id = value;
+  
+  return 0;
+}
 
   /* Label/Key         : !Sample_geo_accession
    * Number per file   : [0, 1]
    * Value constraints : ASCII, valid Sample accession number; (GSMxxx)
    ********************************************************************/
-int valid_Sample_geo_accession(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_geo_accession(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_anchor
    * Number per file   : 1
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Sample_anchor(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_anchor(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_type
    * Number per file   : 1
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Sample_type(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_type(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_tag_count
    * Number per file   : 1
    * Value constraints : Number
    ********************************************************************/
-int valid_Sample_tag_count(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_tag_count(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Sample_tag_length
    * Number per file   : 1
    * Value constraints : Interger
    ********************************************************************/
-int valid_Sample_tag_length(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Sample_tag_length(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : ^SERIES
    * Number per file   : 1
    * Value constraints : ASCII, unique
    ********************************************************************/
-int valid_SERIES(const char *line, struct GEOSimpleFile *parseTo);
+int parse_SERIES(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_title
    * Number per file   : 1
    * Value constraints : ASCII, [1, 255] characters, unique
    ********************************************************************/
-int valid_Series_title(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_title(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_summary
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Series_summary(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_summary(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_overall_design
    * Number per file   : 1
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Series_overall_design(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_overall_design(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_pubmed_id
    * Number per file   : [0, Infinity)
    * Value constraints : PubMed identifier
    ********************************************************************/
-int valid_Series_pubmed_id(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_pubmed_id(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_web_link
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, valid URL
    ********************************************************************/
-int valid_Series_web_link(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_web_link(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_contributor
    * Number per file   : [0, Infinity)
@@ -1167,19 +1266,19 @@ int valid_Series_web_link(const char *line, struct GEOSimpleFile *parseTo);
    * cannot contain spaces; middleinitial, if present, is one character; 
    * lastname is at least two characters and can contain spaces.   
    ********************************************************************/
-int valid_Series_contributor(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_contributor(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_variable_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Series_variable(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_variable(const std::string value, struct GEOSimpleFile *parseTo);
    
   /* Label/Key         : !Series_variable_description_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Series_variable_description(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_variable_description(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_variable_sample_list_[n]
    * Number per file   : [0, Infinity)
@@ -1190,13 +1289,13 @@ int valid_Series_variable_description(const char *line, struct GEOSimpleFile *pa
    * !Series_variable_sample_list_1 = samA, samB
    * !Series_variable_sample_list_2 = samC, samD 
    ********************************************************************/
-int valid_Series_variable_sample_list(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_variable_sample_list(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_repeats_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
    ********************************************************************/
-int valid_Series_repeats(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_repeats(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_repeats_sample_list_[n]
    * Number per file   : [0, Infinity)
@@ -1207,7 +1306,7 @@ int valid_Series_repeats(const char *line, struct GEOSimpleFile *parseTo);
    * !Series_repeats_sample_list_1 = samA, samB
    * !Series_repeats_sample_list_2 = samC, samD 
    ********************************************************************/
-int valid_Series_repeats_sample_list(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_repeats_sample_list(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_sample_id
    * Number per file   : [1, Infinity)
@@ -1218,7 +1317,7 @@ int valid_Series_repeats_sample_list(const char *line, struct GEOSimpleFile *par
    * already exists in GEO, or reference the ^Sample identifiers if they 
    * are being submitted in the same file.
    ********************************************************************/
-int valid_Series_sample_id(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_sample_id(const std::string value, struct GEOSimpleFile *parseTo);
 
   /* Label/Key         : !Series_geo_accession
    * Number per file   : [0, 1]
@@ -1227,7 +1326,7 @@ int valid_Series_sample_id(const char *line, struct GEOSimpleFile *parseTo);
    * Notes: A valid Series accession number (GSExxx)   Only use for 
    * performing updates to existing GEO records.
    ********************************************************************/
-int valid_Series_geo_accession(const char *line, struct GEOSimpleFile *parseTo);
+int parse_Series_geo_accession(const std::string value, struct GEOSimpleFile *parseTo);
 
 
 
@@ -1386,35 +1485,35 @@ struct sampleTable{
 
 struct GEOSimpleFile{
   
-  char* PLATFORM;
+  std::string PLATFORM;
   
-  char* Platform_title;
+  std::string Platform_title;
   
-  char* Platform_distribution;
+  std::string Platform_distribution;
 
-  char* Platform_technology;
+  std::string Platform_technology;
   
-  char** Platform_organism;
+  std::vector<std::string> Platform_organism;
   
-  char* Platform_manufacturer;
+  std::string Platform_manufacturer;
   
-  char** Platform_manufacture_protocol;
+  std::vector<std::string> Platform_manufacture_protocol;
   
-  char** Platform_catalog_number;
+  std::vector<std::string> Platform_catalog_number;
   
-  char** Platform_web_link;
+  std::vector<std::string> Platform_web_link;
   
-  char* Platform_support;
+  std::string Platform_support;
   
-  char* Platform_coating;
+  std::string Platform_coating;
   
-  char** Platform_description;
+  std::vector<std::string> Platform_description;
   
-  char** Platform_contributor;
+  std::vector<std::string> Platform_contributor;
   
-  char** Platform_pubmed_id;
+  std::vector<std::string> Platform_pubmed_id;
   
-  char* Platform_geo_accession;
+  std::string Platform_geo_accession;
   
   struct Platform_table platformTable;
   /* Label/Key         : !Platform_table_begin
@@ -1434,53 +1533,53 @@ struct GEOSimpleFile{
   
   //////////////////////////////////////////////////////////////////////
   
-  char* SAMPLE;
+  std::string SAMPLE;
    
-  char* Sample_title;
+  std::string Sample_title;
    
-  char** Sample_supplementary_file;
+  std::vector<std::string> Sample_supplementary_file;
    
-  char* Sample_table;
+  std::string Sample_table;
   
-  char** Sample_source_name_ch;
+  std::vector<std::string> Sample_source_name_ch;
    
-  char** Sample_organism_ch;
+  std::vector<std::string> Sample_organism_ch;
    
-  char** Sample_characteristics_ch;
+  std::vector<std::string> Sample_characteristics_ch;
    
-  char** Sample_biomaterial_provider_ch;
+  std::vector<std::string> Sample_biomaterial_provider_ch;
   
-  char** Sample_treatment_protocol;
+  std::vector<std::string> Sample_treatment_protocol;
    
-  char** Sample_growth_protocol_ch;
+  std::vector<std::string> Sample_growth_protocol_ch;
    
-  char** Sample_molecule_ch;
+  std::vector<std::string> Sample_molecule_ch;
    
-  char** Sample_extract_protocol_ch;
+  std::vector<std::string> Sample_extract_protocol_ch;
    
-  char** Sample_label_ch;
+  std::vector<std::string> Sample_label_ch;
   
-  char** Sample_label_protocol_ch;
+  std::vector<std::string> Sample_label_protocol_ch;
    
-  char** Sample_hyb_protocol;
+  std::vector<std::string> Sample_hyb_protocol;
    
-  char** Sample_scan_protocol;
+  std::vector<std::string> Sample_scan_protocol;
    
-  char** Sample_data_processing;
+  std::vector<std::string> Sample_data_processing;
    
-  char** Sample_description;
+  std::vector<std::string> Sample_description;
    
-  char* Sample_platform_id;
+  std::string Sample_platform_id;
    
-  char* Sample_geo_accession;
+  std::string Sample_geo_accession;
    
-  char* Sample_anchor;
+  std::string Sample_anchor;
    
-  char* Sample_type;
+  std::string Sample_type;
   
-  char* Sample_tag_count;
+  std::string Sample_tag_count;
    
-  char* Sample_tag_length;
+  std::string Sample_tag_length;
    
    //TODO: add doc, detail
    struct Sample_table sampleTable;
@@ -1499,42 +1598,42 @@ struct GEOSimpleFile{
   
   //////////////////////////////////////////////////////////////////////
   
-  char* SERIES;
+  std::string SERIES;
    
-  char* Series_title;
+  std::string Series_title;
    
-  char** Series_summary;
+  std::vector<std::string> Series_summary;
    
-  char* Series_overall_design;
+  std::string Series_overall_design;
    
-  char** Series_pubmed_id;
+  std::vector<std::string> Series_pubmed_id;
    
-  char** Series_web_link;
+  std::vector<std::string> Series_web_link;
    
-  char** Series_contributor;
+  std::vector<std::string> Series_contributor;
    
-  char** Series_variable;
+  std::vector<std::string> Series_variable;
    
-  char** Series_variable_description;
+  std::vector<std::string> Series_variable_description;
   
-  char** Series_variable_sample_list;
-  
-  //TODO: fix up doc
-  char** Series_repeats;
+  std::vector<std::string> Series_variable_sample_list;
   
   //TODO: fix up doc
-  char** Series_repeats_sample_list;
+  std::vector<std::string> Series_repeats;
   
-  char** Series_sample_id;
+  //TODO: fix up doc
+  std::vector<std::string> Series_repeats_sample_list;
+  
+  std::vector<std::string> Series_sample_id;
    
-  char* Series_geo_accession;
+  std::string Series_geo_accession;
   
 };
 
 
 
 int verifyGEOSimpleString(const simpleFile *toVerify){
-  if(!valid_PLATFORM()){
+  if(!parse_PLATFORM()){
     
   }
   

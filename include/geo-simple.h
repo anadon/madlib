@@ -2,6 +2,8 @@
 #define GEO_SIMPLE_H
 
 #include <string.h>
+#include <vector>
+
 
 enum platformHeaderTypes {ID, SEQUENCE, GB_ACC, GB_LIST, GB_RANGE, 
   RANGE_GB, RANGE_START, RANGE_END, RANGE_STRAND, GI, GI_LIST, GI_RANGE, 
@@ -155,7 +157,7 @@ struct sampleTable{
 
 
 struct GEOSimpleFile{
-  char* PLATFORM;
+  std::string PLATFORM;
   /* Label/Key         : ^PLATFORM
    * Number per file   : 1
    * Value constraints : Unique key, ASCII
@@ -165,7 +167,7 @@ struct GEOSimpleFile{
    * identifier will not appear on final GEO records. 
    ********************************************************************/
   
-  char* Platform_title;
+  std::string Platform_title;
   /* Label/Key         : !Platform_title
    * Number per file   : 1
    * Value constraints : string of length 1-120 characters, must be 
@@ -178,7 +180,7 @@ struct GEOSimpleFile{
    * "FHCRC Mouse 15K v1.0".
    ********************************************************************/
   
-  char* Platform_distribution;
+  std::string Platform_distribution;
   /* Label/Key         : !Platform_distribution
    * Number per file   : 1
    * Value constraints : in {commercial, non-commercial, 
@@ -190,7 +192,7 @@ struct GEOSimpleFile{
    ********************************************************************/
 
   
-  char* Platform_technology;
+  std::string Platform_technology;
   /* Label/Key         : !Platform_technology
    * Number per file   : 1
    * Value constraints : in {spotted DNA/cDNA, spotted oligonucleotide, 
@@ -201,7 +203,7 @@ struct GEOSimpleFile{
    * technology.
    ********************************************************************/
   
-  char** Platform_organism;
+  std::vector<std::string> Platform_organism;
   /* Label/Key         : !Platform_organism
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
@@ -210,7 +212,7 @@ struct GEOSimpleFile{
    * Platform were designed or derived.
    ********************************************************************/
   
-  char* Platform_manufacturer;
+  std::string Platform_manufacturer;
   /* Label/Key         : !Platform_manufacturer
    * Number per file   : 1
    * Value constraints : ASCII
@@ -219,7 +221,7 @@ struct GEOSimpleFile{
    * where the array was manufactured or produced.
    ********************************************************************/
   
-  char** Platform_manufacture_protocol;
+  std::vector<std::string> Platform_manufacture_protocol;
   /* Label/Key         : !Platform_manufacture_protocol
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
@@ -232,7 +234,7 @@ struct GEOSimpleFile{
    * complete protocol descriptions are provided within your submission.
    ********************************************************************/
   
-  char** Platform_catalog_number;
+  std::vector<std::string> Platform_catalog_number;
   /* Label/Key         : !Platform_catalog_number
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
@@ -241,7 +243,7 @@ struct GEOSimpleFile{
    * commercially-available arrays.
    ********************************************************************/
   
-  char** Platform_web_link;
+  std::vector<std::string> Platform_web_link;
   /* Label/Key         : !Platform_web_link
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, valid URL
@@ -251,7 +253,7 @@ struct GEOSimpleFile{
    * know are stable.
    ********************************************************************/
   
-  char* Platform_support;
+  std::string Platform_support;
   /* Label/Key         : !Platform_support
    * Number per file   : [0, 1]
    * Value constraints : ASCII
@@ -260,7 +262,7 @@ struct GEOSimpleFile{
    * nitrocellulose, nylon, silicon, unknown.
    ********************************************************************/
   
-  char* Platform_coating;
+  std::string Platform_coating;
   /* Label/Key         : !Platform_coating
    * Number per file   : [0, 1]
    * Value constraints : ASCII
@@ -269,7 +271,7 @@ struct GEOSimpleFile{
    * polysine, unknown.
    ********************************************************************/
   
-  char** Platform_description;
+  std::vector<std::string> Platform_description;
   /* Label/Key         : !Platform_description
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
@@ -279,7 +281,7 @@ struct GEOSimpleFile{
    * element grid system.
    ********************************************************************/
   
-  char** Platform_contributor;
+  std::vector<std::string> Platform_contributor;
   /* Label/Key         : !Platform_contributor
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, List all people associated with this 
@@ -291,7 +293,7 @@ struct GEOSimpleFile{
    * lastname is at least two characters and can contain spaces. 
    ********************************************************************/
   
-  char** Platform_pubmed_id;
+  std::vector<std::string> Platform_pubmed_id;
   /* Label/Key         : !Platform_pubmed_id
    * Number per file   : [0, Infinity)
    * Value constraints : Integer, see notes.
@@ -300,7 +302,7 @@ struct GEOSimpleFile{
    * published article that describes the array.
    ********************************************************************/
   
-  char* Platform_geo_accession;
+  std::string Platform_geo_accession;
   /* Label/Key         : !Platform_geo_accession
    * Number per file   : [0, 1]
    * Value constraints : Integer, see notes.
@@ -327,7 +329,7 @@ struct GEOSimpleFile{
   
   //////////////////////////////////////////////////////////////////////
   
-  char* SAMPLE;
+  std::string SAMPLE;
   /* Label/Key         : ^SAMPLE
    * Number per file   : 1
    * Value constraints : ASCII, Unique within file
@@ -337,7 +339,7 @@ struct GEOSimpleFile{
    * identifier will not appear on final GEO records.
    ********************************************************************/
    
-  char* Sample_title;
+  std::string Sample_title;
   /* Label/Key         : !Sample_title
    * Number per file   : 1
    * Value constraints : ASCII, [1-120] characters, unqiue in file and
@@ -349,7 +351,7 @@ struct GEOSimpleFile{
    * Muscle_exercised_60min_rep2.
    ********************************************************************/
    
-  char** Sample_supplementary_file;
+  std::vector<std::string> Sample_supplementary_file;
   /* Label/Key         : !Sample_supplementary_file
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, see notes.
@@ -364,7 +366,7 @@ struct GEOSimpleFile{
    * verification of conclusions as set forth in the MIAME guidelines.
    ********************************************************************/
    
-  char* Sample_table;
+  std::string Sample_table;
   /* Label/Key         : !Sample_table
    * Number per file   : [0, 1]
    * Value constraints : ASCII, Tab-delimited table file , see notes.
@@ -386,7 +388,7 @@ struct GEOSimpleFile{
    * SOFT file at time of submission.
    ********************************************************************/
   
-  char** Sample_source_name_ch;
+  std::vector<std::string> Sample_source_name_ch;
   /* Label/Key         : !Sample_source_name_ch[n]
    * Number per file   : 1 per channel
    * Value constraints : ASCII
@@ -396,7 +398,7 @@ struct GEOSimpleFile{
    * 60 min.
    ********************************************************************/
    
-  char** Sample_organism_ch;
+  std::vector<std::string> Sample_organism_ch;
   /* Label/Key         : !Sample_organism_ch[n]
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, see notes.
@@ -405,7 +407,7 @@ struct GEOSimpleFile{
    * organism(s) from which the biological material was derived.
    ********************************************************************/
    
-  char** Sample_characteristics_ch;
+  std::vector<std::string> Sample_characteristics_ch;
   /* Label/Key         : !Sample_characteristics_ch[n]
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, 'Tag: Value' format
@@ -420,7 +422,7 @@ struct GEOSimpleFile{
    * Samples.
    ********************************************************************/
    
-  char** Sample_biomaterial_provider_ch;
+  std::vector<std::string> Sample_biomaterial_provider_ch;
   /* Label/Key         : !Sample_biomaterial_provider_ch[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, see notes.
@@ -429,7 +431,7 @@ struct GEOSimpleFile{
    * provided the biological material.
    ********************************************************************/
   
-  char** Sample_treatment_protocol;
+  std::vector<std::string> Sample_treatment_protocol;
   /* Label/Key         : !Sample_treatment_protocol_ch[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, see notes.
@@ -441,7 +443,7 @@ struct GEOSimpleFile{
    * your submission.
    ********************************************************************/
    
-  char** Sample_growth_protocol_ch;
+  std::vector<std::string> Sample_growth_protocol_ch;
   /* Label/Key         : !Sample_growth_protocol_ch[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, see notes.
@@ -453,7 +455,7 @@ struct GEOSimpleFile{
    * provided within your submission.
    ********************************************************************/
    
-  char** Sample_molecule_ch;
+  std::vector<std::string> Sample_molecule_ch;
   /* Label/Key         : !Sample_molecule_ch[n]
    * Number per file   : 1 per channel
    * Value constraints : ASCII, Specify the type of molecule that was 
@@ -462,7 +464,7 @@ struct GEOSimpleFile{
    * Notes:
    ********************************************************************/
    
-  char** Sample_extract_protocol_ch;
+  std::vector<std::string> Sample_extract_protocol_ch;
   /* Label/Key         : !Sample_extract_protocol_ch[n]
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, see notes.
@@ -473,7 +475,7 @@ struct GEOSimpleFile{
    * descriptions are provided within your submission.
    ********************************************************************/
    
-  char** Sample_label_ch;
+  std::vector<std::string> Sample_label_ch;
   /* Label/Key         : !Sample_label_ch[n]
    * Number per file   : 1 per channel
    * Value constraints : ASCII, Specify the compound used to label the 
@@ -482,7 +484,7 @@ struct GEOSimpleFile{
    * Notes:
    ********************************************************************/
   
-  char** Sample_label_protocol_ch;
+  std::vector<std::string> Sample_label_protocol_ch;
   /* Label/Key         : !Sample_label_protocol_ch[n]
    * Number per file   : [1, Infinty)
    * Value constraints : ASCII, extraction protocol description.
@@ -493,7 +495,7 @@ struct GEOSimpleFile{
    * descriptions are provided within your submission.
    ********************************************************************/
    
-  char** Sample_hyb_protocol;
+  std::vector<std::string> Sample_hyb_protocol;
   /* Label/Key         : !Sample_hyb_protocol
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, describe hybridization protocol used.
@@ -505,7 +507,7 @@ struct GEOSimpleFile{
    * descriptions are provided within your submission.
    ********************************************************************/
    
-  char** Sample_scan_protocol;
+  std::vector<std::string> Sample_scan_protocol;
   /* Label/Key         : !Sample_scan_protocol
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, scanning/image acquisition protocols.
@@ -516,7 +518,7 @@ struct GEOSimpleFile{
    * complete protocol descriptions are provided within your submission.
    ********************************************************************/
    
-  char** Sample_data_processing;
+  std::vector<std::string> Sample_data_processing;
   /* Label/Key         : !Sample_data_processing
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII, see notes.
@@ -528,7 +530,7 @@ struct GEOSimpleFile{
    * text as you need to thoroughly describe the processing procedures.
    ********************************************************************/
    
-  char** Sample_description;
+  std::vector<std::string> Sample_description;
   /* Label/Key         : !Sample_description
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
@@ -538,7 +540,7 @@ struct GEOSimpleFile{
    * dissected into the other fields.
    ********************************************************************/
    
-  char* Sample_platform_id;
+  std::string Sample_platform_id;
   /* Label/Key         : !Sample_platform_id
    * Number per file   : 1
    * Value constraints : ASCII, a valid Platform identifier.
@@ -551,7 +553,7 @@ struct GEOSimpleFile{
    * existing commercial Platform in GEO, use the FIND PLATFORM tool.
    ********************************************************************/
    
-  char* Sample_geo_accession;
+  std::string Sample_geo_accession;
   /* Label/Key         : !Sample_geo_accession
    * Number per file   : [0, 1]
    * Value constraints : Integer, valid Sample accession number.
@@ -560,7 +562,7 @@ struct GEOSimpleFile{
    * performing updates to existing GEO records.
    ********************************************************************/
    
-  char* Sample_anchor;
+  std::string Sample_anchor;
   /* Label/Key         : !Sample_anchor
    * Number per file   : 1
    * Value constraints : See notes.
@@ -569,7 +571,7 @@ struct GEOSimpleFile{
    * submissions only.
    ********************************************************************/
    
-  char* Sample_type;
+  std::string Sample_type;
   /* Label/Key         : !Sample_type
    * Number per file   : 1
    * Value constraints : ASCII, SAGE.
@@ -577,7 +579,7 @@ struct GEOSimpleFile{
    * Notes: SAGE   Use for SAGE submissions only.
    ********************************************************************/
   
-  char* Sample_tag_count;
+  std::string Sample_tag_count;
   /* Label/Key         : !Sample_tag_count
    * Number per file   : 1
    * Value constraints : Number, sum of tags quantified in SAGE library.
@@ -585,7 +587,7 @@ struct GEOSimpleFile{
    * Notes: Use for SAGE submissions only.
    ********************************************************************/
    
-  char* Sample_tag_length;
+  std::string Sample_tag_length;
   /* Label/Key         : !Sample_tag_length
    * Number per file   : 1
    * Value constraints : Interger, base pair length of the SAGE tags, 
@@ -611,7 +613,7 @@ struct GEOSimpleFile{
   
   //////////////////////////////////////////////////////////////////////
   
-  char* SERIES;
+  std::string SERIES;
   /* Label/Key         : ^SERIES
    * Number per file   : 1
    * Value constraints : ASCII, unique in file.
@@ -621,7 +623,7 @@ struct GEOSimpleFile{
    * identifier will not appear on final GEO records.
    ********************************************************************/
    
-  char* Series_title;
+  std::string Series_title;
   /* Label/Key         : !Series_title
    * Number per file   : 1
    * Value constraints : ASCII, [1, 255] characters, unique in file and 
@@ -630,7 +632,7 @@ struct GEOSimpleFile{
    * Notes: Provide a unique title that describes the overall study.
    ********************************************************************/
    
-  char** Series_summary;
+  std::vector<std::string> Series_summary;
   /* Label/Key         : !Series_summary
    * Number per file   : [1, Infinity)
    * Value constraints : ASCII
@@ -640,7 +642,7 @@ struct GEOSimpleFile{
    * include as much text as you need to thoroughly describe the study.
    ********************************************************************/
    
-  char* Series_overall_design;
+  std::string Series_overall_design;
   /* Label/Key         : !Series_overall_design
    * Number per file   : 1
    * Value constraints : ASCII, see notes.
@@ -650,7 +652,7 @@ struct GEOSimpleFile{
    * there control and/or reference Samples, dye-swaps, etc.
    ********************************************************************/
    
-  char** Series_pubmed_id;
+  std::vector<std::string> Series_pubmed_id;
   /* Label/Key         : !Series_pubmed_id
    * Number per file   : [0, Infinity)
    * Value constraints : PubMed identifier
@@ -661,7 +663,7 @@ struct GEOSimpleFile{
    * added later once the data are published.
    ********************************************************************/
    
-  char** Series_web_link;
+  std::vector<std::string> Series_web_link;
   /* Label/Key         : !Series_web_link
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, valid URL.
@@ -671,7 +673,7 @@ struct GEOSimpleFile{
    * know are stable.
    ********************************************************************/
    
-  char** Series_contributor;
+  std::vector<std::string> Series_contributor;
   /* Label/Key         : !Series_contributor
    * Number per file   : [0, Infinity)
    * Value constraints : Contributor names, see notes.
@@ -683,7 +685,7 @@ struct GEOSimpleFile{
    * lastname is at least two characters and can contain spaces.   
    ********************************************************************/
    
-  char** Series_variable;
+  std::vector<std::string> Series_variable;
   /* Label/Key         : !Series_variable_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, see notes.
@@ -701,7 +703,7 @@ struct GEOSimpleFile{
    * GEO DataSet records.
    ********************************************************************/
    
-  char** Series_variable_description;
+  std::vector<std::string> Series_variable_description;
   /* Label/Key         : !Series_variable_description_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
@@ -714,7 +716,7 @@ struct GEOSimpleFile{
    * GEO DataSet records.
    ********************************************************************/
   
-  char** Series_variable_sample_list;
+  std::vector<std::string> Series_variable_sample_list;
   /* Label/Key         : !Series_variable_sample_list_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : 
@@ -729,7 +731,7 @@ struct GEOSimpleFile{
    ********************************************************************/
   
   //TODO: fix up doc
-  char** Series_repeats;
+  std::vector<std::string> Series_repeats;
   /* Label/Key         : !Series_repeats_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII, see notes.
@@ -745,7 +747,7 @@ struct GEOSimpleFile{
    ********************************************************************/
   
   //TODO: fix up doc
-  char** Series_repeats_sample_list;
+  std::vector<std::string> Series_repeats_sample_list;
   /* Label/Key         : !Series_repeats_sample_list_[n]
    * Number per file   : [0, Infinity)
    * Value constraints : ASCII
@@ -759,7 +761,7 @@ struct GEOSimpleFile{
    * GEO DataSet records.
    ********************************************************************/
   
-  char** Series_sample_id;
+  std::vector<std::string> Series_sample_id;
   /* Label/Key         : !Series_sample_id
    * Number per file   : [1, Infinity)
    * Value constraints : Valid Sample identifiers
@@ -770,7 +772,7 @@ struct GEOSimpleFile{
    * are being submitted in the same file.
    ********************************************************************/
    
-  char* Series_geo_accession;
+  std::string Series_geo_accession;
   /* Label/Key         : !Series_geo_accession
    * Number per file   : [0, 1]
    * Value constraints : Number
