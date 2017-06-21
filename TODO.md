@@ -14,3 +14,6 @@ fix up private/public members in edge<>
 
 Re-evaluate Upper-diagonal-square-matrix functions to make index 
 correlation more regular, make getSize()  a const_expr if applicable.
+
+Incorporate useful parts of PEPIS
+  http://bioinfo.noble.org/PolyGenic_QTL/Download.gy
