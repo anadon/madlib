@@ -652,9 +652,6 @@ int aceptableASCIIString(const char *str){
   while(1){
     switch(*str){
       case 0   : return 1; //end parse
-      case 10  : 
-      case 12  : 
-      case 13  : 
       case 32  : 
       case 33  : 
       case 34  : 
