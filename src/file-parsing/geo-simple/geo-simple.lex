@@ -89,6 +89,7 @@ SERIES_REPEATS_SAMPLE_LIST      !Series_repeats_sample_list_
 SERIES_SAMPLE_ID                !Series_sample_id
 SERIES_GEO_ACCESSION            !Series_geo_accession
 
+COMMENT #[ -!]*$
 WORD  [!-~]+
 
 %%
