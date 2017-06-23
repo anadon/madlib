@@ -2,19 +2,28 @@
 #include <stdio.h>
 #include <string>
 #include <string.h>
+#include <vector>
+#include <unordered_map>
 
 extern "C" int yylex();
 extern "C" int yyparse();
 extern "C" FILE* yyin;
 
 void yyerror(const char* s);
+
+static bool validFile = true;
+
+//This is obnoxious and overgrown to account for the variability in the
+//file specification.  This can be verified and put into a more sane 
+//structure.
+static std::unordered_map<std::string, std::vector<std::vector<std::string>>> parseHolder = std::unordered_map<std::string, std::vector<std::vector<std::string>>>();
+
 %}
 
 %union {
   long int ival;
   double fval;
   std::string sval;
-  std::pair<std::string, int> pval;
 }
 
 %token <ival> INT
@@ -35,74 +44,163 @@ topLevelParseRule:
 
 KEY_IS_VALUE:
     KEY_LAB_TYPE IS VALUE {
-    
+      if(!validFile) return;
+      if(strcmp("commercial", $3) && strcmp("non-commercial", $3) && 
+         strcmp("custom-commercial", $3) && strcmp("virtual", $3)){
+        fprintf(stderr, "\"%s\" value is not in {commercial, "
+            "non-commercial, custom-commercial, virtual}, but is %s\n", 
+                                                                $1, $3);
+        validFile = false;
+        return;
+      }
+      
+      if(!parseHolder.count($1)){
+        parseHolder.emplace($1, std::vector<std::vector<std::string>>());
+        parseHolder[$1][0].push_back(std::vector<std::string>());
+        parseHolder[$1][0][0].push_back($3);
+      }else{
+        //TODO: error
+      }
+      
+      
     }
     
   | KEY_TEST_ARCHETYPE IS VALUE {
-    
+      if(!validFile) return;
+      if(strcmp("spotted DNA/cDNA", $3)
+      && strcmp("spotted oligonucleotide", $3)
+      && strcmp("in situ oligonucleotide", $3)
+      && strcmp("antibody", $3)
+      && strcmp("tissue", $3)
+      && strcmp("SARST", $3)
+      && strcmp("RT-PCR", $3)
+      && strcmp("MPSS", $3)){
+        fprintf(stderr, "\"%s\" value is not in in {spotted DNA/cDNA, "
+          "spotted oligonucleotide, in situ oligonucleotide, antibody, "
+                "tissue, SARST, RT-PCR, or MPSS}, but is %s\n", $1, $3);
+        exit(EINVAL);
+      }
+      
+      
+      if(!parseHolder.count($1)){
+        parseHolder.emplace($1, std::vector<std::string>());
+        parseHolder.at($1).push_back($3);
+      }else{
+        //TODO: error
+      }
     }
     
   | KEY_AUTHOR_NAMES IS VALUE {
-    
+      if(!validFile) return;
+      
+      
+      
+      if(!parseHolder.count($1)){
+        parseHolder.emplace($1, std::vector<std::string>());
+      }
+      
+      parseHolder.at($1).push_back($3);
+      
     }
     
   | KEY_INDEXED_INF INTEGER IS VALUE {
-    
+      if(!validFile) return;
+      
+      if(!parseHolder.count($1)){
+        parseHolder.emplace($1, std::vector<std::string>());
+      }
+      
+      
+      if(parseHolder.at($1).size() <= $2){
+        parseHolder.at($1).resize($2+1);
+      }
+      
+      parseHolder[$1][$2] = $3;
     }
     
   | KEY_INDEXED_1 INTEGER IS VALUE {
-    
+      if(!validFile) return;
+      
     }
     
   | KEY_1_GSE IS VALUE {
-    
+      if(!validFile) return;
+      
     }
     
   | KEY_1_GPL IS VALUE {
+      if(!validFile) return;
     
     }
     
   | KEY_1_GSM IS VALUE {
+      if(!validFile) return;
     
     }
     
   | KEY_INF_PMID IS VALUE {
+      if(!validFile) return;
     
     }
     
   | KEY_INF_FP IS VALUE {
-    
+      if(!validFile) return;
+      FILE *check = fopen($3, "r");
+      if(NULL == check){
+        fprintf(stderr, "Warning: for key \"%s\", cannot confirm a "
+                              "file at \"%s\" is accessible\n", $1, $3);
+      }
+      
     }
     
   | KEY_1_FP IS VALUE {
-    
+      if(!validFile) return;
+      
     }
     
   | KEY_1_INT IS VALUE {
+      if(!validFile) return;
     
     }
     
   | KEY_INDEXED_INF_TAG_VAL INTEGER IS VALUE {
+      if(!validFile) return;
     
     }
     
   | KEY_1_120CHAR IS VALUE {
-    
+      if(!validFile) return;
+      if($3.size() > 120){
+        fprintf(stderr, "Key \"%s\" has a set value that is over 120 "
+                                            "characters (%s)", $1, $3);
+        validFile = false;
+        return;
+      } 
     }
     
   | KEY_1_255CHAR IS VALUE {
+      if(!validFile) return;
+      if($3.size() > 120){
+        fprintf(stderr, "Key \"%s\" has a set value that is over 255 "
+                                            "characters (%s)", $1, $3);
+        validFile = false;
+        return;
+      } 
     
     }
     
   | KEY_INF_URL IS VALUE {
+      if(!validFile) return;
     
     }
     
   | KEY_INF_ASCII IS VALUE {
+      if(!validFile) return;
     
     }
     
   | KEY_1_ASCII IS VALUE {
+      if(!validFile) return;
     
     }
   ;
@@ -115,7 +213,7 @@ KEY_IS_VALUE:
    //KEYS: Platform_distribution
 KEY_LAB_TYPE:
     Platform_distribution {
-    $$ = $1;
+      $$ = $1;
     }
   ;
   
