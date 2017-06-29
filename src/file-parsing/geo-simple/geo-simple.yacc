@@ -1,4 +1,5 @@
 %{
+#include <regex>
 #include <stdio.h>
 #include <string>
 #include <string.h>
@@ -18,6 +19,29 @@ static bool validFile = true;
 //structure.
 static std::unordered_map<std::string, std::vector<std::vector<std::string>>> parseHolder = std::unordered_map<std::string, std::vector<std::vector<std::string>>>();
 
+void ensureSpaceForKey(const std::string key){
+  if(!parseHolder.count(key)){
+    parseHolder.emplace(key, std::vector<std::vector<std::string>>());
+    parseHolder[key].push_back(std::vector<std::string>());
+  }
+}
+
+bool isUniqueInsert(const std::string key){
+  return isUniqueInsertForChannel(key, 0);
+}
+
+bool isUniqueInsertForChannel(const std::string key, int channel){
+      
+  if(0 != parseHolder[$1][channel].size()){
+    validFile = false;
+    fprintf(stderr, "Error: multiple insert on key \"%s\" in channel "
+                                                  "%d\n", key, channel);
+    return false;
+  }
+  
+  return true;
+}
+
 %}
 
 %union {
@@ -34,12 +58,12 @@ static std::unordered_map<std::string, std::vector<std::vector<std::string>>> pa
 %%
 
 topLevelParseRule:
-    KEY_IS_VALUE topLevelParseRule  {}
-  | TABLE topLevelParseRule         {}
-  | COMMENT topLevelParseRule       {}
-  | KEY_IS_VALUE                    {}
-  | TABLE                           {}
-  | COMMENT                         {}
+    KEY_IS_VALUE LINE_END topLevelParseRule {}
+  | TABLE        LINE_END topLevelParseRule {}
+  | COMMENT      LINE_END topLevelParseRule {}
+  | KEY_IS_VALUE LINE_END                   {}
+  | TABLE        LINE_END                   {}
+  | COMMENT      LINE_END                   {}
   ;
 
 KEY_IS_VALUE:
@@ -47,22 +71,17 @@ KEY_IS_VALUE:
       if(!validFile) return;
       if(strcmp("commercial", $3) && strcmp("non-commercial", $3) && 
          strcmp("custom-commercial", $3) && strcmp("virtual", $3)){
-        fprintf(stderr, "\"%s\" value is not in {commercial, "
+        fprintf(stderr, "ERROR: key value \"%s\" is not in {commercial, "
             "non-commercial, custom-commercial, virtual}, but is %s\n", 
                                                                 $1, $3);
         validFile = false;
         return;
       }
       
-      if(!parseHolder.count($1)){
-        parseHolder.emplace($1, std::vector<std::vector<std::string>>());
-        parseHolder[$1][0].push_back(std::vector<std::string>());
-        parseHolder[$1][0][0].push_back($3);
-      }else{
-        //TODO: error
-      }
+      ensureSpaceForKey($1);
+      if(!isUniqueInsert($1)) return;
       
-      
+      parseHolder[$1][0].push_back($3);
     }
     
   | KEY_TEST_ARCHETYPE IS VALUE {
@@ -82,65 +101,84 @@ KEY_IS_VALUE:
       }
       
       
-      if(!parseHolder.count($1)){
-        parseHolder.emplace($1, std::vector<std::string>());
-        parseHolder.at($1).push_back($3);
-      }else{
-        //TODO: error
-      }
+      ensureSpaceForKey($1);
+      if(!isUniqueInsert($1)) return;
+      parseHolder[$1][0].push_back($3);
+      
     }
     
-  | KEY_AUTHOR_NAMES IS VALUE {
+  | KEY_AUTHOR_NAMES IS RESEARCHER_NAMES {
       if(!validFile) return;
       
+      ensureSpaceForKey($1);
       
-      
-      if(!parseHolder.count($1)){
-        parseHolder.emplace($1, std::vector<std::string>());
-      }
-      
-      parseHolder.at($1).push_back($3);
+      for(size_t i = 0; i < $3.size(); i++)
+        parseHolder[$1][0].push_back($3[i]);
       
     }
     
   | KEY_INDEXED_INF INTEGER IS VALUE {
       if(!validFile) return;
       
-      if(!parseHolder.count($1)){
-        parseHolder.emplace($1, std::vector<std::string>());
-      }
+      ensureSpaceForKey($1);
       
+      while(parseHolder[$1].size() <= $2)
+        parseHolder[$1].push_back(std::vector<std::string>());
       
-      if(parseHolder.at($1).size() <= $2){
-        parseHolder.at($1).resize($2+1);
-      }
-      
-      parseHolder[$1][$2] = $3;
+      parseHolder[$1][$2].push_back($4);
     }
     
   | KEY_INDEXED_1 INTEGER IS VALUE {
       if(!validFile) return;
       
+      ensureSpaceForKey($1);
+      
+      while(parseHolder[$1].size() <= $2)
+        parseHolder[$1].push_back(std::vector<std::string>());
+      
+      if(!isUniqueInsertForChannel($1, $2)) return;
+      
+      parseHolder[$1][$2].push_back($4);
     }
     
-  | KEY_1_GSE IS VALUE {
+  | KEY_1_GSE IS GSE_NUMBER {
       if(!validFile) return;
       
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+  
+      parseHolder[$1][0].push_back($3);
     }
     
-  | KEY_1_GPL IS VALUE {
+  | KEY_1_GPL IS GPL_NUMBER {
       if(!validFile) return;
+      
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+      
+      parseHolder[$1][0].push_back($3);
     
     }
     
-  | KEY_1_GSM IS VALUE {
+  | KEY_1_GSM IS GSM_NUMBER {
       if(!validFile) return;
+      
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+      
+      parseHolder[$1][0].push_back($3);
     
     }
     
-  | KEY_INF_PMID IS VALUE {
+  | KEY_INF_PMID IS integer {
       if(!validFile) return;
-    
+      
+      ensureSpaceForKey($1);
+      
+      parseHolder[$1][0].push_back($3);
     }
     
   | KEY_INF_FP IS VALUE {
@@ -150,22 +188,55 @@ KEY_IS_VALUE:
         fprintf(stderr, "Warning: for key \"%s\", cannot confirm a "
                               "file at \"%s\" is accessible\n", $1, $3);
       }
+      fclose(check);
+      
+      ensureSpaceForKey($1);
+      
+      parseHolder[$1][0].push_back($3);
       
     }
     
   | KEY_1_FP IS VALUE {
       if(!validFile) return;
       
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+      
+      FILE *check = fopen($3, "r");
+      if(NULL == check){
+        fprintf(stderr, "Warning: for key \"%s\", cannot confirm a "
+                              "file at \"%s\" is accessible\n", $1, $3);
+      }
+      fclose(check);
+      
+      parseHolder[$1][0].push_back($3);
+      
     }
     
-  | KEY_1_INT IS VALUE {
+  | KEY_1_INT IS integer {
       if(!validFile) return;
+      
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+      
+      parseHolder[$1][0].push_back($3);
     
     }
     
-  | KEY_INDEXED_INF_TAG_VAL INTEGER IS VALUE {
+  | KEY_INDEXED_INF_TAG_VAL INTEGER IS TAG_VALUE_LIST {//TODO: Add TAG_VALUE_LIST rule and tokenization
       if(!validFile) return;
-    
+      
+      ensureSpaceForKey($1);
+      
+      while(parseHolder[$1].size() <= $2) 
+        parseHolder[$1].push_back(std::vector<std::string>());
+      
+      for(size_t i = 0; i < $4.size(); i++)
+        parseHolder[$1][$2].push_back($4[i]);
+      
+      
     }
     
   | KEY_1_120CHAR IS VALUE {
@@ -175,32 +246,58 @@ KEY_IS_VALUE:
                                             "characters (%s)", $1, $3);
         validFile = false;
         return;
-      } 
+      }
+      
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+      
+      parseHolder[$1][0].push_back($3);
     }
     
   | KEY_1_255CHAR IS VALUE {
       if(!validFile) return;
-      if($3.size() > 120){
+      if($3.size() > 255){
         fprintf(stderr, "Key \"%s\" has a set value that is over 255 "
                                             "characters (%s)", $1, $3);
         validFile = false;
         return;
       } 
+      
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+      
+      parseHolder[$1][0].push_back($3);
     
     }
     
-  | KEY_INF_URL IS VALUE {
+  | KEY_INF_URL IS URL {//TODO: add URL tokenization
       if(!validFile) return;
+      
+      ensureSpaceForKey($1);
+      
+      parseHolder[$1][0].push_back($3);
     
     }
     
   | KEY_INF_ASCII IS VALUE {
       if(!validFile) return;
+      
+      ensureSpaceForKey($1);
+      
+      parseHolder[$1][0].push_back($3);
     
     }
     
   | KEY_1_ASCII IS VALUE {
       if(!validFile) return;
+      
+      ensureSpaceForKey($1);
+      
+      if(!isUniqueInsert($1)) return;
+      
+      parseHolder[$1][0].push_back($3);
     
     }
   ;
@@ -241,11 +338,11 @@ KEY_TEST_ARCHETYPE:
    ********************************************************************/
    //KEYS: Platform_contributor, Series_contributor
 KEY_AUTHOR_NAMES:
-    Platform_contributor{
-    $$ = $1;
+    Platform_contributor RESEARCHER_NAMES{
+      $$ = $1;
     }
-  | Series_contributor{
-    $$ = $1;
+  | Series_contributor RESEARCHER_NAMES{
+      $$ = $1;
     }
   ;
    
@@ -538,6 +635,16 @@ KEY_1_ASCII:
   ;
 
 
+RESEARCHER_NAMES:
+  RESEARCHER_NAME RESEARCHER_NAMES{
+      $2.push_back($1);
+      $$ = $2;
+    }
+  | RESEARCHER_NAME{
+      std::vector<std::string> nameList;
+      nameList.push_back($1);
+      $$ = nameList;
+    }
 
 
 TABLE:
