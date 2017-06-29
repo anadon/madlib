@@ -89,8 +89,19 @@ SERIES_REPEATS_SAMPLE_LIST      !Series_repeats_sample_list_
 SERIES_SAMPLE_ID                !Series_sample_id
 SERIES_GEO_ACCESSION            !Series_geo_accession
 
-COMMENT #[ -!]*$
+COMMENT #[ -!]*
 WORD  [!-~]+
+VALUE [ -!]*
+WHITE_SPACE [ \t]+
+LINE_END WHITE_SPACE*$
+
+RESEARCHER_NAME                 [A-Z][a-z]*,([A-Z],)?[A-Z][a-z]*
+GSE_NUMBER GSE[0-9]+
+GPL_NUMBER GPL[0-9]+
+GSM_NUMBER GSM[0-9]+
+
+#https://www.ietf.org/rfc/rfc1738.txt
+URL 
 
 %%
 
