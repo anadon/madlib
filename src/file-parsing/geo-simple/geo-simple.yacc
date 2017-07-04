@@ -58,16 +58,16 @@ bool isUniqueInsertForChannel(const std::string key, int channel){
 %%
 
 topLevelParseRule:
-    KEY_IS_VALUE LINE_END topLevelParseRule {}
-  | TABLE        LINE_END topLevelParseRule {}
-  | COMMENT      LINE_END topLevelParseRule {}
-  | KEY_IS_VALUE LINE_END                   {}
-  | TABLE        LINE_END                   {}
-  | COMMENT      LINE_END                   {}
+    key_is_value LINE_END topLevelParseRule {}
+  | table        LINE_END topLevelParseRule {}
+  | comment      LINE_END topLevelParseRule {}
+  | key_is_value LINE_END                   {}
+  | table        LINE_END                   {}
+  | comment      LINE_END                   {}
   ;
 
-KEY_IS_VALUE:
-    KEY_LAB_TYPE IS VALUE {
+key_is_value:
+    key_lab_type IS VALUE {
       if(strcmp("commercial", $3) && strcmp("non-commercial", $3) && 
          strcmp("custom-commercial", $3) && strcmp("virtual", $3)){
         fprintf(stderr, "ERROR: key value \"%s\" is not in {commercial, "
@@ -83,7 +83,7 @@ KEY_IS_VALUE:
       parseHolder[$1][0].push_back($3);
     }
     
-  | KEY_TEST_ARCHETYPE IS VALUE {
+  | key_test_archetype IS VALUE {
   
       if(strcmp("spotted DNA/cDNA", $3)
       && strcmp("spotted oligonucleotide", $3)
@@ -106,7 +106,7 @@ KEY_IS_VALUE:
       
     }
     
-  | KEY_AUTHOR_NAMES IS RESEARCHER_NAMES {
+  | key_author_names IS researcher_names {
       
       ensureSpaceForKey($1);
       
@@ -115,7 +115,7 @@ KEY_IS_VALUE:
       
     }
     
-  | KEY_INDEXED_INF INTEGER IS VALUE {
+  | key_indexed_inf INTEGER IS VALUE {
       
       ensureSpaceForKey($1);
       
@@ -125,7 +125,7 @@ KEY_IS_VALUE:
       parseHolder[$1][$2].push_back($4);
     }
     
-  | KEY_INDEXED_1 INTEGER IS VALUE {
+  | key_indexed_1 INTEGER IS VALUE {
       
       ensureSpaceForKey($1);
       
@@ -137,7 +137,7 @@ KEY_IS_VALUE:
       parseHolder[$1][$2].push_back($4);
     }
     
-  | KEY_1_GSE IS GSE_NUMBER {
+  | key_1_gse IS GSE_NUMBER {
       
       ensureSpaceForKey($1);
       
@@ -146,7 +146,7 @@ KEY_IS_VALUE:
       parseHolder[$1][0].push_back($3);
     }
     
-  | KEY_1_GPL IS GPL_NUMBER {
+  | key_1_gpl IS GPL_NUMBER {
       
       ensureSpaceForKey($1);
       
@@ -156,7 +156,7 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_1_GSM IS GSM_NUMBER {
+  | key_1_gsm IS GSM_NUMBER {
       
       ensureSpaceForKey($1);
       
@@ -166,14 +166,14 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_INF_PMID IS integer {
+  | key_inf_pmid IS INTEGER {
       
       ensureSpaceForKey($1);
       
       parseHolder[$1][0].push_back($3);
     }
     
-  | KEY_INF_FP IS VALUE {
+  | key_inf_fp IS VALUE {
   
       FILE *check = fopen($3, "r");
       if(NULL == check){
@@ -188,7 +188,7 @@ KEY_IS_VALUE:
       
     }
     
-  | KEY_1_FP IS VALUE {
+  | key_1_fp IS VALUE {
       
       ensureSpaceForKey($1);
       
@@ -205,7 +205,7 @@ KEY_IS_VALUE:
       
     }
     
-  | KEY_1_INT IS integer {
+  | key_1_int IS INTEGER {
       
       ensureSpaceForKey($1);
       
@@ -215,7 +215,7 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_INDEXED_INF_TAG_VAL integer IS TAG_VALUE_LIST {
+  | key_indexed_inf_tag_val INTEGER IS tag_value_list {
       
       ensureSpaceForKey($1);
       
@@ -228,7 +228,7 @@ KEY_IS_VALUE:
       
     }
     
-  | KEY_1_120CHAR IS VALUE {
+  | key_1_120char IS VALUE {
   
       if($3.size() > 120){
         fprintf(stderr, "Key \"%s\" has a set value that is over 120 "
@@ -243,7 +243,7 @@ KEY_IS_VALUE:
       parseHolder[$1][0].push_back($3);
     }
     
-  | KEY_1_255CHAR IS VALUE {
+  | key_1_255char IS VALUE {
   
       if($3.size() > 255){
         fprintf(stderr, "Key \"%s\" has a set value that is over 255 "
@@ -259,7 +259,7 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_INF_URL IS URL {
+  | key_inf_url IS URL {
       
       ensureSpaceForKey($1);
       
@@ -267,7 +267,7 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_INF_ASCII IS VALUE {
+  | key_inf_ascii IS VALUE {
       
       ensureSpaceForKey($1);
       
@@ -275,7 +275,7 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_1_ASCII IS VALUE {
+  | key_1_ascii IS VALUE {
       
       ensureSpaceForKey($1);
       
@@ -287,31 +287,31 @@ KEY_IS_VALUE:
   ;
 
 
-  /* NAME: KEY_LAB_TYPE
+  /* NAME: key_lab_type
    * Number per file   : 1
    * Value constraints : in {commercial, non-commercial, custom-commercial, virtual}
    ********************************************************************/
-   //KEYS: Platform_distribution
-KEY_LAB_TYPE:
-    Platform_distribution {
+   //KEYS: PLATFORM_DISTRIBUTION
+key_lab_type:
+    PLATFORM_DISTRIBUTION {
       $$ = $1;
     }
   ;
   
 
-  /* NAME: KEY_TEST_ARCHETYPE
+  /* NAME: key_test_archetype
    * Number per file   : 1
    * Value constraints : in {spotted DNA/cDNA, spotted oligonucleotide, in situ oligonucleotide, antibody, tissue, SARST, RT-PCR, or MPSS}
    ********************************************************************/
-   //KEYS: Platform_technology
-KEY_TEST_ARCHETYPE:
-    Platform_technology {
+   //KEYS: PLATFORM_TECHNOLOGY
+key_test_archetype:
+    PLATFORM_TECHNOLOGY {
       $$ = $1;
     }
   ;
   
   
-  /* NAME: KEY_AUTHOR_NAMES
+  /* NAME: key_author_names
    * Number per file   : Infinity
    * Value constraints : In the form 
    * 'firstname,middleinitial,lastname'
@@ -320,17 +320,17 @@ KEY_TEST_ARCHETYPE:
    * middleinitial, if present, is one character
    * lastname is at least two characters and can contain spaces
    ********************************************************************/
-   //KEYS: Platform_contributor, Series_contributor
-KEY_AUTHOR_NAMES:
-    Platform_contributor RESEARCHER_NAMES{
+   //KEYS: PLATFORM_CONTRIBUTOR, Series_contributor
+key_author_names:
+    PLATFORM_CONTRIBUTOR{
       $$ = $1;
     }
-  | Series_contributor RESEARCHER_NAMES{
+  | SERIES_CONTRIBUTOR{
       $$ = $1;
     }
   ;
    
-  /* NAME: KEY_INDEXED_INF
+  /* NAME: key_indexed_inf
    * Number per file   : Infinity, indexed
    * Value constraints : ASCII
    ********************************************************************/
@@ -338,289 +338,289 @@ KEY_AUTHOR_NAMES:
    //KEYS: Sample_extract_protocol_ch, Sample_label_protocol_ch, Series_variable
    //KEYS: Series_variable_description, Series_variable_sample_list
    //KEYS: Series_repeats, Series_repeats_sample_list, Sample_biomaterial_provider_ch
-KEY_INDEXED_INF:
-    Sample_organism_ch{
+key_indexed_inf:
+    SAMPLE_ORGANISM_CH{
       $$ = $1;
     }
-  | Sample_treatment_protocol_ch{
+  | SAMPLE_TREATMENT_PROTOCOL_CH{
       $$ = $1;
     }
-  | Sample_growth_protocol_ch{
+  | SAMPLE_GROWTH_PROTOCOL_CH{
       $$ = $1;
     }
-  | Sample_extract_protocol_ch{
+  | SAMPLE_EXTRACT_PROTOCOL_CH{
       $$ = $1;
     }
-  | Sample_label_protocol_ch{
+  | SAMPLE_LABEL_PROTOCOL_CH{
       $$ = $1;
     }
-  | Series_variable{
+  | SERIES_VARIABLE{
       $$ = $1;
     }
-  | Series_variable_description{
+  | SERIES_VARIABLE_DESCRIPTION{
       $$ = $1;
     }
-  | Series_variable_sample_list{
+  | SERIES_VARIABLE_SAMPLE_LIST{
       $$ = $1;
     }
-  | Series_repeats{
+  | SERIES_REPEATS{
       $$ = $1;
     }
-  | Series_repeats_sample_list{
+  | SERIES_REPEATS_SAMPLE_LIST{
       $$ = $1;
     }
-  | Sample_biomaterial_provider_ch{
+  | SAMPLE_BIOMATERIAL_PROVIDER_CH{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_INDEXED_1
+  /* NAME: key_indexed_1
    * Number per file   : 1, indexed
    * Value constraints : ASCII
    ********************************************************************/
    //KEYS: Sample_source_name_ch, Sample_molecule_ch, Sample_label_ch
-KEY_INDEXED_1:
-    Sample_source_name_ch{
+key_indexed_1:
+    SAMPLE_SOURCE_NAME_CH{
       $$ = $1;
     }
-  | Sample_molecule_ch{
+  | SAMPLE_MOLECULE_CH{
       $$ = $1;
     }
-  | Sample_label_ch{
+  | SAMPLE_LABEL_CH{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_1_GSE
+  /* NAME: key_1_gse
    * Number per file   : 1
    * Value constraints : A valid Series accession number (GSExxx)
    ********************************************************************/
    //KEYS: Series_geo_accession
-KEY_1_GSE:
-    Series_geo_accession{
+key_1_gse:
+    SERIES_GEO_ACCESSION{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_1_GPL
+  /* NAME: key_1_gpl
    * Number per file   : 1
    * Value constraints : ASCII, valid Platform accession number (GPLxxx)
    ********************************************************************/
    //KEYS: Platform_geo_accession, Sample_platform_id
-KEY_1_GPL:
-    Platform_geo_accession{
+key_1_gpl:
+    PLATFORM_GEO_ACCESSION{
       $$ = $1;
     }
-  | Sample_platform_id{
+  | SAMPLE_PLATFORM_ID{
       $$ = $1;
     }
   ;
 
 
 
-  /* NAME: KEY_1_GSM
+  /* NAME: key_1_gsm
    * Number per file   : 1
    * Value constraints : Integer, valid Sample accession number (GSMxxx)
    ********************************************************************/
    //KEYS: Sample_geo_accession, Series_sample_id
-KEY_1_GSM:
-    Sample_geo_accession{
+key_1_gsm:
+    SAMPLE_GEO_ACCESSION{
       $$ = $1;
     }
-  | Series_sample_id{
+  | SERIES_SAMPLE_ID{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_INF_PMID
+  /* NAME: key_inf_pmid
    * Number per file   : Infinity
    * Value constraints : ASCII, PubMed identifier
    ********************************************************************/
    //KEYS: Platform_pubmed_id, Series_pubmed_id
-KEY_INF_PMID:
-    Platform_pubmed_id{
+key_inf_pmid:
+    PLATFORM_PUBMED_ID{
       $$ = $1;
     }
-  | Series_pubmed_id{
+  | SERIES_PUBMED_ID{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_INF_FP
+  /* NAME: key_inf_fp
    * Number per file   : Infinity
    * Value constraints : ASCII, Name of supplementary file, or 'none'.  
    ********************************************************************/
    //KEYS: Sample_supplementary_file
-KEY_INF_FP:
-    Sample_supplementary_file{
+key_inf_fp:
+    SAMPLE_SUPPLEMENTARY_FILE{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_1_FP
+  /* NAME: key_1_fp
    * Number per file   : 1
    * Value constraints : ASCII, filepath, CHP or tab-delimited file
    ********************************************************************/
    //KEYS: Sample_table
-KEY_1_FP:
-    Sample_table{
+key_1_fp:
+    SAMPLE_TABLE{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_1_INT
+  /* NAME: key_1_int
    * Number per file   : 1
    * Value constraints : Interger
    ********************************************************************/
    //KEYS: Sample_tag_count, Sample_tag_length
-KEY_1_INT:
-    Sample_tag_count{
+key_1_int:
+    SAMPLE_TAG_COUNT{
       $$ = $1;
     }
-  | Sample_tag_length{
+  | SAMPLE_TAG_LENGTH{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_INDEXED_INF_TAG_VAL
+  /* NAME: key_indexed_inf_tag_val
    * Number per file   : Infinity/channel
    * Value constraints : ASCII, 'Tag: Value' format
    ********************************************************************/
    //KEYS: Sample_characteristics_ch
-KEY_INDEXED_INF_TAG_VAL:
-    Sample_characteristics_ch{
+key_indexed_inf_tag_val:
+    SAMPLE_CHARACTERISTICS_CH{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_1_120CHAR
+  /* NAME: key_1_120char
    * Number per file   : 1
    * Value constraints : ASCII, <= 120 characters
    ********************************************************************/
    //KEYS: Platform_title, Sample_title
-KEY_1_120CHAR:
-    Platform_title{
+key_1_120char:
+    PLATFORM_TITLE{
       $$ = $1;
     }
-  | Sample_title{
+  | SAMPLE_TITLE{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_1_255CHAR
+  /* NAME: key_1_255char
    * Number per file   : 1
    * Value constraints : ASCII, <= 255 characters
    ********************************************************************/
    //KEYS: Series_title
-KEY_1_255CHAR:
-    Series_title{
+key_1_255char:
+    SERIES_TITLE{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_INF_URL
+  /* NAME: key_inf_url
    * Number per file   : Infinity
    * Value constraints : ASCII, valid URL
    ********************************************************************/
    //KEYS: Platform_web_link, Series_web_link
-KEY_INF_URL:
-    Platform_web_link{
+key_inf_url:
+    PLATFORM_WEB_LINK{
       $$ = $1;
     }
-  | Series_web_link{
+  | SERIES_WEB_LINK{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_INF_ASCII
+  /* NAME: key_inf_ascii
    * Number per file   : Infinity
    * Value constraints : ASCII
    ********************************************************************/
    //KEYS: Platform_organism, Platform_manufacture_protocol, Platform_catalog_number
    //KEYS: Platform_description, Sample_hyb_protocol, Sample_scan_protocol
    //KEYS: Sample_data_processing, Sample_description, Series_summary
-KEY_INF_ASCII:
-    Platform_organism{
+key_inf_ascii:
+    PLATFORM_ORGANISM{
       $$ = $1;
     }
-  | Platform_manufacture_protocol{
+  | PLATFORM_MANUFACTURE_PROTOCOL{
       $$ = $1;
     }
-  | Platform_catalog_number{
+  | PLATFORM_CATALOG_NUMBER{
       $$ = $1;
     }
-  | Platform_description{
+  | PLATFORM_DESCRIPTION{
       $$ = $1;
     }
-  | Sample_hyb_protocol{
+  | SAMPLE_HYB_PROTOCOL{
       $$ = $1;
     }
-  | Sample_scan_protocol{
+  | SAMPLE_SCAN_PROTOCOL{
       $$ = $1;
     }
-  | Sample_data_processing{
+  | SAMPLE_DATA_PROCESSING{
       $$ = $1;
     }
-  | Sample_description{
+  | SAMPLE_DESCRIPTION{
       $$ = $1;
     }
-  | Series_summary{
+  | SERIES_SUMMARY{
       $$ = $1;
     }
   ;
 
 
-  /* NAME: KEY_1_ASCII
+  /* NAME: key_1_ascii
    * Number per file   : 1
    * Value constraints : ASCII
    ********************************************************************/
    //KEYS: PLATFORM_TOKEN, Platform_manufacturer, Platform_support, Platform_coating
    //KEYS: SAMPLE_TOKEN, Sample_anchor, Sample_type, SERIES_TOKEN, Series_overall_design
-KEY_1_ASCII:
+key_1_ascii:
     PLATFORM_TOKEN{
       $$ = $1;
     }
-  | Platform_manufacturer{
+  | PLATFORM_MANUFACTURER{
       $$ = $1;
     }
-  | Platform_support{
+  | PLATFORM_SUPPORT{
       $$ = $1;
     }
-  | Platform_coating{
+  | PLATFORM_COATING{
       $$ = $1;
     }
   | SAMPLE_TOKEN{
       $$ = $1;
     }
-  | Sample_anchor{
+  | SAMPLE_ANCHOR{
       $$ = $1;
     }
-  | Sample_type{
+  | SAMPLE_TYPE{
       $$ = $1;
     }
   | SERIES_TOKEN{
       $$ = $1;
     }
-  | Series_overall_design{
+  | SERIES_OVERALL_DESIGN{
       $$ = $1;
     }
   ;
 
 
-RESEARCHER_NAMES:
-  RESEARCHER_NAME RESEARCHER_NAMES{
+researcher_names:
+  RESEARCHER_NAME researcher_names{
       $2.push_back($1);
       $$ = $2;
     }
@@ -632,8 +632,8 @@ RESEARCHER_NAMES:
 
 
 //NOTE: WHITE_SPACE may be problematic due to ambiguity
-TAG_VALUE_LIST:
-    TAG_VALUE WHITESPACE TAG_VALUE_LIST{
+tag_value_list:
+    TAG_VALUE WHITESPACE tag_value_list{
       $2.push_back($1);
       $$ = $2;
     }
@@ -646,7 +646,7 @@ TAG_VALUE_LIST:
 
 
 
-TABLE:
+table:
   PLATFORM_TABLE_BEGIN
   PLATFORM_TABLE_END
   SAMPLE_TABLE_BEGIN
@@ -654,4 +654,4 @@ TABLE:
   
 
   NUMBERED_KEY IS VALUE
-  TABLE_START TABLE_DATA TABLE_END
+  table_START table_DATA table_END
