@@ -91,8 +91,8 @@ SERIES_GEO_ACCESSION            !Series_geo_accession
 
 COMMENT #[ -!]*
 WORD  [!-~]+
-VALUE [ -!]*
-WHITE_SPACE [ \t]+
+VALUE ([!-~][ -!]*[!-~] | [!-~])
+WHITE_SPACE [ \t]*
 LINE_END WHITE_SPACE*$
 
 RESEARCHER_NAME                 [A-Z][a-z]*,([A-Z],)?[A-Z][a-z]*
@@ -102,6 +102,8 @@ GSM_NUMBER GSM[0-9]+
 
 #https://www.ietf.org/rfc/rfc1738.txt
 URL 
+
+TAG_VALUE [!-9,;-~]+:[!-9,;-~]+
 
 %%
 
