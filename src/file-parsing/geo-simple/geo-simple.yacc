@@ -68,7 +68,6 @@ topLevelParseRule:
 
 KEY_IS_VALUE:
     KEY_LAB_TYPE IS VALUE {
-      if(!validFile) return;
       if(strcmp("commercial", $3) && strcmp("non-commercial", $3) && 
          strcmp("custom-commercial", $3) && strcmp("virtual", $3)){
         fprintf(stderr, "ERROR: key value \"%s\" is not in {commercial, "
@@ -85,7 +84,7 @@ KEY_IS_VALUE:
     }
     
   | KEY_TEST_ARCHETYPE IS VALUE {
-      if(!validFile) return;
+  
       if(strcmp("spotted DNA/cDNA", $3)
       && strcmp("spotted oligonucleotide", $3)
       && strcmp("in situ oligonucleotide", $3)
@@ -97,7 +96,7 @@ KEY_IS_VALUE:
         fprintf(stderr, "\"%s\" value is not in in {spotted DNA/cDNA, "
           "spotted oligonucleotide, in situ oligonucleotide, antibody, "
                 "tissue, SARST, RT-PCR, or MPSS}, but is %s\n", $1, $3);
-        exit(EINVAL);
+        validFile = false;
       }
       
       
@@ -108,7 +107,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_AUTHOR_NAMES IS RESEARCHER_NAMES {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -118,7 +116,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_INDEXED_INF INTEGER IS VALUE {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -129,7 +126,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_INDEXED_1 INTEGER IS VALUE {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -142,7 +138,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_GSE IS GSE_NUMBER {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -152,7 +147,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_GPL IS GPL_NUMBER {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -163,7 +157,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_GSM IS GSM_NUMBER {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -174,7 +167,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_INF_PMID IS integer {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -182,7 +174,7 @@ KEY_IS_VALUE:
     }
     
   | KEY_INF_FP IS VALUE {
-      if(!validFile) return;
+  
       FILE *check = fopen($3, "r");
       if(NULL == check){
         fprintf(stderr, "Warning: for key \"%s\", cannot confirm a "
@@ -197,7 +189,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_FP IS VALUE {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -215,7 +206,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_INT IS integer {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -225,8 +215,7 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_INDEXED_INF_TAG_VAL INTEGER IS TAG_VALUE_LIST {//TODO: Add TAG_VALUE_LIST rule and tokenization
-      if(!validFile) return;
+  | KEY_INDEXED_INF_TAG_VAL integer IS TAG_VALUE_LIST {
       
       ensureSpaceForKey($1);
       
@@ -240,12 +229,11 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_120CHAR IS VALUE {
-      if(!validFile) return;
+  
       if($3.size() > 120){
         fprintf(stderr, "Key \"%s\" has a set value that is over 120 "
                                             "characters (%s)", $1, $3);
         validFile = false;
-        return;
       }
       
       ensureSpaceForKey($1);
@@ -256,12 +244,11 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_255CHAR IS VALUE {
-      if(!validFile) return;
+  
       if($3.size() > 255){
         fprintf(stderr, "Key \"%s\" has a set value that is over 255 "
                                             "characters (%s)", $1, $3);
         validFile = false;
-        return;
       } 
       
       ensureSpaceForKey($1);
@@ -272,8 +259,7 @@ KEY_IS_VALUE:
     
     }
     
-  | KEY_INF_URL IS URL {//TODO: add URL tokenization
-      if(!validFile) return;
+  | KEY_INF_URL IS URL {
       
       ensureSpaceForKey($1);
       
@@ -282,7 +268,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_INF_ASCII IS VALUE {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -291,7 +276,6 @@ KEY_IS_VALUE:
     }
     
   | KEY_1_ASCII IS VALUE {
-      if(!validFile) return;
       
       ensureSpaceForKey($1);
       
@@ -322,7 +306,7 @@ KEY_LAB_TYPE:
    //KEYS: Platform_technology
 KEY_TEST_ARCHETYPE:
     Platform_technology {
-    $$ = $1;
+      $$ = $1;
     }
   ;
   
@@ -356,37 +340,37 @@ KEY_AUTHOR_NAMES:
    //KEYS: Series_repeats, Series_repeats_sample_list, Sample_biomaterial_provider_ch
 KEY_INDEXED_INF:
     Sample_organism_ch{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_treatment_protocol_ch{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_growth_protocol_ch{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_extract_protocol_ch{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_label_protocol_ch{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_variable{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_variable_description{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_variable_sample_list{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_repeats{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_repeats_sample_list{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_biomaterial_provider_ch{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -398,13 +382,13 @@ KEY_INDEXED_INF:
    //KEYS: Sample_source_name_ch, Sample_molecule_ch, Sample_label_ch
 KEY_INDEXED_1:
     Sample_source_name_ch{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_molecule_ch{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_label_ch{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -416,7 +400,7 @@ KEY_INDEXED_1:
    //KEYS: Series_geo_accession
 KEY_1_GSE:
     Series_geo_accession{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -428,10 +412,10 @@ KEY_1_GSE:
    //KEYS: Platform_geo_accession, Sample_platform_id
 KEY_1_GPL:
     Platform_geo_accession{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_platform_id{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -444,10 +428,10 @@ KEY_1_GPL:
    //KEYS: Sample_geo_accession, Series_sample_id
 KEY_1_GSM:
     Sample_geo_accession{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_sample_id{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -459,10 +443,10 @@ KEY_1_GSM:
    //KEYS: Platform_pubmed_id, Series_pubmed_id
 KEY_INF_PMID:
     Platform_pubmed_id{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_pubmed_id{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -474,7 +458,7 @@ KEY_INF_PMID:
    //KEYS: Sample_supplementary_file
 KEY_INF_FP:
     Sample_supplementary_file{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -486,7 +470,7 @@ KEY_INF_FP:
    //KEYS: Sample_table
 KEY_1_FP:
     Sample_table{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -498,10 +482,10 @@ KEY_1_FP:
    //KEYS: Sample_tag_count, Sample_tag_length
 KEY_1_INT:
     Sample_tag_count{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_tag_length{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -513,7 +497,7 @@ KEY_1_INT:
    //KEYS: Sample_characteristics_ch
 KEY_INDEXED_INF_TAG_VAL:
     Sample_characteristics_ch{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -525,10 +509,10 @@ KEY_INDEXED_INF_TAG_VAL:
    //KEYS: Platform_title, Sample_title
 KEY_1_120CHAR:
     Platform_title{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_title{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -540,7 +524,7 @@ KEY_1_120CHAR:
    //KEYS: Series_title
 KEY_1_255CHAR:
     Series_title{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -552,10 +536,10 @@ KEY_1_255CHAR:
    //KEYS: Platform_web_link, Series_web_link
 KEY_INF_URL:
     Platform_web_link{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_web_link{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -569,31 +553,31 @@ KEY_INF_URL:
    //KEYS: Sample_data_processing, Sample_description, Series_summary
 KEY_INF_ASCII:
     Platform_organism{
-    $$ = $1;
+      $$ = $1;
     }
   | Platform_manufacture_protocol{
-    $$ = $1;
+      $$ = $1;
     }
   | Platform_catalog_number{
-    $$ = $1;
+      $$ = $1;
     }
   | Platform_description{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_hyb_protocol{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_scan_protocol{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_data_processing{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_description{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_summary{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -606,31 +590,31 @@ KEY_INF_ASCII:
    //KEYS: SAMPLE_TOKEN, Sample_anchor, Sample_type, SERIES_TOKEN, Series_overall_design
 KEY_1_ASCII:
     PLATFORM_TOKEN{
-    $$ = $1;
+      $$ = $1;
     }
   | Platform_manufacturer{
-    $$ = $1;
+      $$ = $1;
     }
   | Platform_support{
-    $$ = $1;
+      $$ = $1;
     }
   | Platform_coating{
-    $$ = $1;
+      $$ = $1;
     }
   | SAMPLE_TOKEN{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_anchor{
-    $$ = $1;
+      $$ = $1;
     }
   | Sample_type{
-    $$ = $1;
+      $$ = $1;
     }
   | SERIES_TOKEN{
-    $$ = $1;
+      $$ = $1;
     }
   | Series_overall_design{
-    $$ = $1;
+      $$ = $1;
     }
   ;
 
@@ -645,6 +629,21 @@ RESEARCHER_NAMES:
       nameList.push_back($1);
       $$ = nameList;
     }
+
+
+//NOTE: WHITE_SPACE may be problematic due to ambiguity
+TAG_VALUE_LIST:
+    TAG_VALUE WHITESPACE TAG_VALUE_LIST{
+      $2.push_back($1);
+      $$ = $2;
+    }
+  | TAG_VALUE{
+      std::vector<std::string> tr;
+      tr.push_back($1);
+      $$ = tr;
+    }
+
+
 
 
 TABLE:
