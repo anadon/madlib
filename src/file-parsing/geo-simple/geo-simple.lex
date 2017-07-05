@@ -1,5 +1,13 @@
-%code top {
+%option nison-bridge
+%option bison-locations
+%option noyywrap
+%option reentrant
+%option warn
+%option yylineno
+%option c++
 
+%code top {
+#include "geo-soft.h"
 }
 
 %code requires {

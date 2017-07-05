@@ -1,3 +1,10 @@
+%define api.pure full
+%locations
+%start topLevelParseRule
+%define parse.trace
+
+
+
 %code top{
 #include <regex>
 #include <stdio.h>
@@ -90,11 +97,6 @@ bool isUniqueInsertForChannel(const std::string key,
 %token <int> INTEGER
 %type <std::vector<std::string>> researcher_names tag_value_list
 
-
-%define api.pure full
-%locations
-%start topLevelParseRule
-%define parse.trace
 
 
 
