@@ -4,3 +4,8 @@ test.out
 gmon.out
 *.gch
 madlib.*
+geo-soft.tab.*
+lex.yy.cc
+location.hh
+position.hh
+stack.hh
