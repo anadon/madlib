@@ -1,126 +1,112 @@
-%define api.pure full
+%defines
+%define parser_class_name {GeoSoftDriver}
+%define api.token.constructor
+%define parse.assert
 %locations
 %start topLevelParseRule
-%define parse.trace
-
-
-
-%code top{
-#include <regex>
-#include <stdio.h>
-#include <string>
-#include <string.h>
-#include <vector>
-#include <unordered_map>
-
-static bool validFile = true;
-
-//This is obnoxious and overgrown to account for the variability in the
-//file specification.  This can be verified and put into a more sane
-//structure.
-static std::unordered_map<std::string, std::vector<std::vector<std::string>>> parseHolder;
-
-void ensureSpaceForKey(const std::string key){
-  if(!parseHolder.count(key)){
-    parseHolder.emplace(key, std::vector<std::vector<std::string>>());
-    parseHolder[key].push_back(std::vector<std::string>());
-  }
-}
-
-bool isUniqueInsert(const std::string key, const std::string value,
-                      int channel, int line, int startCol, int endCol){
-  return isUniqueInsertForChannel(key, value, 0, line, startCol,endCol);
-}
-
-bool isUniqueInsertForChannel(const std::string key,
-          const std::string value, int channel, int line, int startCol,
-                                                            int endCol){
-
-  if(0 != parseHolder[$1][channel].size()){
-    validFile = false;
-    fprintf(stderr, "Error: multiple insert on key \"%s\" in channel "
-                                                  "%d\n", key, channel);
-    return false;
-  }
-
-  return true;
-}
-
-
-}%
-
-
-
+%lex-param {yyscan_t scanner}
+%parse-param {yyscan_t scanner}
+%require "3.0.4"
+%glr-parser
+%skeleton "lalr1.cc"
+//%define api.pure full
+//%define parser.error verbose
+%locations
+%token-table
 
 
 %initial-action{
-  parseHolder = std::unordered_map<std::string, std::vector<std::vector<std::string>>>();
+  @$.begin.filename = @$.end.filename = &driver.filename;
+  //TODO: this is clearly wrong, as Driver only cares about a FILE*.  The @$
+  //thing needs to also use FILE*.
 }
 
-/*%union {
-  long int ival;
-  double fval;
-  std::string sval;
-}*/
+%code top {
+  #include <deque>
+  #include <stdio.h>
+  #include <string>
+  #include <string.h>
+  #include <vector>
+  #include <unordered_map>
+%}
+
+
+%code provides{
+
+#include "geo-soft.tab.hh"
+
+void yyparse(yyscan_t *scanner);
+void yylex(YYSTYPE *yylval_param, yyscan_t yyscanner);
+
+
+%}
+
+
 
 //the value used as "$X" for all the parse rules below
+//bison builds the union automatically this way in a way usefil for C++
 %define api.value.type variant
 %token <std::string> VALUE GSE_NUMBER GPL_NUMBER GSM_NUMBER URL
-%token <std::string> PLATFORM_TOKEN PLATFORM_TITLE PLATFORM_DISTRIBUTION 
-%token <std::string> PLATFORM_TECHNOLOGY PLATFORM_ORGANISM 
+%token <std::string> PLATFORM_TOKEN PLATFORM_TITLE PLATFORM_DISTRIBUTION
+%token <std::string> PLATFORM_TECHNOLOGY PLATFORM_ORGANISM
 %token <std::string> PLATFORM_MANUFACTURER PLATFORM_MANUFACTURE_PROTOCOL
-%token <std::string> PLATFORM_CATALOG_NUMBER PLATFORM_WEB_LINK 
-%token <std::string> PLATFORM_SUPPORT PLATFORM_COATING 
-%token <std::string> PLATFORM_DESCRIPTION PLATFORM_CONTRIBUTOR 
-%token <std::string> PLATFORM_PUBMED_ID PLATFORM_GEO_ACCESSION 
-%token <std::string> PLATFORM_TABLE_BEGIN PLATFORM_TABLE_END 
-%token <std::string> SAMPLE_TOKEN SAMPLE_TITLE SAMPLE_SUPPLEMENTARY_FILE 
-%token <std::string> SAMPLE_TABLE SAMPLE_SOURCE_NAME_CH 
-%token <std::string> SAMPLE_ORGANISM_CH SAMPLE_CHARACTERISTICS_CH 
-%token <std::string> SAMPLE_BIOMATERIAL_PROVIDER_CH 
-%token <std::string> SAMPLE_TREATMENT_PROTOCOL_CH 
-%token <std::string> SAMPLE_GROWTH_PROTOCOL_CH SAMPLE_MOLECULE_CH 
-%token <std::string> SAMPLE_EXTRACT_PROTOCOL_CH SAMPLE_LABEL_CH 
-%token <std::string> SAMPLE_LABEL_PROTOCOL_CH SAMPLE_HYB_PROTOCOL 
-%token <std::string> SAMPLE_SCAN_PROTOCOL SAMPLE_DATA_PROCESSING 
-%token <std::string> SAMPLE_DESCRIPTION SAMPLE_PLATFORM_ID 
-%token <std::string> SAMPLE_GEO_ACCESSION SAMPLE_ANCHOR SAMPLE_TYPE 
-%token <std::string> SAMPLE_TAG_COUNT SAMPLE_TAG_LENGTH 
-%token <std::string> SAMPLE_TABLE_BEGIN SAMPLE_TABLE_END SERIES_TOKEN 
-%token <std::string> SERIES_TITLE SERIES_SUMMARY SERIES_OVERALL_DESIGN 
-%token <std::string> SERIES_PUBMED_ID SERIES_WEB_LINK SERIES_CONTRIBUTOR 
-%token <std::string> SERIES_VARIABLE SERIES_VARIABLE_DESCRIPTION 
-%token <std::string> SERIES_VARIABLE_SAMPLE_LIST SERIES_REPEATS 
-%token <std::string> SERIES_REPEATS_SAMPLE_LIST SERIES_SAMPLE_ID 
-%token <std::string> SERIES_GEO_ACCESSION 
-
+%token <std::string> PLATFORM_CATALOG_NUMBER PLATFORM_WEB_LINK
+%token <std::string> PLATFORM_SUPPORT PLATFORM_COATING
+%token <std::string> PLATFORM_DESCRIPTION PLATFORM_CONTRIBUTOR
+%token <std::string> PLATFORM_PUBMED_ID PLATFORM_GEO_ACCESSION
+%token <std::string> PLATFORM_TABLE_BEGIN PLATFORM_TABLE_END
+%token <std::string> SAMPLE_TOKEN SAMPLE_TITLE SAMPLE_SUPPLEMENTARY_FILE
+%token <std::string> SAMPLE_TABLE SAMPLE_SOURCE_NAME_CH
+%token <std::string> SAMPLE_ORGANISM_CH SAMPLE_CHARACTERISTICS_CH
+%token <std::string> SAMPLE_BIOMATERIAL_PROVIDER_CH
+%token <std::string> SAMPLE_TREATMENT_PROTOCOL_CH
+%token <std::string> SAMPLE_GROWTH_PROTOCOL_CH SAMPLE_MOLECULE_CH
+%token <std::string> SAMPLE_EXTRACT_PROTOCOL_CH SAMPLE_LABEL_CH
+%token <std::string> SAMPLE_LABEL_PROTOCOL_CH SAMPLE_HYB_PROTOCOL
+%token <std::string> SAMPLE_SCAN_PROTOCOL SAMPLE_DATA_PROCESSING
+%token <std::string> SAMPLE_DESCRIPTION SAMPLE_PLATFORM_ID
+%token <std::string> SAMPLE_GEO_ACCESSION SAMPLE_ANCHOR SAMPLE_TYPE
+%token <std::string> SAMPLE_TAG_COUNT SAMPLE_TAG_LENGTH
+%token <std::string> SAMPLE_TABLE_BEGIN SAMPLE_TABLE_END SERIES_TOKEN
+%token <std::string> SERIES_TITLE SERIES_SUMMARY SERIES_OVERALL_DESIGN
+%token <std::string> SERIES_PUBMED_ID SERIES_WEB_LINK SERIES_CONTRIBUTOR
+%token <std::string> SERIES_VARIABLE SERIES_VARIABLE_DESCRIPTION
+%token <std::string> SERIES_VARIABLE_SAMPLE_LIST SERIES_REPEATS
+%token <std::string> SERIES_REPEATS_SAMPLE_LIST SERIES_SAMPLE_ID
+%token <std::string> SERIES_GEO_ACCESSION RESEARCHER_NAME TAG_VALUE
 %token <int> INTEGER
-%type <std::vector<std::string>> researcher_names tag_value_list
+%token IS LINE_END WHITESPACE COMMENT
+%type <std::deque<std::vector<std::string> > > tabledata
+%type < std::vector<std::string> > researcher_names tag_value_list tablerow
+%type <std::string> key_lab_type key_test_archetype key_author_names
+%type <std::string> key_indexed_inf key_indexed_1 key_1_gse key_1_gpl
+%type <std::string> key_1_gsm key_inf_pmid key_inf_fp key_1_fp key_1_int
+%type <std::string> key_indexed_inf_tag_val key_1_120char key_1_255char
+%type <std::string> key_inf_url key_inf_ascii key_1_ascii
 
 
-
-
-
-
-%code required{
+%code{
 //yylex and yyerror need to be declared here
-int yylex   (YYSTYPE *lvalp, YYLTYPE *llocp);
-int yyparse ();
 FILE* yyin;
 void yyerror(YYLTYPE *locp, const char* s);
-}%
+
+class Scanner;
+class Interpreter;
+
+static Parser::symbol_type vyylex(Scanner &scanner, Interpreter &interpreter){
+  return scanner.get_next_token();
+}
+
+%}
 
 
 %%
 
 topLevelParseRule:
-    %empty
-  | key_is_value LINE_END topLevelParseRule {}
+    key_is_value LINE_END topLevelParseRule {}
   | table        LINE_END topLevelParseRule {}
-  | comment      LINE_END topLevelParseRule {}
-  | key_is_value LINE_END                   {}
-  | table        LINE_END                   {}
-  | comment      LINE_END                   {}
+  | COMMENT      LINE_END topLevelParseRule {}
+  | LINE_END                                {}
   ;
 
 key_is_value:
@@ -140,7 +126,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
     }
 
   | key_test_archetype IS VALUE {
@@ -165,7 +151,7 @@ key_is_value:
       ensureSpaceForKey($1);
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -174,7 +160,7 @@ key_is_value:
       ensureSpaceForKey($1);
 
       for(size_t i = 0; i < $3.size(); i++)
-        parseHolder[$1][0].push_back($3[i]);
+        driver.parseHolder[$1][0].push_back($3[i]);
 
     }
 
@@ -182,23 +168,23 @@ key_is_value:
 
       ensureSpaceForKey($1);
 
-      while(parseHolder[$1].size() <= $2)
-        parseHolder[$1].push_back(std::vector<std::string>());
+      while(driver.parseHolder[$1].size() <= $2)
+        driver.parseHolder[$1].push_back(std::vector<std::string>());
 
-      parseHolder[$1][$2].push_back($4);
+      driver.parseHolder[$1][$2].push_back($4);
     }
 
   | key_indexed_1 INTEGER IS VALUE {
 
       ensureSpaceForKey($1);
 
-      while(parseHolder[$1].size() <= $2)
-        parseHolder[$1].push_back(std::vector<std::string>());
+      while(driver.parseHolder[$1].size() <= $2)
+        driver.parseHolder[$1].push_back(std::vector<std::string>());
 
       if(!isUniqueInsertForChannel($1, $4, $2, @4.first_line,
                               @4.first_column, @4.last_column)) return;
 
-      parseHolder[$1][$2].push_back($4);
+      driver.parseHolder[$1][$2].push_back($4);
     }
 
   | key_1_gse IS GSE_NUMBER {
@@ -208,7 +194,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
     }
 
   | key_1_gpl IS GPL_NUMBER {
@@ -218,7 +204,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -229,7 +215,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -237,7 +223,7 @@ key_is_value:
 
       ensureSpaceForKey($1);
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
     }
 
   | key_inf_fp IS VALUE {
@@ -254,7 +240,7 @@ key_is_value:
       ensureSpaceForKey($1, $3, @3.first_line, @3.first_column,
                                                         @3.last_column);
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -273,7 +259,7 @@ key_is_value:
       }
       fclose(check);
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -284,7 +270,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -292,11 +278,11 @@ key_is_value:
 
       ensureSpaceForKey($1);
 
-      while(parseHolder[$1].size() <= $2)
-        parseHolder[$1].push_back(std::vector<std::string>());
+      while(driver.parseHolder[$1].size() <= $2)
+        driver.parseHolder[$1].push_back(std::vector<std::string>());
 
       for(size_t i = 0; i < $4.size(); i++)
-        parseHolder[$1][$2].push_back($4[i]);
+        driver.parseHolder[$1][$2].push_back($4[i]);
 
     }
 
@@ -314,7 +300,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
     }
 
   | key_1_255char IS VALUE {
@@ -331,7 +317,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -339,7 +325,7 @@ key_is_value:
 
       ensureSpaceForKey($1);
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -347,7 +333,7 @@ key_is_value:
 
       ensureSpaceForKey($1);
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
 
@@ -358,7 +344,7 @@ key_is_value:
       if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
                                                 @3.last_column)) return;
 
-      parseHolder[$1][0].push_back($3);
+      driver.parseHolder[$1][0].push_back($3);
 
     }
   ;
@@ -724,17 +710,30 @@ tag_value_list:
   ;
 
 
-
-
 table:
-  PLATFORM_TABLE_BEGIN
-  PLATFORM_TABLE_END
-  SAMPLE_TABLE_BEGIN
-  SAMPLE_TABLE_END
+  PLATFORM_TABLE_BEGIN LINE_END tabledata PLATFORM_TABLE_END
+  SAMPLE_TABLE_BEGIN LINE_END tabledata SAMPLE_TABLE_END
 
 
-  NUMBERED_KEY IS VALUE
-  table_START table_DATA table_END
+tabledata:
+    tablerow tabledata {
+      $1.push_front($2);
+      $$ = $1;
+    }
+  | tablerow {
+      $$ = std::deque<std::vector<std::string>>();
+      $$.push_back($1);
+    }
+  ;
+
+tablerow:
+    LINE_END {
+      $$ = std::vector<std::string>();
+    }
+  | VALUE WHITESPACE tablerow {
+      $3.push_back($1);
+      $$ = $3;
+    }
 
 
 %%
@@ -748,12 +747,9 @@ int yylex(){
 }
 
 
-void yyerror(const char *s){
-  fprintf(stderr, "%s\n", s);
+void yy::Parser::error(const location_type &l, const string &m){
+  driver.error(l, m);
 }
-
-
-
 
 
 int parseSoftFile(const char *path, struct GEOSoftFile contents){
@@ -763,8 +759,15 @@ int parseSoftFile(const char *path, struct GEOSoftFile contents){
   if(status){
     return status;
   }
-  
-  status = yyparse();
+
+  std::unordered_map<std::string, std::vector<std::vector<std::string> > > driver();
+
+  yyscan_t myscanner;
+
+  yylex_init(&myscanner);
+  yyparse(myscanner, &driver);
+  yylex_destroy(myscanner);
+
   if(status){
     return status;
   }

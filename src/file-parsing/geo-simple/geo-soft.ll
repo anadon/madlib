@@ -1,24 +1,24 @@
-%option nison-bridge
-%option bison-locations
 %option noyywrap
-%option reentrant
 %option warn
 %option yylineno
-%option c++
 
-%code top {
-#include "geo-soft.h"
-}
-
-%code requires {
+%{
+  #include <deque>
   #include <string>
-  
+
+  #include "geo-soft.tab.hh"
+
   #define YYLTYPE YYLTYPE
   typedef struct YYLTYPE{
     double value;
     std::string line;
   } YYLTYPE;
-%}
+
+
+  #define yyterminate() return token::EOF
+  #define YY_USER_ACTION yylloc->columns(yyleng);
+}
+
 
 %union {
   long int n;
@@ -26,15 +26,18 @@
   std::string s;
 }
 
-//small block courtesy 
+//small block courtesy
 //https://stackoverflow.com/questions/14462808/flex-bison-interpreting-numbers-as-floats
-digit [0-9]
-integer {digit}+
-real ({digit}+[.]{digit}*)|({digit}*[.]{digit}+)
-exp ({integer}|{real})[eE]-?{integer}
+DIGIT [0-9]
+INTEGER {DIGIT}+ {return atoi(yytext);}
+REAL ({DIGIT}+[.]{DIGIT}*)|({DIGIT}*[.]{DIGIT}+) {return atof(yytext);}
 
 
 %%
+
+%{
+  yylloc->step();
+%}
 
 
 IS[ \t]*=[ \t]*
@@ -101,20 +104,21 @@ COMMENT #[ -!]*
 WORD  [!-~]+
 VALUE ([!-~][ -!]*[!-~] | [!-~])
 WHITE_SPACE [ \t]*
+EOF <<EOF>>
 LINE_END WHITE_SPACE*$
+
 
 RESEARCHER_NAME                 [A-Z][a-z]*,([A-Z],)?[A-Z][a-z]*
 GSE_NUMBER GSE[0-9]+
 GPL_NUMBER GPL[0-9]+
 GSM_NUMBER GSM[0-9]+
 
-#https://www.ietf.org/rfc/rfc1738.txt
-URL 
+/*
+URL specification at https://www.ietf.org/rfc/rfc1738.txt
+Regex courtesy of @diegoperini via https://mathiasbynens.be/demo/url-regex
+*/
+URL _^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:/[^\s]*)?$_iuS
 
 TAG_VALUE [!-9,;-~]+:[!-9,;-~]+
 
 %%
-
-
-
-
