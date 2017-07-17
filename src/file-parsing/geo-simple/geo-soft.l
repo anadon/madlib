@@ -1,12 +1,14 @@
+%option nodefault
 %option noyywrap
 %option warn
 %option yylineno
+%option header-file="lex.yy.h"
+%option c++
+%option yyclass="Scanner"
 
 %{
   #include <deque>
   #include <string>
-
-  #include "geo-soft.tab.hh"
 
   #define YYLTYPE YYLTYPE
   typedef struct YYLTYPE{
@@ -14,9 +16,13 @@
     std::string line;
   } YYLTYPE;
 
+  #include "geo-soft.tab.hh"
+  #include "lex.yy.h"
+  #include "scanner.hpp"
 
-  #define yyterminate() return token::EOF
-  #define YY_USER_ACTION yylloc->columns(yyleng);
+
+  #define yyterminate() yy::Parser::make_END(yy::location());
+  //#define YY_USER_ACTION yylloc->columns(yyleng);
 }
 
 

@@ -1,25 +1,24 @@
 %defines
-%define parser_class_name {GeoSoftDriver}
 %define api.token.constructor
 %define parse.assert
 %locations
 %start topLevelParseRule
-%lex-param {yyscan_t scanner}
-%parse-param {yyscan_t scanner}
 %require "3.0.4"
-%glr-parser
 %skeleton "lalr1.cc"
 //%define api.pure full
 //%define parser.error verbose
 %locations
 %token-table
+//%pure-parser
+%define parser_class_name { Parser }
+%define api.namespace {yy}
 
 
-%initial-action{
-  @$.begin.filename = @$.end.filename = &driver.filename;
-  //TODO: this is clearly wrong, as Driver only cares about a FILE*.  The @$
-  //thing needs to also use FILE*.
-}
+//%initial-action{
+//  @$.begin.filename = @$.end.filename = &driver.filename;
+//  //TODO: this is clearly wrong, as Driver only cares about a FILE*.  The @$
+//  //thing needs to also use FILE*.
+//%}
 
 %code top {
   #include <deque>
@@ -28,23 +27,52 @@
   #include <string.h>
   #include <vector>
   #include <unordered_map>
-%}
 
+  using std::unordered_map;
+  using std::string;
+  using std::vector;
+
+  #include "scanner.hpp"
+
+}
+
+%code requires{
+  namespace yy{
+    class Parser;
+    class Scanner;
+  }
+
+  using yy::Parser;
+  using yy::Scanner;
+}
+
+%lex-param {Scanner scanner}
+%lex-param {Parser &driver}
+%lex-param {unordered_map<string, vector<vector<string> > > &intermediateData}
+%parse-param {Scanner scanner}
+%parse-param {Parser &driver}
+%parse-param {unordered_map<string, vector<vector<string> > > &intermediateData}
 
 %code provides{
 
+#include "lex.yy.h"
 #include "geo-soft.tab.hh"
+#include "location.hh"
+#include "position.hh"
+#include "scanner.hpp"
 
-void yyparse(yyscan_t *scanner);
-void yylex(YYSTYPE *yylval_param, yyscan_t yyscanner);
+static Parser::symbol_type yylex(Scanner scanner, Parser &driver,
+            unordered_map<string, vector<vector<string> > > &intermediateData){
+  return scanner.get_next_token();
+}
 
 
-%}
+}
 
 
 
 //the value used as "$X" for all the parse rules below
-//bison builds the union automatically this way in a way usefil for C++
+//bison builds the union automatically this way in a way useful for C++
 %define api.value.type variant
 %token <std::string> VALUE GSE_NUMBER GPL_NUMBER GSM_NUMBER URL
 %token <std::string> PLATFORM_TOKEN PLATFORM_TITLE PLATFORM_DISTRIBUTION
@@ -84,22 +112,6 @@ void yylex(YYSTYPE *yylval_param, yyscan_t yyscanner);
 %type <std::string> key_indexed_inf_tag_val key_1_120char key_1_255char
 %type <std::string> key_inf_url key_inf_ascii key_1_ascii
 
-
-%code{
-//yylex and yyerror need to be declared here
-FILE* yyin;
-void yyerror(YYLTYPE *locp, const char* s);
-
-class Scanner;
-class Interpreter;
-
-static Parser::symbol_type vyylex(Scanner &scanner, Interpreter &interpreter){
-  return scanner.get_next_token();
-}
-
-%}
-
-
 %%
 
 topLevelParseRule:
@@ -111,8 +123,10 @@ topLevelParseRule:
 
 key_is_value:
     key_lab_type IS VALUE {
-      if(strcmp("commercial", $3) && strcmp("non-commercial", $3) &&
-         strcmp("custom-commercial", $3) && strcmp("virtual", $3)){
+      if(strcmp("commercial", $3.c_str()) &&
+         strcmp("non-commercial", $3.c_str()) &&
+         strcmp("custom-commercial", $3.c_str()) &&
+         strcmp("virtual", $3.c_str())){
         fprintf(stderr, "ERROR: line %d characters %d - %d, key value "
             "\"%s\" is not in "
             "{commercial, non-commercial, custom-commercial, virtual}, "
@@ -352,7 +366,8 @@ key_is_value:
 
   /* NAME: key_lab_type
    * Number per file   : 1
-   * Value constraints : in {commercial, non-commercial, custom-commercial, virtual}
+   * Value constraints : in {commercial, non-commercial, custom-commercial,
+   * virtual}
    ********************************************************************/
    //KEYS: PLATFORM_DISTRIBUTION
 key_lab_type:
@@ -398,10 +413,12 @@ key_author_names:
    * Number per file   : Infinity, indexed
    * Value constraints : ASCII
    ********************************************************************/
-   //KEYS: Sample_organism_ch, Sample_treatment_protocol_ch, Sample_growth_protocol_ch
-   //KEYS: Sample_extract_protocol_ch, Sample_label_protocol_ch, Series_variable
-   //KEYS: Series_variable_description, Series_variable_sample_list
-   //KEYS: Series_repeats, Series_repeats_sample_list, Sample_biomaterial_provider_ch
+   //KEYS: Sample_organism_ch, Sample_treatment_protocol_ch,
+   //KEYS: Sample_growth_protocol_ch, Sample_extract_protocol_ch,
+   //KEYS: Sample_label_protocol_ch, Series_variable,
+   //KEYS: Series_variable_description, Series_variable_sample_list,
+   //KEYS: Series_repeats, Series_repeats_sample_list,
+   //KEYS: Sample_biomaterial_provider_ch
 key_indexed_inf:
     SAMPLE_ORGANISM_CH{
       $$ = $1;
@@ -612,9 +629,10 @@ key_inf_url:
    * Number per file   : Infinity
    * Value constraints : ASCII
    ********************************************************************/
-   //KEYS: Platform_organism, Platform_manufacture_protocol, Platform_catalog_number
-   //KEYS: Platform_description, Sample_hyb_protocol, Sample_scan_protocol
-   //KEYS: Sample_data_processing, Sample_description, Series_summary
+   //KEYS: Platform_organism, Platform_manufacture_protocol,
+   //KEYS: Platform_catalog_number, Platform_description, Sample_hyb_protocol,
+   //KEYS: Sample_scan_protocol, Sample_data_processing, Sample_description,
+   //KEYS: Series_summary
 key_inf_ascii:
     PLATFORM_ORGANISM{
       $$ = $1;
@@ -650,8 +668,9 @@ key_inf_ascii:
    * Number per file   : 1
    * Value constraints : ASCII
    ********************************************************************/
-   //KEYS: PLATFORM_TOKEN, Platform_manufacturer, Platform_support, Platform_coating
-   //KEYS: SAMPLE_TOKEN, Sample_anchor, Sample_type, SERIES_TOKEN, Series_overall_design
+   //KEYS: PLATFORM_TOKEN, Platform_manufacturer, Platform_support,
+   //KEYS: Platform_coating, SAMPLE_TOKEN, Sample_anchor, Sample_type,
+   //KEYS: SERIES_TOKEN, Series_overall_design
 key_1_ascii:
     PLATFORM_TOKEN{
       $$ = $1;
@@ -742,14 +761,11 @@ tablerow:
 
 //yylex and yyerror need to be defined here
 
-int yylex(){
-
-}
 
 
-void yy::Parser::error(const location_type &l, const string &m){
-  driver.error(l, m);
-}
+//void yy::Parser::error(const location_type &l, const string &m){
+//  driver.error(l, m);
+//}
 
 
 int parseSoftFile(const char *path, struct GEOSoftFile contents){
@@ -760,12 +776,12 @@ int parseSoftFile(const char *path, struct GEOSoftFile contents){
     return status;
   }
 
-  std::unordered_map<std::string, std::vector<std::vector<std::string> > > driver();
+  unordered_map<string, vector<vector<string> > > contents();
 
   yyscan_t myscanner;
 
   yylex_init(&myscanner);
-  yyparse(myscanner, &driver);
+  yyparse(myscanner, &contents);
   yylex_destroy(myscanner);
 
   if(status){
