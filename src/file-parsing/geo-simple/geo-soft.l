@@ -1,54 +1,28 @@
-%option nodefault
+
 %option noyywrap
 %option warn
 %option yylineno
 %option header-file="lex.yy.h"
-%option c++
-%option yyclass="Scanner"
+%option bison-bridge reentrant bison-locations
 
 %{
-  #include <deque>
-  #include <string>
-
-  #define YYLTYPE YYLTYPE
-  typedef struct YYLTYPE{
-    double value;
-    std::string line;
-  } YYLTYPE;
-
+  #include <string.h>
   #include "geo-soft.tab.hh"
-  #include "lex.yy.h"
-  #include "scanner.hpp"
+%}
 
-
-  #define yyterminate() yy::Parser::make_END(yy::location());
-  //#define YY_USER_ACTION yylloc->columns(yyleng);
-}
-
-
-%union {
-  long int n;
-  double f;
-  std::string s;
-}
-
-//small block courtesy
-//https://stackoverflow.com/questions/14462808/flex-bison-interpreting-numbers-as-floats
+/*URL specification at https://www.ietf.org/rfc/rfc1738.txt
+Regex courtesy of @diegoperini via https://mathiasbynens.be/demo/url-regex */
+/*small block courtesy*/
+/*https://stackoverflow.com/questions/14462808/flex-bison-interpreting-numbers-as-floats*/
 DIGIT [0-9]
-INTEGER {DIGIT}+ {return atoi(yytext);}
-REAL ({DIGIT}+[.]{DIGIT}*)|({DIGIT}*[.]{DIGIT}+) {return atof(yytext);}
-
+INTEGER {DIGIT}+
+REAL ({DIGIT}+[.]{DIGIT}*)|({DIGIT}*[.]{DIGIT}+)
 
 %%
 
-%{
-  yylloc->step();
-%}
-
-
 IS[ \t]*=[ \t]*
 
-PLATFORM_TOKEN                  [\^]PLATFORM
+PLATFORM_TOKEN                  [^]PLATFORM
 PLATFORM_TITLE                  !Platform_title
 PLATFORM_DISTRIBUTION           !Platform_distribution
 PLATFORM_TECHNOLOGY             !Platform_technology
@@ -65,7 +39,7 @@ PLATFORM_PUBMED_ID              !Platform_pubmed_id
 PLATFORM_GEO_ACCESSION          !Platform_geo_accession
 PLATFORM_TABLE_BEGIN            !Platform_table_begin
 PLATFORM_TABLE_END              !Platform_table_end
-SAMPLE_TOKEN                    [\^]SAMPLE
+SAMPLE_TOKEN                    [^]SAMPLE
 SAMPLE_TITLE                    !Sample_title
 SAMPLE_SUPPLEMENTARY_FILE       !Sample_supplementary_file
 SAMPLE_TABLE                    !Sample_table
@@ -91,7 +65,7 @@ SAMPLE_TAG_COUNT                !Sample_tag_count
 SAMPLE_TAG_LENGTH               !Sample_tag_length
 SAMPLE_TABLE_BEGIN              !Sample_table_begin
 SAMPLE_TABLE_END                !Sample_table_end
-SERIES_TOKEN                    [\^]SERIES
+SERIES_TOKEN                    [^]SERIES
 SERIES_TITLE                    !Series_title
 SERIES_SUMMARY                  !Series_summary
 SERIES_OVERALL_DESIGN           !Series_overall_design
@@ -109,7 +83,7 @@ SERIES_GEO_ACCESSION            !Series_geo_accession
 COMMENT #[ -!]*
 WORD  [!-~]+
 VALUE ([!-~][ -!]*[!-~] | [!-~])
-WHITE_SPACE [ \t]*
+WHITE_SPACE [ \\t]*
 EOF <<EOF>>
 LINE_END WHITE_SPACE*$
 
@@ -119,10 +93,7 @@ GSE_NUMBER GSE[0-9]+
 GPL_NUMBER GPL[0-9]+
 GSM_NUMBER GSM[0-9]+
 
-/*
-URL specification at https://www.ietf.org/rfc/rfc1738.txt
-Regex courtesy of @diegoperini via https://mathiasbynens.be/demo/url-regex
-*/
+
 URL _^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]+-?)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,})))(?::\d{2,5})?(?:/[^\s]*)?$_iuS
 
 TAG_VALUE [!-9,;-~]+:[!-9,;-~]+

@@ -1,17 +1,11 @@
 %defines
-%define api.token.constructor
-%define parse.assert
+//%define parse.assert
 %locations
 %start topLevelParseRule
 %require "3.0.4"
-%skeleton "lalr1.cc"
-//%define api.pure full
-//%define parser.error verbose
+%define api.pure full
 %locations
 %token-table
-//%pure-parser
-%define parser_class_name { Parser }
-%define api.namespace {yy}
 
 
 //%initial-action{
@@ -28,44 +22,71 @@
   #include <vector>
   #include <unordered_map>
 
-  using std::unordered_map;
-  using std::string;
-  using std::vector;
+  using namespace std;
 
-  #include "scanner.hpp"
 
 }
 
 %code requires{
-  namespace yy{
-    class Parser;
-    class Scanner;
-  }
 
-  using yy::Parser;
-  using yy::Scanner;
+  #include <deque>
+  #include <stdio.h>
+  #include <string>
+  #include <string.h>
+  #include <vector>
+  #include <unordered_map>
+
+  using namespace std;
+
 }
 
-%lex-param {Scanner scanner}
-%lex-param {Parser &driver}
-%lex-param {unordered_map<string, vector<vector<string> > > &intermediateData}
-%parse-param {Scanner scanner}
-%parse-param {Parser &driver}
-%parse-param {unordered_map<string, vector<vector<string> > > &intermediateData}
+
+%union{
+  vector<string> *vs;
+  int local_int;
+  deque<vector<string> > *dvs;
+  string *s;
+};
+
 
 %code provides{
 
-#include "lex.yy.h"
-#include "geo-soft.tab.hh"
-#include "location.hh"
-#include "position.hh"
-#include "scanner.hpp"
+  #include <deque>
+  #include <stdio.h>
+  #include <string>
+  #include <string.h>
+  #include <vector>
+  #include <unordered_map>
+  #include <cstdlib>
 
-static Parser::symbol_type yylex(Scanner scanner, Parser &driver,
-            unordered_map<string, vector<vector<string> > > &intermediateData){
-  return scanner.get_next_token();
-}
+  using namespace std;
 
+  #include "geo-soft.tab.hh"
+  #include "lex.yy.h"
+
+  //These are gross hacks.
+  static bool validFile = true;
+  static std::unordered_map<std::string, std::vector<std::vector<std::string> > > *contents;
+
+  void ensureSpaceForKey(
+                  unordered_map<string, vector<vector<string> > > &intermediate,
+                                                                    string key){
+    if(0 == intermediate.count(key)){
+      intermediate[key] = vector<vector<string>>();
+      intermediate[key].push_back(vector<string>());
+    }
+  }
+
+  bool isUniqueInsert(
+                  unordered_map<string, vector<vector<string> > > &intermediate,
+                    string key, string value, int first_line, int first_column,
+                                                              int last_column){
+    if(0 == intermediate.count(key)) return true;
+    fprintf(stderr, "Error: repeat insertion of key \"%s\" with value \"%s\" "
+                    "on line %d from columns %d-%d\n", key.c_str(), first_line,
+                                                    first_column, last_column);
+    return false;
+  }
 
 }
 
@@ -73,44 +94,45 @@ static Parser::symbol_type yylex(Scanner scanner, Parser &driver,
 
 //the value used as "$X" for all the parse rules below
 //bison builds the union automatically this way in a way useful for C++
-%define api.value.type variant
-%token <std::string> VALUE GSE_NUMBER GPL_NUMBER GSM_NUMBER URL
-%token <std::string> PLATFORM_TOKEN PLATFORM_TITLE PLATFORM_DISTRIBUTION
-%token <std::string> PLATFORM_TECHNOLOGY PLATFORM_ORGANISM
-%token <std::string> PLATFORM_MANUFACTURER PLATFORM_MANUFACTURE_PROTOCOL
-%token <std::string> PLATFORM_CATALOG_NUMBER PLATFORM_WEB_LINK
-%token <std::string> PLATFORM_SUPPORT PLATFORM_COATING
-%token <std::string> PLATFORM_DESCRIPTION PLATFORM_CONTRIBUTOR
-%token <std::string> PLATFORM_PUBMED_ID PLATFORM_GEO_ACCESSION
-%token <std::string> PLATFORM_TABLE_BEGIN PLATFORM_TABLE_END
-%token <std::string> SAMPLE_TOKEN SAMPLE_TITLE SAMPLE_SUPPLEMENTARY_FILE
-%token <std::string> SAMPLE_TABLE SAMPLE_SOURCE_NAME_CH
-%token <std::string> SAMPLE_ORGANISM_CH SAMPLE_CHARACTERISTICS_CH
-%token <std::string> SAMPLE_BIOMATERIAL_PROVIDER_CH
-%token <std::string> SAMPLE_TREATMENT_PROTOCOL_CH
-%token <std::string> SAMPLE_GROWTH_PROTOCOL_CH SAMPLE_MOLECULE_CH
-%token <std::string> SAMPLE_EXTRACT_PROTOCOL_CH SAMPLE_LABEL_CH
-%token <std::string> SAMPLE_LABEL_PROTOCOL_CH SAMPLE_HYB_PROTOCOL
-%token <std::string> SAMPLE_SCAN_PROTOCOL SAMPLE_DATA_PROCESSING
-%token <std::string> SAMPLE_DESCRIPTION SAMPLE_PLATFORM_ID
-%token <std::string> SAMPLE_GEO_ACCESSION SAMPLE_ANCHOR SAMPLE_TYPE
-%token <std::string> SAMPLE_TAG_COUNT SAMPLE_TAG_LENGTH
-%token <std::string> SAMPLE_TABLE_BEGIN SAMPLE_TABLE_END SERIES_TOKEN
-%token <std::string> SERIES_TITLE SERIES_SUMMARY SERIES_OVERALL_DESIGN
-%token <std::string> SERIES_PUBMED_ID SERIES_WEB_LINK SERIES_CONTRIBUTOR
-%token <std::string> SERIES_VARIABLE SERIES_VARIABLE_DESCRIPTION
-%token <std::string> SERIES_VARIABLE_SAMPLE_LIST SERIES_REPEATS
-%token <std::string> SERIES_REPEATS_SAMPLE_LIST SERIES_SAMPLE_ID
-%token <std::string> SERIES_GEO_ACCESSION RESEARCHER_NAME TAG_VALUE
-%token <int> INTEGER
+//%define api.value.type variant
+
+%token <s> VALUE GSE_NUMBER GPL_NUMBER GSM_NUMBER URL
+%token <s> PLATFORM_TOKEN PLATFORM_TITLE PLATFORM_DISTRIBUTION
+%token <s> PLATFORM_TECHNOLOGY PLATFORM_ORGANISM
+%token <s> PLATFORM_MANUFACTURER PLATFORM_MANUFACTURE_PROTOCOL
+%token <s> PLATFORM_CATALOG_NUMBER PLATFORM_WEB_LINK
+%token <s> PLATFORM_SUPPORT PLATFORM_COATING
+%token <s> PLATFORM_DESCRIPTION PLATFORM_CONTRIBUTOR
+%token <s> PLATFORM_PUBMED_ID PLATFORM_GEO_ACCESSION
+%token <s> PLATFORM_TABLE_BEGIN PLATFORM_TABLE_END
+%token <s> SAMPLE_TOKEN SAMPLE_TITLE SAMPLE_SUPPLEMENTARY_FILE
+%token <s> SAMPLE_TABLE SAMPLE_SOURCE_NAME_CH
+%token <s> SAMPLE_ORGANISM_CH SAMPLE_CHARACTERISTICS_CH
+%token <s> SAMPLE_BIOMATERIAL_PROVIDER_CH
+%token <s> SAMPLE_TREATMENT_PROTOCOL_CH
+%token <s> SAMPLE_GROWTH_PROTOCOL_CH SAMPLE_MOLECULE_CH
+%token <s> SAMPLE_EXTRACT_PROTOCOL_CH SAMPLE_LABEL_CH
+%token <s> SAMPLE_LABEL_PROTOCOL_CH SAMPLE_HYB_PROTOCOL
+%token <s> SAMPLE_SCAN_PROTOCOL SAMPLE_DATA_PROCESSING
+%token <s> SAMPLE_DESCRIPTION SAMPLE_PLATFORM_ID
+%token <s> SAMPLE_GEO_ACCESSION SAMPLE_ANCHOR SAMPLE_TYPE
+%token <s> SAMPLE_TAG_COUNT SAMPLE_TAG_LENGTH
+%token <s> SAMPLE_TABLE_BEGIN SAMPLE_TABLE_END SERIES_TOKEN
+%token <s> SERIES_TITLE SERIES_SUMMARY SERIES_OVERALL_DESIGN
+%token <s> SERIES_PUBMED_ID SERIES_WEB_LINK SERIES_CONTRIBUTOR
+%token <s> SERIES_VARIABLE SERIES_VARIABLE_DESCRIPTION
+%token <s> SERIES_VARIABLE_SAMPLE_LIST SERIES_REPEATS
+%token <s> SERIES_REPEATS_SAMPLE_LIST SERIES_SAMPLE_ID
+%token <s> SERIES_GEO_ACCESSION RESEARCHER_NAME TAG_VALUE
+%token <local_int> INTEGER
 %token IS LINE_END WHITESPACE COMMENT
-%type <std::deque<std::vector<std::string> > > tabledata
-%type < std::vector<std::string> > researcher_names tag_value_list tablerow
-%type <std::string> key_lab_type key_test_archetype key_author_names
-%type <std::string> key_indexed_inf key_indexed_1 key_1_gse key_1_gpl
-%type <std::string> key_1_gsm key_inf_pmid key_inf_fp key_1_fp key_1_int
-%type <std::string> key_indexed_inf_tag_val key_1_120char key_1_255char
-%type <std::string> key_inf_url key_inf_ascii key_1_ascii
+%type <dvs> tabledata
+%type <vs> researcher_names tag_value_list tablerow
+%type <s> key_lab_type key_test_archetype key_author_names
+%type <s> key_indexed_inf key_indexed_1 key_1_gse key_1_gpl
+%type <s> key_1_gsm key_inf_pmid key_inf_fp key_1_fp key_1_int
+%type <s> key_indexed_inf_tag_val key_1_120char key_1_255char
+%type <s> key_inf_url key_inf_ascii key_1_ascii
 
 %%
 
@@ -123,242 +145,282 @@ topLevelParseRule:
 
 key_is_value:
     key_lab_type IS VALUE {
-      if(strcmp("commercial", $3.c_str()) &&
-         strcmp("non-commercial", $3.c_str()) &&
-         strcmp("custom-commercial", $3.c_str()) &&
-         strcmp("virtual", $3.c_str())){
+      string key = *$1;
+      string value = *$3;
+      if(strcmp("commercial", value.c_str()) &&
+         strcmp("non-commercial", value.c_str()) &&
+         strcmp("custom-commercial", value.c_str()) &&
+         strcmp("virtual", value.c_str())){
         fprintf(stderr, "ERROR: line %d characters %d - %d, key value "
             "\"%s\" is not in "
             "{commercial, non-commercial, custom-commercial, virtual}, "
                           "but is %s\n", @3.first_line, @3.first_column,
-                                                @3.last_column, $1, $3);
+                                      @3.last_column, key.c_str(), value.c_str());
         validFile = false;
-        return;
       }
 
-      ensureSpaceForKey($1);
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      ensureSpaceForKey(*contents, key);
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
     }
 
   | key_test_archetype IS VALUE {
+    string key = *$1;
+    string value = *$3;
 
-      if(strcmp("spotted DNA/cDNA", $3)
-      && strcmp("spotted oligonucleotide", $3)
-      && strcmp("in situ oligonucleotide", $3)
-      && strcmp("antibody", $3)
-      && strcmp("tissue", $3)
-      && strcmp("SARST", $3)
-      && strcmp("RT-PCR", $3)
-      && strcmp("MPSS", $3)){
+      if(strcmp("spotted DNA/cDNA", value.c_str())
+      && strcmp("spotted oligonucleotide", value.c_str())
+      && strcmp("in situ oligonucleotide", value.c_str())
+      && strcmp("antibody", value.c_str())
+      && strcmp("tissue", value.c_str())
+      && strcmp("SARST", value.c_str())
+      && strcmp("RT-PCR", value.c_str())
+      && strcmp("MPSS", value.c_str())){
         fprintf(stderr, "ERROR: line %d characters %d - %d, key value "
               "\"%s\" is not in in {spotted DNA/cDNA, "
               "spotted oligonucleotide, in situ oligonucleotide, "
               "antibody, tissue, SARST, RT-PCR, or MPSS}, but is %s\n",
-                @3.first_line, @3.first_column, @3.last_column, $1, $3);
+                @3.first_line, @3.first_column, @3.last_column, key.c_str(),
+                                                                  value.c_str());
         validFile = false;
       }
 
 
-      ensureSpaceForKey($1);
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
-      driver.parseHolder[$1][0].push_back($3);
+      ensureSpaceForKey(*contents, key);
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                      @3.last_column)) return 1;
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_author_names IS researcher_names {
+      string key = *$1;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      for(size_t i = 0; i < $3.size(); i++)
-        driver.parseHolder[$1][0].push_back($3[i]);
+      for(size_t i = 0; i < $3->size(); i++)
+        contents->at(key).at(0).push_back((*$3)[i]);
 
     }
 
   | key_indexed_inf INTEGER IS VALUE {
+    string key = *$1;
+    int index = $2;
+    string value = *$4;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      while(driver.parseHolder[$1].size() <= $2)
-        driver.parseHolder[$1].push_back(std::vector<std::string>());
+      while(contents->at(key).size() <= $2)
+        contents->at(key).push_back(std::vector<string>());
 
-      driver.parseHolder[$1][$2].push_back($4);
+      contents->at(key).at($2).push_back(*$4);
     }
 
   | key_indexed_1 INTEGER IS VALUE {
+    string key = *$1;
+    int index = $2;
+    string value = *$4;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      while(driver.parseHolder[$1].size() <= $2)
-        driver.parseHolder[$1].push_back(std::vector<std::string>());
+      while(contents->at(key).size() <= $2)
+        contents->at(key).push_back(std::vector<string>());
 
-      if(!isUniqueInsertForChannel($1, $4, $2, @4.first_line,
-                              @4.first_column, @4.last_column)) return;
+      if(!isUniqueInsertForChannel(key, *$4, $2, @4.first_line,
+                              @4.first_column, @4.last_column)) return 1;
 
-      driver.parseHolder[$1][$2].push_back($4);
+      contents->at(key).at($2).push_back(*$4);
     }
 
   | key_1_gse IS GSE_NUMBER {
+    string key = *$1;
+    string value = *$3;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
     }
 
   | key_1_gpl IS GPL_NUMBER {
+    string key = *$1;
+    string value = *$3;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_1_gsm IS GSM_NUMBER {
+    string key = *$1;
+    string value = *$3;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_inf_pmid IS INTEGER {
+    string key = *$1;
+    string value = to_string($3);
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
     }
 
   | key_inf_fp IS VALUE {
+    string key = *$1;
+    string value = *$3;
 
-      FILE *check = fopen($3, "r");
+      FILE *check = fopen($3->c_str(), "r");
       if(NULL == check){
         fprintf(stderr, "Warning: line %d characters %d - %d, key "
                     "value \"%s\", cannot confirm a file at \"%s\" is "
                     "accessible\n", @3.first_line, @3.first_column,
-                                                @3.last_column, $1, $3);
+                                      @3.last_column, $1->c_str(), $3->c_str());
       }
       fclose(check);
 
-      ensureSpaceForKey($1, $3, @3.first_line, @3.first_column,
-                                                        @3.last_column);
+      ensureSpaceForKey(*contents, key);
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_1_fp IS VALUE {
+    string key = *$1;
+    string value = *$3;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                    @3.last_column)) return 1;
 
-      FILE *check = fopen($3, "r");
+      FILE *check = fopen($3->c_str(), "r");
       if(NULL == check){
         fprintf(stderr, "Warning: line %d characters %d - %d, key "
                     "value \"%s\", cannot confirm a file at \"%s\" is "
                         "accessible\n", @3.first_line, @3.first_column,
-                                                @3.last_column, $1, $3);
+                                      @3.last_column, $1->c_str(), $3->c_str());
       }
       fclose(check);
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_1_int IS INTEGER {
+    string key = *$1;
+    string value = to_string($3);
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_indexed_inf_tag_val INTEGER IS tag_value_list {
+    string key = *$1;
+    int index = $2;
+    vector<string> values = *$4;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      while(driver.parseHolder[$1].size() <= $2)
-        driver.parseHolder[$1].push_back(std::vector<std::string>());
+      while(contents->at(key).size() <= index)
+        contents->at(key).push_back(std::vector<string>());
 
-      for(size_t i = 0; i < $4.size(); i++)
-        driver.parseHolder[$1][$2].push_back($4[i]);
+      for(size_t i = 0; i < $4->size(); i++)
+        contents->at(key).at(index).push_back(values[i]);
 
     }
 
   | key_1_120char IS VALUE {
+    string key = *$1;
+    string value = *$3;
 
-      if($3.size() > 120){
+      if($3->size() > 120){
         fprintf(stderr, "Error: line %d characters %d - %d, key value "
-              "\"%s\" has a set value that is over 120 characters (%s)",
-                @3.first_line, @3.first_column, @3.last_column, $1, $3);
+                  "\"%s\" has a set value that is over 120 characters (%s)",
+                  @3.first_line, @3.first_column, @3.last_column, $1->c_str(),
+                                                                  $3->c_str());
         validFile = false;
       }
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
     }
 
   | key_1_255char IS VALUE {
+    string key = *$1;
+    string value = *$3;
 
-      if($3.size() > 255){
+      if($3->size() > 255){
         fprintf(stderr, "Error: line %d characters %d - %d, key value "
               "\"%s\" has a set value that is over 255 characters (%s)",
-                @3.first_line, @3.first_column, @3.last_column, $1, $3);
+                    @3.first_line, @3.first_column, @3.last_column, $1->c_str(),
+                                                                  $3->c_str());
         validFile = false;
       }
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_inf_url IS URL {
+    string key = *$1;
+    string value = *$3;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_inf_ascii IS VALUE {
+    string key = *$1;
+    string value = *$3;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
 
   | key_1_ascii IS VALUE {
+    string key = *$1;
+    string value = *$3;
 
-      ensureSpaceForKey($1);
+      ensureSpaceForKey(*contents, key);
 
-      if(!isUniqueInsert($1, $3, @3.first_line, @3.first_column,
-                                                @3.last_column)) return;
+      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+                                                @3.last_column)) return 1;
 
-      driver.parseHolder[$1][0].push_back($3);
+      contents->at(key).at(0).push_back(value);
 
     }
   ;
@@ -704,13 +766,16 @@ key_1_ascii:
 
 researcher_names:
     RESEARCHER_NAME{
-      std::vector<std::string> nameList;
-      nameList.push_back($1);
+      string value = *$1;
+      vector<string> *nameList;
+      nameList = new vector<string>();
+      nameList->push_back(value);
       $$ = nameList;
     }
   | researcher_names WHITESPACE RESEARCHER_NAME {
-      $3.push_back($1);
-      $$ = $3;
+      string value = *$3;
+      $1->push_back(value);
+      $$ = $1;
     }
   ;
 
@@ -718,13 +783,15 @@ researcher_names:
 //NOTE: WHITE_SPACE may be problematic due to ambiguity
 tag_value_list:
     TAG_VALUE{
-      std::vector<std::string> tr;
-      tr.push_back($1);
+      string value = *$1;
+      vector<string> *tr = new vector<string>();
+      tr->push_back(value);
       $$ = tr;
     }
   | tag_value_list WHITESPACE TAG_VALUE{
-      $3.push_back($1);
-      $$ = $3;
+      string value = *$3;
+      $1->push_back(value);
+      $$ = $1;
     }
   ;
 
@@ -736,21 +803,22 @@ table:
 
 tabledata:
     tablerow tabledata {
-      $1.push_front($2);
-      $$ = $1;
+      $2->push_front(*$1);
+      $$ = $2;
     }
   | tablerow {
-      $$ = std::deque<std::vector<std::string>>();
-      $$.push_back($1);
+      $$ = new deque<vector<string>>();
+      $$->push_front(*$1);
     }
   ;
 
 tablerow:
     LINE_END {
-      $$ = std::vector<std::string>();
+      $$ = new vector<string>();
     }
   | VALUE WHITESPACE tablerow {
-      $3.push_back($1);
+      string value = *$1;
+      $3->push_back(value);
       $$ = $3;
     }
 
@@ -776,13 +844,14 @@ int parseSoftFile(const char *path, struct GEOSoftFile contents){
     return status;
   }
 
-  unordered_map<string, vector<vector<string> > > contents();
+  //unordered_map<string, vector<vector<string> > > contents();
+  contents = new unordered_map<string, vector<vector<string> > >();
 
-  yyscan_t myscanner;
+  //yyscan_t myscanner;
 
-  yylex_init(&myscanner);
-  yyparse(myscanner, &contents);
-  yylex_destroy(myscanner);
+  //yylex_init(&myscanner);
+  yyparse();
+  //yylex_destroy(myscanner);
 
   if(status){
     return status;
