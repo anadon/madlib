@@ -8,4 +8,4 @@ all: geo-soft.yy geo-soft.l
 	g++ -c lex.yy.cc
 
 clean:
-	rm -f *.cc *.hh *.c *.h
+	rm -f geo-soft.tab.cc geo-soft.tab.hh lex.yy.cc lex.yy.c
