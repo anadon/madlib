@@ -22,7 +22,7 @@ REAL ({DIGIT}+[.]{DIGIT}*)|({DIGIT}*[.]{DIGIT}+)
 
 IS[ \t]*=[ \t]*
 
-PLATFORM_TOKEN                  [^]PLATFORM
+PLATFORM_TOKEN                  \[\^\]PLATFORM
 PLATFORM_TITLE                  !Platform_title
 PLATFORM_DISTRIBUTION           !Platform_distribution
 PLATFORM_TECHNOLOGY             !Platform_technology
@@ -39,7 +39,7 @@ PLATFORM_PUBMED_ID              !Platform_pubmed_id
 PLATFORM_GEO_ACCESSION          !Platform_geo_accession
 PLATFORM_TABLE_BEGIN            !Platform_table_begin
 PLATFORM_TABLE_END              !Platform_table_end
-SAMPLE_TOKEN                    [^]SAMPLE
+SAMPLE_TOKEN                    \[\^\]SAMPLE
 SAMPLE_TITLE                    !Sample_title
 SAMPLE_SUPPLEMENTARY_FILE       !Sample_supplementary_file
 SAMPLE_TABLE                    !Sample_table
@@ -65,7 +65,7 @@ SAMPLE_TAG_COUNT                !Sample_tag_count
 SAMPLE_TAG_LENGTH               !Sample_tag_length
 SAMPLE_TABLE_BEGIN              !Sample_table_begin
 SAMPLE_TABLE_END                !Sample_table_end
-SERIES_TOKEN                    [^]SERIES
+SERIES_TOKEN                    \[\^\]SERIES
 SERIES_TITLE                    !Series_title
 SERIES_SUMMARY                  !Series_summary
 SERIES_OVERALL_DESIGN           !Series_overall_design

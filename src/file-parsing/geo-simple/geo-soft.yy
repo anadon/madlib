@@ -66,7 +66,7 @@
 
   //These are gross hacks.
   static bool validFile = true;
-  static std::unordered_map<std::string, std::vector<std::vector<std::string> > > *contents;
+  static std::unordered_map<std::string, std::vector<std::vector<std::string> > > *intermediate;
 
   void ensureSpaceForKey(
                   unordered_map<string, vector<vector<string> > > &intermediate,
@@ -124,7 +124,7 @@
 %token <s> SERIES_VARIABLE_SAMPLE_LIST SERIES_REPEATS
 %token <s> SERIES_REPEATS_SAMPLE_LIST SERIES_SAMPLE_ID
 %token <s> SERIES_GEO_ACCESSION RESEARCHER_NAME TAG_VALUE
-%token <local_int> INTEGER
+%token <s> INTEGER
 %token IS LINE_END WHITESPACE COMMENT
 %type <dvs> tabledata
 %type <vs> researcher_names tag_value_list tablerow
@@ -159,11 +159,11 @@ key_is_value:
         validFile = false;
       }
 
-      ensureSpaceForKey(*contents, key);
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      ensureSpaceForKey(*intermediate, key);
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
     }
 
   | key_test_archetype IS VALUE {
@@ -188,20 +188,20 @@ key_is_value:
       }
 
 
-      ensureSpaceForKey(*contents, key);
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      ensureSpaceForKey(*intermediate, key);
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                       @3.last_column)) return 1;
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
   | key_author_names IS researcher_names {
       string key = *$1;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
       for(size_t i = 0; i < $3->size(); i++)
-        contents->at(key).at(0).push_back((*$3)[i]);
+        intermediate->at(key).at(0).push_back((*$3)[i]);
 
     }
 
@@ -210,12 +210,12 @@ key_is_value:
     int index = $2;
     string value = *$4;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      while(contents->at(key).size() <= $2)
-        contents->at(key).push_back(std::vector<string>());
+      while(intermediate->at(key).size() <= $2)
+        intermediate->at(key).push_back(std::vector<string>());
 
-      contents->at(key).at($2).push_back(*$4);
+      intermediate->at(key).at($2).push_back(*$4);
     }
 
   | key_indexed_1 INTEGER IS VALUE {
@@ -223,39 +223,39 @@ key_is_value:
     int index = $2;
     string value = *$4;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      while(contents->at(key).size() <= $2)
-        contents->at(key).push_back(std::vector<string>());
+      while(intermediate->at(key).size() <= $2)
+        intermediate->at(key).push_back(std::vector<string>());
 
       if(!isUniqueInsertForChannel(key, *$4, $2, @4.first_line,
                               @4.first_column, @4.last_column)) return 1;
 
-      contents->at(key).at($2).push_back(*$4);
+      intermediate->at(key).at($2).push_back(*$4);
     }
 
   | key_1_gse IS GSE_NUMBER {
     string key = *$1;
     string value = *$3;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
     }
 
   | key_1_gpl IS GPL_NUMBER {
     string key = *$1;
     string value = *$3;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -263,12 +263,12 @@ key_is_value:
     string key = *$1;
     string value = *$3;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -276,9 +276,9 @@ key_is_value:
     string key = *$1;
     string value = to_string($3);
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
     }
 
   | key_inf_fp IS VALUE {
@@ -294,9 +294,9 @@ key_is_value:
       }
       fclose(check);
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -304,9 +304,9 @@ key_is_value:
     string key = *$1;
     string value = *$3;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                     @3.last_column)) return 1;
 
       FILE *check = fopen($3->c_str(), "r");
@@ -318,7 +318,7 @@ key_is_value:
       }
       fclose(check);
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -326,12 +326,12 @@ key_is_value:
     string key = *$1;
     string value = to_string($3);
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -340,13 +340,13 @@ key_is_value:
     int index = $2;
     vector<string> values = *$4;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      while(contents->at(key).size() <= index)
-        contents->at(key).push_back(std::vector<string>());
+      while(intermediate->at(key).size() <= index)
+        intermediate->at(key).push_back(std::vector<string>());
 
       for(size_t i = 0; i < $4->size(); i++)
-        contents->at(key).at(index).push_back(values[i]);
+        intermediate->at(key).at(index).push_back(values[i]);
 
     }
 
@@ -362,12 +362,12 @@ key_is_value:
         validFile = false;
       }
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
     }
 
   | key_1_255char IS VALUE {
@@ -382,12 +382,12 @@ key_is_value:
         validFile = false;
       }
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -395,9 +395,9 @@ key_is_value:
     string key = *$1;
     string value = *$3;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -405,9 +405,9 @@ key_is_value:
     string key = *$1;
     string value = *$3;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
 
@@ -415,12 +415,12 @@ key_is_value:
     string key = *$1;
     string value = *$3;
 
-      ensureSpaceForKey(*contents, key);
+      ensureSpaceForKey(*intermediate, key);
 
-      if(!isUniqueInsert(*contents, key, value, @3.first_line, @3.first_column,
+      if(!isUniqueInsert(*intermediate, key, value, @3.first_line, @3.first_column,
                                                 @3.last_column)) return 1;
 
-      contents->at(key).at(0).push_back(value);
+      intermediate->at(key).at(0).push_back(value);
 
     }
   ;
@@ -836,7 +836,9 @@ tablerow:
 //}
 
 
-int parseSoftFile(const char *path, struct GEOSoftFile contents){
+
+
+int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   int status = 0;
 
   status = freopen(stdin, path);
@@ -844,18 +846,464 @@ int parseSoftFile(const char *path, struct GEOSoftFile contents){
     return status;
   }
 
-  //unordered_map<string, vector<vector<string> > > contents();
-  contents = new unordered_map<string, vector<vector<string> > >();
+  //unordered_map<string, vector<vector<string> > > *intermediate;
+  intermediate = new unordered_map<string, vector<vector<string> > >();
 
-  //yyscan_t myscanner;
 
-  //yylex_init(&myscanner);
   yyparse();
-  //yylex_destroy(myscanner);
 
   if(status){
     return status;
   }
+
+
+
+
+
+
+
+  CSTRING_Sample_supplementary_file
+  CSTRING_Sample_table
+  CSTRING_Sample_source_name_ch
+  CSTRING_Sample_organism_ch
+  CSTRING_Sample_characteristics_ch
+  CSTRING_Sample_biomaterial_provider_ch
+  CSTRING_Sample_treatment_protocol_ch
+  CSTRING_Sample_growth_protocol_ch
+  CSTRING_Sample_molecule_ch
+  CSTRING_Sample_extract_protocol_ch
+  CSTRING_Sample_label_ch
+  CSTRING_Sample_label_protocol_ch
+  CSTRING_Sample_hyb_protocol
+  CSTRING_Sample_scan_protocol
+  CSTRING_Sample_data_processing
+  CSTRING_Sample_description
+  CSTRING_Sample_platform_id
+  CSTRING_Sample_geo_accession
+  CSTRING_Sample_anchor
+  CSTRING_Sample_type
+  CSTRING_Sample_tag_count
+  CSTRING_Sample_tag_length
+  CSTRING_Sample_table_begin
+  CSTRING_Sample_table_end
+  CSTRING_SERIES
+  CSTRING_Series_title
+  CSTRING_Series_summary
+  CSTRING_Series_overall_design
+  CSTRING_Series_pubmed_id
+  CSTRING_Series_web_link
+  CSTRING_Series_contributor
+  CSTRING_Series_variable_
+  CSTRING_Series_variable_description_
+  CSTRING_Series_variable_sample_list_
+  CSTRING_Series_repeats_
+  CSTRING_Series_repeats_sample_list_
+  CSTRING_Series_sample_id
+  CSTRING_Series_geo_accession
+
+
+  if(!intermediate->count(CSTRING_PLATFORM)){
+    (*contents)->PLATFORM_TOKEN
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_title)){
+    (*contents)->PLATFORM_TITLE
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_distribution)){
+    (*contents)->PLATFORM_DISTRIBUTION
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_technology)){
+    (*contents)->PLATFORM_TECHNOLOGY
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_organism)){
+    (*contents)->PLATFORM_ORGANISM
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_manufacturer)){
+    (*contents)->PLATFORM_MANUFACTURER
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_manufacture_protocol)){
+    (*contents)->PLATFORM_MANUFACTURE_PROTOCOL
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_catalog_number)){
+    (*contents)->PLATFORM_CATALOG_NUMBER
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_web_link)){
+    (*contents)->PLATFORM_WEB_LINK
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_support)){
+    (*contents)->PLATFORM_SUPPORT
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_coating)){
+    (*contents)->PLATFORM_COATING
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_description)){
+    (*contents)->PLATFORM_DESCRIPTION
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_contributor)){
+    (*contents)->PLATFORM_CONTRIBUTOR
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_pubmed_id)){
+    (*contents)->PLATFORM_PUBMED_ID
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_geo_accession)){
+    (*contents)->PLATFORM_GEO_ACCESSION
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Platform_table_begin)){
+    (*contents)->PLATFORM_TABLE_BEGIN
+  }else{
+  }
+
+
+  //should be handled by the CSTRING_Platform_table_begin clause
+  //if(!intermediate->count(CSTRING_Platform_table_end)){
+  //  (*contents)->PLATFORM_TABLE_END
+  //}else{
+  //}
+
+
+  if(!intermediate->count(CSTRING_SAMPLE)){
+    (*contents)->
+  }else{
+  }
+
+
+  if(!intermediate->count(CSTRING_Sample_title)){
+    (*contents)->SAMPLE_TITLE
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_supplementary_file")){
+    (*contents)->SAMPLE_SUPPLEMENTARY_FILE
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_table")){
+    (*contents)->SAMPLE_TABLE
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_source_name_ch")){
+    (*contents)->SAMPLE_SOURCE_NAME_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_organism_ch")){
+    (*contents)->SAMPLE_ORGANISM_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_characteristics_ch")){
+    (*contents)->SAMPLE_CHARACTERISTICS_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_biomaterial_provider_ch")){
+    (*contents)->SAMPLE_BIOMATERIAL_PROVIDER_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_treatment_protocol_ch")){
+    (*contents)->SAMPLE_TREATMENT_PROTOCOL_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_growth_protocol_ch")){
+    (*contents)->SAMPLE_GROWTH_PROTOCOL_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_molecule_ch")){
+    (*contents)->SAMPLE_MOLECULE_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_extract_protocol_ch")){
+    (*contents)->SAMPLE_EXTRACT_PROTOCOL_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_label_ch")){
+    (*contents)->SAMPLE_LABEL_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_label_protocol_ch")){
+    (*contents)->SAMPLE_LABEL_PROTOCOL_CH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_hyb_protocol")){
+    (*contents)->SAMPLE_HYB_PROTOCOL
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_scan_protocol")){
+    (*contents)->SAMPLE_SCAN_PROTOCOL
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_data_processing")){
+    (*contents)->SAMPLE_DATA_PROCESSING
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_description")){
+    (*contents)->SAMPLE_DESCRIPTION
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_platform_id")){
+    (*contents)->SAMPLE_PLATFORM_ID
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_geo_accession")){
+    (*contents)->SAMPLE_GEO_ACCESSION
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_anchor")){
+    (*contents)->SAMPLE_ANCHOR
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_type")){
+    (*contents)->SAMPLE_TYPE
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_tag_count")){
+    (*contents)->SAMPLE_TAG_COUNT
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_tag_length")){
+    (*contents)->SAMPLE_TAG_LENGTH
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_table_begin")){
+    (*contents)->SAMPLE_TABLE_BEGIN
+  }else{
+  }
+
+
+  if(!intermediate->count("!Sample_table_end")){
+    (*contents)->SAMPLE_TABLE_END
+  }else{
+  }
+
+
+  if(!intermediate->count("[^]SERIES")){
+    (*contents)->SERIES_TOKEN
+  }else{
+  }
+
+  if(!intermediate->count("!Series_title")){
+    (*contents)->SERIES_TITLE
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_summary")){
+    (*contents)->SERIES_SUMMARY
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_overall_design")){
+    (*contents)->SERIES_OVERALL_DESIGN
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_pubmed_id")){
+    (*contents)->SERIES_PUBMED_ID
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_web_link")){
+    (*contents)->SERIES_WEB_LINK
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_contributor")){
+    (*contents)->SERIES_CONTRIBUTOR
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_variable_")){
+    (*contents)->SERIES_VARIABLE
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_variable_description_")){
+    (*contents)->SERIES_VARIABLE_DESCRIPTION
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_variable_sample_list_")){
+    (*contents)->SERIES_VARIABLE_SAMPLE_LIST
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_repeats_")){
+    (*contents)->SERIES_REPEATS
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_repeats_sample_list_")){
+    (*contents)->SERIES_REPEATS_SAMPLE_LIST
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_sample_id")){
+    (*contents)->SERIES_SAMPLE_ID
+  }else{
+  }
+
+
+  if(!intermediate->count("!Series_geo_accession")){
+    (*contents)->SERIES_GEO_ACCESSION
+  }else{
+  }
+
+    std::string GSE_NUMBER
+    std::string GPL_NUMBER
+    std::string GSM_NUMBER
+    std::string URL
+    std::string PLATFORM_TOKEN
+    std::string PLATFORM_TITLE
+    std::string PLATFORM_DISTRIBUTION
+    std::string PLATFORM_TECHNOLOGY
+    std::string PLATFORM_ORGANISM
+    std::string PLATFORM_MANUFACTURER
+    std::string PLATFORM_MANUFACTURE_PROTOCOL
+    std::string PLATFORM_CATALOG_NUMBER
+    std::string PLATFORM_WEB_LINK
+    std::string PLATFORM_SUPPORT
+    std::string PLATFORM_COATING
+    std::string PLATFORM_DESCRIPTION
+    std::string PLATFORM_CONTRIBUTOR
+    std::string PLATFORM_PUBMED_ID
+    std::string PLATFORM_GEO_ACCESSION
+    std::string PLATFORM_TABLE_BEGIN
+    std::string PLATFORM_TABLE_END
+    std::string SAMPLE_TOKEN
+    std::string SAMPLE_TITLE
+    std::string SAMPLE_SUPPLEMENTARY_FILE
+    std::string SAMPLE_TABLE
+    std::string SAMPLE_SOURCE_NAME_CH
+    std::string SAMPLE_ORGANISM_CH
+    std::string SAMPLE_CHARACTERISTICS_CH
+    std::string SAMPLE_BIOMATERIAL_PROVIDER_CH
+    std::string SAMPLE_TREATMENT_PROTOCOL_CH
+    std::string SAMPLE_GROWTH_PROTOCOL_CH
+    std::string SAMPLE_MOLECULE_CH
+    std::string SAMPLE_EXTRACT_PROTOCOL_CH
+    std::string SAMPLE_LABEL_CH
+    std::string SAMPLE_LABEL_PROTOCOL_CH
+    std::string SAMPLE_HYB_PROTOCOL
+    std::string SAMPLE_SCAN_PROTOCOL
+    std::string SAMPLE_DATA_PROCESSING
+    std::string SAMPLE_DESCRIPTION
+    std::string SAMPLE_PLATFORM_ID
+    std::string SAMPLE_GEO_ACCESSION
+    std::string SAMPLE_ANCHOR SAMPLE_TYPE
+    std::string SAMPLE_TAG_COUNT
+    std::string SAMPLE_TAG_LENGTH
+    std::string SAMPLE_TABLE_BEGIN
+    std::string SAMPLE_TABLE_END SERIES_TOKEN
+    std::string SERIES_TITLE SERIES_SUMMARY
+    std::string SERIES_OVERALL_DESIGN
+    std::string SERIES_PUBMED_ID
+    std::string SERIES_WEB_LINK
+    std::string SERIES_CONTRIBUTOR
+    std::string SERIES_VARIABLE
+    std::string SERIES_VARIABLE_DESCRIPTION
+    std::string SERIES_VARIABLE_SAMPLE_LIST
+    std::string SERIES_REPEATS
+    std::string SERIES_REPEATS_SAMPLE_LIST
+    std::string SERIES_SAMPLE_ID
+    std::string SERIES_GEO_ACCESSION
+    std::string RESEARCHER_NAME
+    std::string TAG_VALUE
+
 
   return status;
 }
