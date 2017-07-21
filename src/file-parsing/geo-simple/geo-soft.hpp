@@ -345,7 +345,7 @@ Content guidelines: Specify the name of the company, laboratory or person that
 provided the biological material.
 *******************************************************************************/
 #define CSTRING_Sample_biomaterial_provider_ch "!Sample_biomaterial_provider_ch"
-//The number of allowed labels is inaccurate; it means 1 or more per channel
+//The number of allowed labels is inaccurate; it means 0 or more per channel
 //std::vector<std::vector<std::string> > sample_biomaterial_provider;
 
 
@@ -360,7 +360,7 @@ thoroughly describe the protocol; it is strongly recommended that complete
 protocol descriptions are provided within your submission.
 *******************************************************************************/
 #define CSTRING_Sample_treatment_protocol_ch "!Sample_treatment_protocol_ch"
-//The number of allowed labels is inaccurate; it means 1 or more per channel
+//The number of allowed labels is inaccurate; it means 0 or more per channel
 //std::vector<std::vector<std::string> > sample_treatment_protocol;
 
 
@@ -375,7 +375,7 @@ you need to thoroughly describe the protocol; it is strongly recommended that
 complete protocol descriptions are provided within your submission.
 *******************************************************************************/
 #define CSTRING_Sample_growth_protocol_ch "!Sample_growth_protocol_ch"
-//The number of allowed labels is inaccurate; it means 1 or more per channel
+//The number of allowed labels is inaccurate; it means 0 or more per channel
 //std::vector<std::vector<std::string> > sample_growth_protocol;
 
 
