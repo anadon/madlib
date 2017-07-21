@@ -860,141 +860,206 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
 
 
-
-
-  CSTRING_Sample_supplementary_file
-  CSTRING_Sample_table
-  CSTRING_Sample_source_name_ch
-  CSTRING_Sample_organism_ch
-  CSTRING_Sample_characteristics_ch
-  CSTRING_Sample_biomaterial_provider_ch
-  CSTRING_Sample_treatment_protocol_ch
-  CSTRING_Sample_growth_protocol_ch
-  CSTRING_Sample_molecule_ch
-  CSTRING_Sample_extract_protocol_ch
-  CSTRING_Sample_label_ch
-  CSTRING_Sample_label_protocol_ch
-  CSTRING_Sample_hyb_protocol
-  CSTRING_Sample_scan_protocol
-  CSTRING_Sample_data_processing
-  CSTRING_Sample_description
-  CSTRING_Sample_platform_id
-  CSTRING_Sample_geo_accession
-  CSTRING_Sample_anchor
-  CSTRING_Sample_type
-  CSTRING_Sample_tag_count
-  CSTRING_Sample_tag_length
-  CSTRING_Sample_table_begin
-  CSTRING_Sample_table_end
-  CSTRING_SERIES
-  CSTRING_Series_title
-  CSTRING_Series_summary
-  CSTRING_Series_overall_design
-  CSTRING_Series_pubmed_id
-  CSTRING_Series_web_link
-  CSTRING_Series_contributor
-  CSTRING_Series_variable_
-  CSTRING_Series_variable_description_
-  CSTRING_Series_variable_sample_list_
-  CSTRING_Series_repeats_
-  CSTRING_Series_repeats_sample_list_
-  CSTRING_Series_sample_id
-  CSTRING_Series_geo_accession
-
-
-  if(!intermediate->count(CSTRING_PLATFORM)){
-    (*contents)->PLATFORM_TOKEN
+  if(!intermediate->count(CSTRING_PLATFORM)){ //std::string
+    (*contents)->platform = intermediate[CSTRING_PLATFORM][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_PLATFORM);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count(CSTRING_Platform_title)){
-    (*contents)->PLATFORM_TITLE
+  if(!intermediate->count(CSTRING_Platform_title)){ //std::string
+    (*contents)->platform_title = intermediate[CSTRING_Platform_title][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                        CSTRING_Platform_title);
+    #endif
+    status++;
   }
 
-
+  //enum platform_distribution_enum
   if(!intermediate->count(CSTRING_Platform_distribution)){
-    (*contents)->PLATFORM_DISTRIBUTION
+    (*contents)->platform_distribution = platform_distribution_unset;
+    if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+                                                                "commercial")){
+      (*contents)->platform_distribution = commercial;
+    }else if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+                                                            "non-commercial")){
+      (*contents)->platform_distribution = non_commercial;
+    }else if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+                                                          "custom-commercial")){
+      (*contents)->platform_distribution = custom_commercial;
+    }else if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+                                                                    "virtual")){
+      (*contents)->platform_distribution = _virtual;
+    }else{
+      #ifdef DEBUG
+      fprintf(stderr, "ERROR: Value for key \"%s\" is invalid\n",
+                                                CSTRING_Platform_distribution);
+      #endif
+      status++;
+    }
+
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                CSTRING_Platform_distribution);
+    #endif
+    status++;
   }
 
 
+  //enum platform_technology_enum
   if(!intermediate->count(CSTRING_Platform_technology)){
-    (*contents)->PLATFORM_TECHNOLOGY
+    (*contents)->platform_technology = platform_technology_unset;
+    if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                            "spotted DNA/cDNA"){
+      (*contents)->platform_technology = spotted_DNA_or_cDNA;
+    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                    "spotted oligonucleotide"){
+      (*contents)->platform_technology = spotted_oligonucleotide;
+    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                    "in situ oligonucleotide"){
+      (*contents)->platform_technology = in_situ_oligonucleotide;
+    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                                    "antibody"){
+      (*contents)->platform_technology = antibody;
+    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                                      "tissue"){
+      (*contents)->platform_technology = tissue;
+    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                                      "SARST"){
+      (*contents)->platform_technology = SARST;
+    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                                      "RT-PCR"){
+      (*contents)->platform_technology = RT_PCR;
+    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
+                                                                        "MPSS"){
+      (*contents)->platform_technology = MPSS;
+    }else{
+      #ifdef DEBUG
+      fprintf(stderr, "ERROR: Value for key \"%s\" is invalid\n",
+                                                CSTRING_Platform_distribution);
+      #endif
+      status++;
+    }
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                  CSTRING_Platform_technology);
+    #endif
+    status++;
   }
 
 
+  //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_organism)){
-    (*contents)->PLATFORM_ORGANISM
+    (*contents)->platform_organism = intermediate[CSTRING_Platform_organism][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                    CSTRING_Platform_organism);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count(CSTRING_Platform_manufacturer)){
-    (*contents)->PLATFORM_MANUFACTURER
+  if(!intermediate->count(CSTRING_Platform_manufacturer)){  //std::string
+    (*contents)->platform_manufacturer =
+                              intermediate[CSTRING_Platform_manufacturer][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                CSTRING_Platform_manufacturer);
+    #endif
+    status++;
   }
 
 
+  //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_manufacture_protocol)){
-    (*contents)->PLATFORM_MANUFACTURE_PROTOCOL
+    (*contents)->platform_manufacture_protocol =
+                        intermediate[CSTRING_Platform_manufacture_protocol][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                        CSTRING_Platform_manufacture_protocol);
+    #endif
+    status++;
   }
 
-
+  //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_catalog_number)){
-    (*contents)->PLATFORM_CATALOG_NUMBER
-  }else{
+    (*contents)->platform_catalog_number =
+                              intermediate[CSTRING_Platform_catalog_number][0];
   }
 
 
+  //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_web_link)){
-    (*contents)->PLATFORM_WEB_LINK
-  }else{
+    (*contents)->platform_web_link =
+                                intermediate[CSTRING_Platform_web_link][0];
   }
 
 
+  //std::string
   if(!intermediate->count(CSTRING_Platform_support)){
-    (*contents)->PLATFORM_SUPPORT
-  }else{
+    (*contents)->platform_support =
+                                  intermediate[CSTRING_Platform_support][0][0];
   }
 
 
+  //std::string
   if(!intermediate->count(CSTRING_Platform_coating)){
-    (*contents)->PLATFORM_COATING
-  }else{
+    (*contents)->platform_coating =
+                                  intermediate[CSTRING_Platform_coating][0][0];
   }
 
 
+  //std::string
   if(!intermediate->count(CSTRING_Platform_description)){
-    (*contents)->PLATFORM_DESCRIPTION
-  }else{
+    (*contents)->platform_description =
+                              intermediate[CSTRING_Platform_description][0][0];
   }
 
 
+  //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_contributor)){
-    (*contents)->PLATFORM_CONTRIBUTOR
-  }else{
+    (*contents)->platform_contributor =
+                                  intermediate[CSTRING_Platform_contributor][0];
   }
 
 
+  //std::vector<int>
   if(!intermediate->count(CSTRING_Platform_pubmed_id)){
-    (*contents)->PLATFORM_PUBMED_ID
-  }else{
+    for(size_t i = 0;
+                i < intermediate[CSTRING_Platform_pubmed_id][0].size(); i++){
+      (*contents)->platform_pubmed_id.push_back(
+                          atoi(intermediate[CSTRING_Platform_pubmed_id][0][i]));
+    }
   }
 
 
+  //std::string
   if(!intermediate->count(CSTRING_Platform_geo_accession)){
-    (*contents)->PLATFORM_GEO_ACCESSION
-  }else{
+    (*contents)->platform_geo_accession =
+                            intermediate[CSTRING_Platform_geo_accession][0][0];
   }
 
 
+  //TODO: This mess
   if(!intermediate->count(CSTRING_Platform_table_begin)){
+    std::vector<std::string> platform_table_column_titles;
+    std::vector<std::vector<std::string> > platform_table_matrix;
     (*contents)->PLATFORM_TABLE_BEGIN
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: Platform table entries missing\n");
+    #endif
+    status++;
   }
 
 
@@ -1005,304 +1070,387 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //}
 
 
-  if(!intermediate->count(CSTRING_SAMPLE)){
-    (*contents)->
+  //std::string
+  if(!intermediate->count(CSTRING_SAMPLE)){\
+    (*contents)->sample = intermediate[CSTRING_SAMPLE][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_SAMPLE);
+    #endif
+    status++;
   }
 
 
+  //std::string
   if(!intermediate->count(CSTRING_Sample_title)){
-    (*contents)->SAMPLE_TITLE
+    (*contents)->sample_title = intermediate[CSTRING_Sample_title][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_Sample_title);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_supplementary_file")){
-    (*contents)->SAMPLE_SUPPLEMENTARY_FILE
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Sample_supplementary_file)){
+    (*contents)->sample_supplementary_file =
+                            intermediate[CSTRING_Sample_supplementary_file][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                            CSTRING_Sample_supplementary_file);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_table")){
-    (*contents)->SAMPLE_TABLE
-  }else{
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_table)){
+    (*contents)->sample_table = intermediate[CSTRING_Sample_table][0][0];
   }
 
 
-  if(!intermediate->count("!Sample_source_name_ch")){
-    (*contents)->SAMPLE_SOURCE_NAME_CH
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Sample_hyb_protocol)){
+    (*contents)->sample_hyb_protocol = intermediate[CSTRING_Sample_hyb_protocol][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                  CSTRING_Sample_hyb_protocol);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_organism_ch")){
-    (*contents)->SAMPLE_ORGANISM_CH
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Sample_scan_protocol)){
+    (*contents)->sample_scan_protocol =
+                                  intermediate[CSTRING_Sample_scan_protocol][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                  CSTRING_Sample_scan_protocol);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_characteristics_ch")){
-    (*contents)->SAMPLE_CHARACTERISTICS_CH
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Sample_data_processing)){
+    (*contents)->sample_data_processing =
+                                intermediate[CSTRING_Sample_data_processing][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                CSTRING_Sample_data_processing);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_biomaterial_provider_ch")){
-    (*contents)->SAMPLE_BIOMATERIAL_PROVIDER_CH
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Sample_description)){
+    (*contents)->sample_description =
+                                    intermediate[CSTRING_Sample_description][0];
   }
 
 
-  if(!intermediate->count("!Sample_treatment_protocol_ch")){
-    (*contents)->SAMPLE_TREATMENT_PROTOCOL_CH
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_platform_id)){
+    (*contents)->sample_platform_id =
+                                intermediate[CSTRING_Sample_platform_id][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                    CSTRING_Sample_platform_id);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_growth_protocol_ch")){
-    (*contents)->SAMPLE_GROWTH_PROTOCOL_CH
-  }else{
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_geo_accession)){
+    (*contents)->sample_geo_accession =
+                              intermediate[CSTRING_Sample_geo_accession][0][0];
   }
 
 
-  if(!intermediate->count("!Sample_molecule_ch")){
-    (*contents)->SAMPLE_MOLECULE_CH
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_anchor)){
+    (*contents)->sample_anchor = intermediate[CSTRING_Sample_anchor][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_Sample_anchor);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_extract_protocol_ch")){
-    (*contents)->SAMPLE_EXTRACT_PROTOCOL_CH
-  }else{
+  //TODO: create a check block for SAGE submissions
+  //NOTE: SAGE submission needs to be block checked.
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_type)){
+    (*contents)->sample_type = intermediate[CSTRING_Sample_type][0][0];
   }
 
 
-  if(!intermediate->count("!Sample_label_ch")){
-    (*contents)->SAMPLE_LABEL_CH
-  }else{
+  //NOTE: SAGE submission needs to be block checked
+  //int
+  if(!intermediate->count(CSTRING_Sample_tag_count)){
+    (*contents)->sample_tag_count =
+                            atoi(intermediate[CSTRING_Sample_tag_count][0][0]);
   }
 
 
-  if(!intermediate->count("!Sample_label_protocol_ch")){
-    (*contents)->SAMPLE_LABEL_PROTOCOL_CH
-  }else{
+  //NOTE: SAGE submission needs to be block checked.
+  //int
+  if(!intermediate->count(CSTRING_Sample_tag_length)){
+    (*contents)->sample_tag_length =
+                            atoi(intermediate[CSTRING_Sample_tag_length][0][0]);
   }
 
 
-  if(!intermediate->count("!Sample_hyb_protocol")){
-    (*contents)->SAMPLE_HYB_PROTOCOL
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_scan_protocol")){
-    (*contents)->SAMPLE_SCAN_PROTOCOL
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_data_processing")){
-    (*contents)->SAMPLE_DATA_PROCESSING
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_description")){
-    (*contents)->SAMPLE_DESCRIPTION
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_platform_id")){
-    (*contents)->SAMPLE_PLATFORM_ID
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_geo_accession")){
-    (*contents)->SAMPLE_GEO_ACCESSION
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_anchor")){
-    (*contents)->SAMPLE_ANCHOR
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_type")){
-    (*contents)->SAMPLE_TYPE
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_tag_count")){
-    (*contents)->SAMPLE_TAG_COUNT
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_tag_length")){
-    (*contents)->SAMPLE_TAG_LENGTH
-  }else{
-  }
-
-
-  if(!intermediate->count("!Sample_table_begin")){
+  //TODO: this mess
+  if(!intermediate->count(CSTRING_Sample_table_begin)){
+    std::vector<std::string> sample_table_columns;
+    std::vector<std::vector<std::string> > sample_table_matrix;
     (*contents)->SAMPLE_TABLE_BEGIN
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                    CSTRING_Sample_table_begin);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Sample_table_end")){
-    (*contents)->SAMPLE_TABLE_END
+  //Handled by CSTRING_Sample_table_begin
+  //if(!intermediate->count(CSTRING_Sample_table_end)){
+  //  (*contents)->SAMPLE_TABLE_END
+  //}else{
+  //}
+
+
+  //std::string
+  if(!intermediate->count(CSTRING_SERIES)){
+    (*contents)->series = intermediate[CSTRING_SERIES][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_SERIES);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("[^]SERIES")){
-    (*contents)->SERIES_TOKEN
+  //std::string
+  if(!intermediate->count(CSTRING_Series_title)){
+    (*contents)->series_title = intermediate[CSTRING_Series_title][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_Series_title);
+    #endif
+    status++;
   }
 
-  if(!intermediate->count("!Series_title")){
-    (*contents)->SERIES_TITLE
+
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_summary)){
+    (*contents)->series_summary = intermediate[CSTRING_Series_summary][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                        CSTRING_Series_summary);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Series_summary")){
-    (*contents)->SERIES_SUMMARY
+  //std::string;
+  if(!intermediate->count(CSTRING_Series_overall_design)){
+    (*contents)->series_overall_design =
+                              intermediate[CSTRING_Series_overall_design][0][0];
   }else{
+    #ifdef DEBUG
+    fprintf(stderr, "ERROR: \"%s\" missing from file\n",
+                                                        CSTRING_Series_summary);
+    #endif
+    status++;
   }
 
 
-  if(!intermediate->count("!Series_overall_design")){
-    (*contents)->SERIES_OVERALL_DESIGN
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_pubmed_id)){
+    (*contents)->series_pubmed_id = intermediate[CSTRING_Series_pubmed_id][0];
   }
 
 
-  if(!intermediate->count("!Series_pubmed_id")){
-    (*contents)->SERIES_PUBMED_ID
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_web_link)){
+    (*contents)->series_web_link = intermediate[CSTRING_Series_web_link][0];
   }
 
 
-  if(!intermediate->count("!Series_web_link")){
-    (*contents)->SERIES_WEB_LINK
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_contributor)){
+    (*contents)->series_contributor =
+                                    intermediate[CSTRING_Series_contributor][0];
   }
 
 
-  if(!intermediate->count("!Series_contributor")){
-    (*contents)->SERIES_CONTRIBUTOR
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_variable_)){
+    (*contents)->series_variable = intermediate[CSTRING_Series_variable_][0];
   }
 
 
-  if(!intermediate->count("!Series_variable_")){
-    (*contents)->SERIES_VARIABLE
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_variable_description_)){
+    (*contents)->series_variable_description =
+                          intermediate[CSTRING_Series_variable_description_][0];
   }
 
 
-  if(!intermediate->count("!Series_variable_description_")){
-    (*contents)->SERIES_VARIABLE_DESCRIPTION
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_variable_sample_list_)){
+    (*contents)->series_variable_sample_list =
+                          intermediate[CSTRING_Series_variable_sample_list_][0];
   }
 
 
-  if(!intermediate->count("!Series_variable_sample_list_")){
-    (*contents)->SERIES_VARIABLE_SAMPLE_LIST
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count()){
+    (*contents)->series_repeats = intermediate[CSTRING_Series_repeats_][0];
   }
 
 
-  if(!intermediate->count("!Series_repeats_")){
-    (*contents)->SERIES_REPEATS
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_repeats_sample_list_)){
+    (*contents)->series_repeats_sample_list =
+                          intermediate[CSTRING_Series_repeats_sample_list_][0];
   }
 
 
-  if(!intermediate->count("!Series_repeats_sample_list_")){
-    (*contents)->SERIES_REPEATS_SAMPLE_LIST
-  }else{
+  //std::vector<std::string>
+  if(!intermediate->count(CSTRING_Series_sample_id)){
+    (*contents)->series_sample_id = intermediate[CSTRING_Series_sample_id][0];
   }
 
 
-  if(!intermediate->count("!Series_sample_id")){
-    (*contents)->SERIES_SAMPLE_ID
-  }else{
+  //std::string
+  if(!intermediate->count(CSTRING_Series_geo_accession)){
+    (*contents)->series_geo_accession =
+                              intermediate[CSTRING_Series_geo_accession][0][0];
   }
 
 
-  if(!intermediate->count("!Series_geo_accession")){
-    (*contents)->SERIES_GEO_ACCESSION
-  }else{
+  //TODO: Channel block check here
+  //TODO: create channel check block
+  //NOTE: channel checking must be done as a group
+
+
+
+  //Channel block
+  size_t lastIndex;
+  lastIndex = intermediate->count(CSTRING_Sample_source_name_ch);
+
+  if(lastIndex != intermediate->count(CSTRING_Sample_organism_ch) ||
+    lastIndex != intermediate->count(CSTRING_Sample_characteristics_ch) ||
+    lastIndex != intermediate->count(CSTRING_Sample_biomaterial_provider_ch) ||
+      lastIndex != intermediate->count(CSTRING_Sample_treatment_protocol_ch) ||
+        lastIndex != intermediate->count(CSTRING_Sample_growth_protocol_ch) ||
+        lastIndex != intermediate->count(CSTRING_Sample_molecule_ch) ||
+        lastIndex != intermediate->count(CSTRING_Sample_extract_protocol_ch) ||
+            lastIndex != intermediate->count(CSTRING_Sample_label_ch) ||
+            lastIndex != intermediate->count(CSTRING_Sample_label_protocol_ch)){
+    status++;
+
+    //Find the max value, to try and recover as much information as possible
+    //and allocate appropriately.
+    size_t highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_organism_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_characteristics_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_biomaterial_provider_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_treatment_protocol_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_growth_protocol_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_molecule_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_extract_protocol_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_label_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
+    highCheck = intermediate->count(CSTRING_Sample_label_protocol_ch);
+    if(lastIndex < highCheck) lastIndex = highCheck;
   }
 
-    std::string GSE_NUMBER
-    std::string GPL_NUMBER
-    std::string GSM_NUMBER
-    std::string URL
-    std::string PLATFORM_TOKEN
-    std::string PLATFORM_TITLE
-    std::string PLATFORM_DISTRIBUTION
-    std::string PLATFORM_TECHNOLOGY
-    std::string PLATFORM_ORGANISM
-    std::string PLATFORM_MANUFACTURER
-    std::string PLATFORM_MANUFACTURE_PROTOCOL
-    std::string PLATFORM_CATALOG_NUMBER
-    std::string PLATFORM_WEB_LINK
-    std::string PLATFORM_SUPPORT
-    std::string PLATFORM_COATING
-    std::string PLATFORM_DESCRIPTION
-    std::string PLATFORM_CONTRIBUTOR
-    std::string PLATFORM_PUBMED_ID
-    std::string PLATFORM_GEO_ACCESSION
-    std::string PLATFORM_TABLE_BEGIN
-    std::string PLATFORM_TABLE_END
-    std::string SAMPLE_TOKEN
-    std::string SAMPLE_TITLE
-    std::string SAMPLE_SUPPLEMENTARY_FILE
-    std::string SAMPLE_TABLE
-    std::string SAMPLE_SOURCE_NAME_CH
-    std::string SAMPLE_ORGANISM_CH
-    std::string SAMPLE_CHARACTERISTICS_CH
-    std::string SAMPLE_BIOMATERIAL_PROVIDER_CH
-    std::string SAMPLE_TREATMENT_PROTOCOL_CH
-    std::string SAMPLE_GROWTH_PROTOCOL_CH
-    std::string SAMPLE_MOLECULE_CH
-    std::string SAMPLE_EXTRACT_PROTOCOL_CH
-    std::string SAMPLE_LABEL_CH
-    std::string SAMPLE_LABEL_PROTOCOL_CH
-    std::string SAMPLE_HYB_PROTOCOL
-    std::string SAMPLE_SCAN_PROTOCOL
-    std::string SAMPLE_DATA_PROCESSING
-    std::string SAMPLE_DESCRIPTION
-    std::string SAMPLE_PLATFORM_ID
-    std::string SAMPLE_GEO_ACCESSION
-    std::string SAMPLE_ANCHOR SAMPLE_TYPE
-    std::string SAMPLE_TAG_COUNT
-    std::string SAMPLE_TAG_LENGTH
-    std::string SAMPLE_TABLE_BEGIN
-    std::string SAMPLE_TABLE_END SERIES_TOKEN
-    std::string SERIES_TITLE SERIES_SUMMARY
-    std::string SERIES_OVERALL_DESIGN
-    std::string SERIES_PUBMED_ID
-    std::string SERIES_WEB_LINK
-    std::string SERIES_CONTRIBUTOR
-    std::string SERIES_VARIABLE
-    std::string SERIES_VARIABLE_DESCRIPTION
-    std::string SERIES_VARIABLE_SAMPLE_LIST
-    std::string SERIES_REPEATS
-    std::string SERIES_REPEATS_SAMPLE_LIST
-    std::string SERIES_SAMPLE_ID
-    std::string SERIES_GEO_ACCESSION
-    std::string RESEARCHER_NAME
-    std::string TAG_VALUE
+  //std::vector<std::string>
+  for(size_t i = 0; i < lastIndex; i++)
+    (*contents)->channel.push_back(struct GeoSoftChannel());
+
+  for(size_t i = 0; i < intermediate[CSTRING_Sample_source_name_ch][0].size(); i++)
+    (*contents)->channel[i].sample_source_name =
+                              intermediate[CSTRING_Sample_source_name_ch][0][i];
+
+  for(size_t i = 0; i < intermediate[CSTRING_Sample_organism_ch].size(); i++)
+    (*contents)->channel[i].sample_organism =
+                                    intermediate[CSTRING_Sample_organism_ch][i];
+
+  for(size_t i = 0; i < intermediate[CSTRING_Sample_characteristics_ch].size(); i++){
+    for(size_t j = 0; j < intermediate[CSTRING_Sample_characteristics_ch][i].size(); j++){}
+      std::string tag, value, both;
+      both = intermediate[CSTRING_Sample_characteristics_ch][i][j];
+      tag = both.substr(0, both.find(":"));
+      value = both.substr(both.find(":") + 1);
+      std::pair<std::string, std::string> tagVal = {tag, value};
+      (*contents)->channel[i].sample_characteristics.push_back(tagVal);
+    }
+  }
+
+
+  //NOTE: channel checking must be done as a group
+  //std::vector<std::vector<std::pair<std::string, std::string> > >
+  if(!intermediate->count(CSTRING_Sample_characteristics_ch)){
+    (*contents)->sample_characteristics =
+                            intermediate[CSTRING_Sample_characteristics_ch][i]);
+  }
+
+
+  //std::vector<std::vector<std::string> >
+  if(!intermediate->count(CSTRING_Sample_biomaterial_provider_ch)){
+    (*contents)->sample_biomaterial_provider =
+                          intermediate[CSTRING_Sample_biomaterial_provider_ch];
+  }
+
+
+  //std::vector<std::vector<std::string> >
+  if(!intermediate->count(CSTRING_Sample_treatment_protocol_ch)){
+    (*contents)->sample_treatment_protocol =
+                            intermediate[CSTRING_Sample_treatment_protocol_ch];
+  }
+
+
+  //std::vector<std::vector<std::string> >
+  if(!intermediate->count(CSTRING_Sample_growth_protocol_ch)){
+    (*contents)->sample_growth_protocol =
+                                intermediate[CSTRING_Sample_growth_protocol_ch];
+  }
+
+
+  if(!intermediate->count(CSTRING_Sample_extract_protocol_ch))
+
+
+  if(!intermediate->count(CSTRING_Sample_label_ch))
+
+
+  if(!intermediate->count(CSTRING_Sample_label_protocol_ch))
+
+
+  //TODO: SAGE block check here
 
 
   return status;
