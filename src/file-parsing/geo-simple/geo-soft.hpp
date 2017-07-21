@@ -43,7 +43,8 @@ Content guidelines: Microarrays are 'commercial', 'non-commercial', or
 *******************************************************************************/
 #define CSTRING_Platform_distribution "!Platform_distribution"
 enum platform_distribution_enum{
-  commercial, non_commercial, custom_commercial, _virtual
+  commercial, non_commercial, custom_commercial, _virtual,
+  platform_distribution_unset
 };
 
 
@@ -59,7 +60,7 @@ technology.
 #define CSTRING_Platform_technology "!Platform_technology"
 enum platform_technology_enum{
   spotted_DNA_or_cDNA, spotted_oligonucleotide, in_situ_oligonucleotide,
-  antibody, tissue, SARST, RT_PCR, MPSS
+  antibody, tissue, SARST, RT_PCR, MPSS, platform_technology_unset
 };
 
 
@@ -276,7 +277,12 @@ Allowed values and constraints: name of external CHP or tab-delimited file to be
 used as data table
 
 Content guidelines: - Affymetrix CHP file name:
-If your processed data are CHP files, you can reference the CHP file name in this field. If your manuscript discusses data processed by RMA or another algorithm, we recommend providing those values in the table section. There is no need to specify the !Sample_platform_id when CHP files are supplied. All external files should be zipped or tarred together with the SOFT file at time of submission.
+If your processed data are CHP files, you can reference the CHP file name in
+this field. If your manuscript discusses data processed by RMA or another
+algorithm, we recommend providing those values in the table section. There is no
+need to specify the !Sample_platform_id when CHP files are supplied. All
+external files should be zipped or tarred together with the SOFT file at time of
+submission.
 - Tab-delimited table file name:
 If it is convenient for you to generate, you can reference the name of an
 external tab-delimited table file (see format) in this field, rather than
@@ -326,7 +332,8 @@ as many characteristics fields as necessary to thoroughly describe your Samples.
 *******************************************************************************/
 #define CSTRING_Sample_characteristics_ch "!Sample_characteristics_ch"
 //The number of allowed labels is inaccurate; it means 1 or more per channel
-//std::vector<std::vector<std::pair<std::string, std::string> > > sample_characteristics;
+//std::vector<std::vector<std::pair<std::string, std::string> > >
+//sample_characteristics;
 
 
 /*******************************************************************************
@@ -778,6 +785,101 @@ Content guidelines: Only use for performing updates to existing GEO records.
 //std::string series_geo_accession;
 
 
+static char **GeoSoftKeys = {
+  CSTRING_PLATFORM,
+  CSTRING_Platform_title,
+  CSTRING_Platform_distribution,
+  CSTRING_Platform_technology,
+  CSTRING_Platform_organism,
+  CSTRING_Platform_manufacturer,
+  CSTRING_Platform_manufacture_protocol,
+  CSTRING_Platform_catalog_number,
+  CSTRING_Platform_web_link,
+  CSTRING_Platform_support,
+  CSTRING_Platform_coating,
+  CSTRING_Platform_description,
+  CSTRING_Platform_contributor,
+  CSTRING_Platform_pubmed_id,
+  CSTRING_Platform_geo_accession,
+  CSTRING_Platform_table_begin,
+  CSTRING_Platform_table_end,
+  CSTRING_SAMPLE,
+  CSTRING_Sample_title,
+  CSTRING_Sample_supplementary_file,
+  CSTRING_Sample_table,
+  CSTRING_Sample_source_name_ch,
+  CSTRING_Sample_organism_ch,
+  CSTRING_Sample_characteristics_ch,
+  CSTRING_Sample_biomaterial_provider_ch,
+  CSTRING_Sample_treatment_protocol_ch,
+  CSTRING_Sample_growth_protocol_ch,
+  CSTRING_Sample_molecule_ch,
+  CSTRING_Sample_extract_protocol_ch,
+  CSTRING_Sample_label_ch,
+  CSTRING_Sample_label_protocol_ch,
+  CSTRING_Sample_hyb_protocol,
+  CSTRING_Sample_scan_protocol,
+  CSTRING_Sample_data_processing,
+  CSTRING_Sample_description,
+  CSTRING_Sample_platform_id,
+  CSTRING_Sample_geo_accession,
+  CSTRING_Sample_anchor,
+  CSTRING_Sample_type,
+  CSTRING_Sample_tag_count,
+  CSTRING_Sample_tag_length,
+  CSTRING_Sample_table_begin,
+  CSTRING_Sample_table_end,
+  CSTRING_SERIES,
+  CSTRING_Series_title,
+  CSTRING_Series_summary,
+  CSTRING_Series_overall_design,
+  CSTRING_Series_pubmed_id,
+  CSTRING_Series_web_link,
+  CSTRING_Series_contributor,
+  CSTRING_Series_variable_,
+  CSTRING_Series_variable_description_,
+  CSTRING_Series_variable_sample_list_,
+  CSTRING_Series_repeats_,
+  CSTRING_Series_repeats_sample_list_,
+  CSTRING_Series_sample_id,
+  CSTRING_Series_geo_accession,
+  NULL
+};
+
+
+struct GeoSoftChannel{
+  //Number of allowed labels: 1 per channel
+  std::string sample_source_name;
+
+  //Number of allowed labels: 1 or more per channel
+  std::vector<std::string> sample_organism;
+
+  //Number of allowed labels: 1 or more per channel
+  std::vector<std::pair<std::string, std::string> > sample_characteristics;
+
+  //Number of allowed labels: 0 or more per channel
+  std::vector<std::string> sample_biomaterial_provider;
+
+  //Number of allowed labels: 0 or more per channel
+  std::vector<std::string> sample_treatment_protocol;
+
+  //Number of allowed labels: 0 or more per channel
+  std::vector<std::string> sample_growth_protocol;
+
+  //Number of allowed labels: 1 per channel
+  std::string sample_molecule;
+
+  //Number of allowed labels: 1 or more per channel
+  std::vector<std::string> sample_extract_protocol;
+
+  //Number of allowed labels: 1 per channel
+  std::string sample_label;
+
+  //Number of allowed labels: 1 or more per channel
+  std::vector<std::string> sample_label_protocol;
+};
+
+
 struct GeoSoft{
   std::string platform;
   std::string platform_title;
@@ -800,16 +902,9 @@ struct GeoSoft{
   std::string sample_title;
   std::vector<std::string> sample_supplementary_file;
   std::string sample_table;
-  std::vector<std::string> sample_source_name;
-  std::vector<std::vector<std::string> > sample_organism;
-  std::vector<std::vector<std::pair<std::string, std::string> > > sample_characteristics;
-  std::vector<std::vector<std::string> > sample_biomaterial_provider;
-  std::vector<std::vector<std::string> > sample_treatment_protocol;
-  std::vector<std::vector<std::string> > sample_growth_protocol;
-  std::vector<std::string> sample_molecule;
-  std::vector<std::vector<std::string> > sample_extract_protocol;
-  std::vector<std::string> sample_label;
-  std::vector<std::vector<std::string> > sample_label_protocol;
+
+  std::vector<struct GeoSoftChannel> channel;
+
   std::vector<std::string> sample_hyb_protocol;
   std::vector<std::string> sample_scan_protocol;
   std::vector<std::string> sample_data_processing;
