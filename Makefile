@@ -17,7 +17,7 @@ CC=gcc
 LIBS=-pthread
 
 INCLUDE=$(shell pwd)/include
-OLIB=lib/madlib.a lib/madlib.so
+OLIB=lib/libmadlib.a lib/libmadlib.so
 
 TEMPLATES=include/graph.tpp                                                    \
           include/upper-diagonal-square-matrix.tpp
@@ -50,22 +50,10 @@ test:debug $(TEST_PROG)
 
 install:$(OLOB)
 	install -D $(TEMPLATES) $(HEADERS) -t $(DESTDIR)/usr/include
-	install -D -s lib/madlib.a \
-	           $(DESTDIR)/usr/lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION)
-	ln -s lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION) \
-	      $(DESTDIR)/usr/lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION)
-	ln -s lib/madlib.a.$(MAJOR_VERSION).$(MINOR_VERSION) \
-	      $(DESTDIR)/usr/lib/madlib.a.$(MAJOR_VERSION)
-	ln -s lib/madlib.a.$(MAJOR_VERSION) \
-	      $(DESTDIR)/usr/lib/madlib.a
-	install -D -s lib/madlib.so \
-	           $(DESTDIR)/usr/lib/madlib.so.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION)
-	ln -s lib/madlib.so.$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION) \
-	      $(DESTDIR)/usr/lib/madlib.so.$(MAJOR_VERSION).$(MINOR_VERSION)
-	ln -s lib/madlib.so.$(MAJOR_VERSION).$(MINOR_VERSION) \
-	      $(DESTDIR)/usr/lib/madlib.so.$(MAJOR_VERSION)
-	ln -s lib/madlib.so.$(MAJOR_VERSION) \
-	      $(DESTDIR)/usr/lib/madlib.so
+	install -D -s lib/libmadlib.a \
+	           $(DESTDIR)/usr/lib/libmadlib.a
+	install -D -s lib/libmadlib.so \
+	           $(DESTDIR)/usr/lib/libmadlib.so
 
 clean:
 	cd src ; make clean
@@ -79,10 +67,8 @@ clean:
 $(OLIB):$(shell find src -type f) $(shell find include -type f)
 	cd src ; make
 	mkdir -p lib
-	mv src/madlib.so lib/
-	mv src/madlib.a lib/
+	mv src/libmadlib.so lib/
+	mv src/libmadlib.a lib/
 
 $(TEST_PROG): $(OLIB)
 	cd test ; make
-
-

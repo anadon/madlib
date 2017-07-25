@@ -3,14 +3,14 @@ CC=gcc
 LIBS=-pthread
 
 ##These should be defined in the calling Makefile
-COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include
+COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I../include
 CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x
 CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99
 #CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
 #CFLAGS=-O3 $(COMMON_FLAGS) -std=c99
 
-STATIC_LIB=madlib.a
-DYNAMIC_LIB=madlib.so
+STATIC_LIB=libmadlib.a
+DYNAMIC_LIB=libmadlib.so
 
 
 SOURCES=diagnostics.cpp                                                \
@@ -38,6 +38,7 @@ all:$(STATIC_LIB) $(DYNAMIC_LIB)
 
 $(STATIC_LIB):$(OBJECTS)
 	ar rcs $(STATIC_LIB) $(OBJECTS)
+	ranlib $(STATIC_LIB)
 
 $(DYNAMIC_LIB):$(OBJECTS)
 	gcc $(OBJECTS) -shared -o $(DYNAMIC_LIB)

@@ -46,9 +46,9 @@
  * @param[in] sortSpace Memory space to use to sort
  *
  **********************************************************************/
-void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, size_t> *toSort,
+void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, std::size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
-                                    std::pair<f64, size_t> *sortSpace);
+                                    std::pair<f64, std::size_t> *sortSpace);
 
 
 /*******************************************************************//**
@@ -65,16 +65,16 @@ void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, size_t> *toSort,
  * @param[in] sortSpace Memory space to use to sort
  *
  **********************************************************************/
-void sortDoubleSizeTPairLowToHighHelper(std::pair<f64, size_t> *toSort,
+void sortDoubleSizeTPairLowToHighHelper(std::pair<f64, std::size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
-                                    std::pair<f64, size_t> *sortSpace);
+                                    std::pair<f64, std::size_t> *sortSpace);
 
 
 ////////////////////////////////////////////////////////////////////////
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-void sortDoubleSizeTPairHighToLow(std::pair<f64, size_t> *toSort,
+void sortDoubleSizeTPairHighToLow(std::pair<f64, std::size_t> *toSort,
                                                           csize_t size){
   size_t decreasingStart, decreasingEnd;
   size_t i;
@@ -140,9 +140,9 @@ void sortDoubleSizeTPairHighToLow(std::pair<f64, size_t> *toSort,
 }
 
 
-void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, size_t> *toSort,
+void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, std::size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
-                                    std::pair<f64, size_t> *sortSpace){
+                                    std::pair<f64, std::size_t> *sortSpace){
   size_t leftParser, rightParser, mergedParser;
 
   leftParser = leftIndex;
@@ -163,7 +163,7 @@ void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, size_t> *toSort,
 
 
 //TODO: retest
-void sortDoubleSizeTPairLowToHigh(std::pair<f64, size_t> *toSort,
+void sortDoubleSizeTPairLowToHigh(std::pair<f64, std::size_t> *toSort,
                                                           csize_t size){
   size_t decreasingStart, decreasingEnd;
   size_t i;
@@ -231,9 +231,9 @@ void sortDoubleSizeTPairLowToHigh(std::pair<f64, size_t> *toSort,
 }
 
 
-void sortDoubleSizeTPairLowToHighHelper(std::pair<f64, size_t> *toSort,
+void sortDoubleSizeTPairLowToHighHelper(std::pair<f64, std::size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
-                                    std::pair<f64, size_t> *sortSpace){
+                                    std::pair<f64, std::size_t> *sortSpace){
   size_t leftParser, rightParser, mergedParser;
 
   leftParser = leftIndex;
