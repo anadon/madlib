@@ -50,10 +50,12 @@ test:debug $(TEST_PROG)
 
 install:$(OLOB)
 	install -D $(TEMPLATES) $(HEADERS) -t $(DESTDIR)/usr/include
-	install -D -s lib/libmadlib.a \
-	           $(DESTDIR)/usr/lib/libmadlib.a
-	install -D -s lib/libmadlib.so \
-	           $(DESTDIR)/usr/lib/libmadlib.so
+	#install -D -s lib/libmadlib.a \
+	#           $(DESTDIR)/usr/lib/libmadlib.a
+	#install -D -s lib/libmadlib.so \
+	#           $(DESTDIR)/usr/lib/libmadlib.so
+	cp lib/libmadlib.a /usr/lib/libmadlib.a
+	cp lib/libmadlib.so /usr/lib/libmadlib.so
 
 clean:
 	cd src ; make clean
