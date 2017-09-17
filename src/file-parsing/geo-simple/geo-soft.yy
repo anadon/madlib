@@ -1,11 +1,10 @@
 %defines
-//%define parse.assert
 %locations
 %start topLevelParseRule
 %require "3.0.4"
 %define api.pure full
-%locations
 %token-table
+%param   {void *yyscanner}
 
 
 //%initial-action{
@@ -23,7 +22,6 @@
   #include <unordered_map>
 
   using namespace std;
-
 
 }
 
@@ -61,8 +59,16 @@
 
   using namespace std;
 
-  #include "geo-soft.tab.hh"
-  #include "lex.yy.h"
+  #ifndef YY_TYPEDEF_YY_SCANNER_T
+  #define YY_TYPEDEF_YY_SCANNER_T
+  typedef void* yyscan_t;
+  #endif
+
+  extern int yylex \
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner);
+  #define YY_DECL int yylex \
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
+  //#include "lex.yy.h"
 
   //These are gross hacks.
   static bool validFile = true;
@@ -87,6 +93,20 @@
                                                     first_column, last_column);
     return false;
   }
+
+  bool isUniqueInsertForChannel(
+                  unordered_map<string, vector<vector<string> > > &intermediate,
+                          string key, string value, int channel, int first_line,
+                                             int first_column, int last_column){
+    if(0 == intermediate.count(key)) return true;
+    if(0 == intermediate.at(key).at(channel).size()) return true;
+    fprintf(stderr, "Error: repeat insertion of key \"%s\" with value \"%s\" "
+                    "on line %d from columns %d-%d\n", key.c_str(), first_line,
+                                                    first_column, last_column);
+    return false;
+  }
+
+  void yyerror(YYLTYPE *yylloc, yyscan_t yyscanner, const char *msg);
 
 }
 
@@ -207,31 +227,31 @@ key_is_value:
 
   | key_indexed_inf INTEGER IS VALUE {
     string key = *$1;
-    int index = $2;
+    int index = atoi($2->c_str());
     string value = *$4;
 
       ensureSpaceForKey(*intermediate, key);
 
-      while(intermediate->at(key).size() <= $2)
+      while(intermediate->at(key).size() <= index)
         intermediate->at(key).push_back(std::vector<string>());
 
-      intermediate->at(key).at($2).push_back(*$4);
+      intermediate->at(key).at(index).push_back(*$4);
     }
 
   | key_indexed_1 INTEGER IS VALUE {
     string key = *$1;
-    int index = $2;
+    int index = atoi($2->c_str());
     string value = *$4;
 
       ensureSpaceForKey(*intermediate, key);
 
-      while(intermediate->at(key).size() <= $2)
+      while(intermediate->at(key).size() <= index)
         intermediate->at(key).push_back(std::vector<string>());
 
-      if(!isUniqueInsertForChannel(key, *$4, $2, @4.first_line,
+      if(!isUniqueInsertForChannel(*intermediate, key, *$4, index, @4.first_line,
                               @4.first_column, @4.last_column)) return 1;
 
-      intermediate->at(key).at($2).push_back(*$4);
+      intermediate->at(key).at(index).push_back(*$4);
     }
 
   | key_1_gse IS GSE_NUMBER {
@@ -274,7 +294,7 @@ key_is_value:
 
   | key_inf_pmid IS INTEGER {
     string key = *$1;
-    string value = to_string($3);
+    string value = *$3;
 
       ensureSpaceForKey(*intermediate, key);
 
@@ -324,7 +344,7 @@ key_is_value:
 
   | key_1_int IS INTEGER {
     string key = *$1;
-    string value = to_string($3);
+    string value = *$3;
 
       ensureSpaceForKey(*intermediate, key);
 
@@ -337,7 +357,7 @@ key_is_value:
 
   | key_indexed_inf_tag_val INTEGER IS tag_value_list {
     string key = *$1;
-    int index = $2;
+    int index = atoi($2->c_str());
     vector<string> values = *$4;
 
       ensureSpaceForKey(*intermediate, key);
@@ -827,41 +847,36 @@ tablerow:
 
 //epilogue
 
-//yylex and yyerror need to be defined here
+void yyerror(YYLTYPE *yylloc, yyscan_t yyscanner, const char *msg){
+
+}
 
 
 
-//void yy::Parser::error(const location_type &l, const string &m){
-//  driver.error(l, m);
-//}
 
-
+#include "geo-soft.hpp"
+#include "lex.yy.h"
 
 
 int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
-  int status = 0;
+  int status;
+  FILE *FPCheck;
 
-  status = freopen(stdin, path);
-  if(status){
-    return status;
-  }
+  FPCheck = freopen(fp, "r", stdin);
+  if(NULL == FPCheck)  return 1;
+  stdin = FPCheck;
 
   //unordered_map<string, vector<vector<string> > > *intermediate;
   intermediate = new unordered_map<string, vector<vector<string> > >();
 
 
-  yyparse();
-
-  if(status){
-    return status;
-  }
-
-
-
-
+  yyscan_t scanner;
+  yylex_init(&scanner);
+  yyparse(scanner);
+  yylex_destroy(scanner);
 
   if(!intermediate->count(CSTRING_PLATFORM)){ //std::string
-    (*contents)->platform = intermediate[CSTRING_PLATFORM][0][0];
+    (*contents)->platform = (*intermediate)[string(CSTRING_PLATFORM)][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_PLATFORM);
@@ -871,7 +886,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
 
   if(!intermediate->count(CSTRING_Platform_title)){ //std::string
-    (*contents)->platform_title = intermediate[CSTRING_Platform_title][0][0];
+    (*contents)->platform_title = (*intermediate)[STRING_Platform_title][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -883,16 +898,16 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //enum platform_distribution_enum
   if(!intermediate->count(CSTRING_Platform_distribution)){
     (*contents)->platform_distribution = platform_distribution_unset;
-    if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+    if(!strcmp((*intermediate)[STRING_Platform_distribution][0][0].c_str(),
                                                                 "commercial")){
       (*contents)->platform_distribution = commercial;
-    }else if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+    }else if(!strcmp((*intermediate)[STRING_Platform_distribution][0][0].c_str(),
                                                             "non-commercial")){
       (*contents)->platform_distribution = non_commercial;
-    }else if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+    }else if(!strcmp((*intermediate)[STRING_Platform_distribution][0][0].c_str(),
                                                           "custom-commercial")){
       (*contents)->platform_distribution = custom_commercial;
-    }else if(!strcmp(intermediate[CSTRING_Platform_distribution][0][0].c_str(),
+    }else if(!strcmp((*intermediate)[STRING_Platform_distribution][0][0].c_str(),
                                                                     "virtual")){
       (*contents)->platform_distribution = _virtual;
     }else{
@@ -915,29 +930,29 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //enum platform_technology_enum
   if(!intermediate->count(CSTRING_Platform_technology)){
     (*contents)->platform_technology = platform_technology_unset;
-    if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                            "spotted DNA/cDNA"){
+    if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                            "spotted DNA/cDNA")){
       (*contents)->platform_technology = spotted_DNA_or_cDNA;
-    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                    "spotted oligonucleotide"){
+    }else if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                    "spotted oligonucleotide")){
       (*contents)->platform_technology = spotted_oligonucleotide;
-    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                    "in situ oligonucleotide"){
+    }else if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                    "in situ oligonucleotide")){
       (*contents)->platform_technology = in_situ_oligonucleotide;
-    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                                    "antibody"){
+    }else if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                                    "antibody")){
       (*contents)->platform_technology = antibody;
-    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                                      "tissue"){
+    }else if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                                      "tissue")){
       (*contents)->platform_technology = tissue;
-    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                                      "SARST"){
+    }else if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                                      "SARST")){
       (*contents)->platform_technology = SARST;
-    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                                      "RT-PCR"){
+    }else if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                                      "RT-PCR")){
       (*contents)->platform_technology = RT_PCR;
-    }else if(!strcmp(intermediate[CSTRING_Platform_technology][0][0].c_str(),
-                                                                        "MPSS"){
+    }else if(!strcmp((*intermediate)[STRING_Platform_technology][0][0].c_str(),
+                                                                        "MPSS")){
       (*contents)->platform_technology = MPSS;
     }else{
       #ifdef DEBUG
@@ -957,7 +972,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_organism)){
-    (*contents)->platform_organism = intermediate[CSTRING_Platform_organism][0];
+    (*contents)->platform_organism = (*intermediate)[STRING_Platform_organism][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -969,7 +984,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   if(!intermediate->count(CSTRING_Platform_manufacturer)){  //std::string
     (*contents)->platform_manufacturer =
-                              intermediate[CSTRING_Platform_manufacturer][0][0];
+                              (*intermediate)[STRING_Platform_manufacturer][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -982,7 +997,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_manufacture_protocol)){
     (*contents)->platform_manufacture_protocol =
-                        intermediate[CSTRING_Platform_manufacture_protocol][0];
+                        (*intermediate)[STRING_Platform_manufacture_protocol][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -994,51 +1009,51 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_catalog_number)){
     (*contents)->platform_catalog_number =
-                              intermediate[CSTRING_Platform_catalog_number][0];
+                              (*intermediate)[STRING_Platform_catalog_number][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_web_link)){
     (*contents)->platform_web_link =
-                                intermediate[CSTRING_Platform_web_link][0];
+                                (*intermediate)[STRING_Platform_web_link][0];
   }
 
 
   //std::string
   if(!intermediate->count(CSTRING_Platform_support)){
     (*contents)->platform_support =
-                                  intermediate[CSTRING_Platform_support][0][0];
+                                  (*intermediate)[STRING_Platform_support][0][0];
   }
 
 
   //std::string
   if(!intermediate->count(CSTRING_Platform_coating)){
     (*contents)->platform_coating =
-                                  intermediate[CSTRING_Platform_coating][0][0];
+                                  (*intermediate)[STRING_Platform_coating][0][0];
   }
 
 
   //std::string
   if(!intermediate->count(CSTRING_Platform_description)){
     (*contents)->platform_description =
-                              intermediate[CSTRING_Platform_description][0][0];
+                              (*intermediate)[STRING_Platform_description][0][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Platform_contributor)){
     (*contents)->platform_contributor =
-                                  intermediate[CSTRING_Platform_contributor][0];
+                                  (*intermediate)[STRING_Platform_contributor][0];
   }
 
 
   //std::vector<int>
   if(!intermediate->count(CSTRING_Platform_pubmed_id)){
     for(size_t i = 0;
-                i < intermediate[CSTRING_Platform_pubmed_id][0].size(); i++){
+                i < (*intermediate)[STRING_Platform_pubmed_id][0].size(); i++){
       (*contents)->platform_pubmed_id.push_back(
-                          atoi(intermediate[CSTRING_Platform_pubmed_id][0][i]));
+                          atoi((*intermediate)[STRING_Platform_pubmed_id][0][i].c_str()));
     }
   }
 
@@ -1046,15 +1061,17 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::string
   if(!intermediate->count(CSTRING_Platform_geo_accession)){
     (*contents)->platform_geo_accession =
-                            intermediate[CSTRING_Platform_geo_accession][0][0];
+                            (*intermediate)[STRING_Platform_geo_accession][0][0];
   }
 
 
-  //TODO: This mess
   if(!intermediate->count(CSTRING_Platform_table_begin)){
-    std::vector<std::string> platform_table_column_titles;
-    std::vector<std::vector<std::string> > platform_table_matrix;
-    (*contents)->PLATFORM_TABLE_BEGIN
+    (*contents)->platform_table_column_titles = (*intermediate)[CSTRING_Platform_table_begin][0];
+    (*intermediate)[CSTRING_Platform_table_begin].erase((*intermediate)[CSTRING_Platform_table_begin].begin());
+    (*contents)->platform_table_matrix = (*intermediate)[CSTRING_Platform_table_begin];
+
+    //TODO: verification here
+
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: Platform table entries missing\n");
@@ -1072,7 +1089,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::string
   if(!intermediate->count(CSTRING_SAMPLE)){\
-    (*contents)->sample = intermediate[CSTRING_SAMPLE][0][0];
+    (*contents)->sample = (*intermediate)[STRING_SAMPLE][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_SAMPLE);
@@ -1083,7 +1100,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::string
   if(!intermediate->count(CSTRING_Sample_title)){
-    (*contents)->sample_title = intermediate[CSTRING_Sample_title][0][0];
+    (*contents)->sample_title = (*intermediate)[STRING_Sample_title][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_Sample_title);
@@ -1095,7 +1112,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Sample_supplementary_file)){
     (*contents)->sample_supplementary_file =
-                            intermediate[CSTRING_Sample_supplementary_file][0];
+                            (*intermediate)[STRING_Sample_supplementary_file][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1107,13 +1124,13 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::string
   if(!intermediate->count(CSTRING_Sample_table)){
-    (*contents)->sample_table = intermediate[CSTRING_Sample_table][0][0];
+    (*contents)->sample_table = (*intermediate)[STRING_Sample_table][0][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Sample_hyb_protocol)){
-    (*contents)->sample_hyb_protocol = intermediate[CSTRING_Sample_hyb_protocol][0];
+    (*contents)->sample_hyb_protocol = (*intermediate)[STRING_Sample_hyb_protocol][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1126,7 +1143,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Sample_scan_protocol)){
     (*contents)->sample_scan_protocol =
-                                  intermediate[CSTRING_Sample_scan_protocol][0];
+                                  (*intermediate)[STRING_Sample_scan_protocol][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1139,7 +1156,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Sample_data_processing)){
     (*contents)->sample_data_processing =
-                                intermediate[CSTRING_Sample_data_processing][0];
+                                (*intermediate)[STRING_Sample_data_processing][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1152,14 +1169,14 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Sample_description)){
     (*contents)->sample_description =
-                                    intermediate[CSTRING_Sample_description][0];
+                                    (*intermediate)[STRING_Sample_description][0];
   }
 
 
   //std::string
   if(!intermediate->count(CSTRING_Sample_platform_id)){
     (*contents)->sample_platform_id =
-                                intermediate[CSTRING_Sample_platform_id][0][0];
+                                (*intermediate)[STRING_Sample_platform_id][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1172,13 +1189,13 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::string
   if(!intermediate->count(CSTRING_Sample_geo_accession)){
     (*contents)->sample_geo_accession =
-                              intermediate[CSTRING_Sample_geo_accession][0][0];
+                              (*intermediate)[STRING_Sample_geo_accession][0][0];
   }
 
 
   //std::string
   if(!intermediate->count(CSTRING_Sample_anchor)){
-    (*contents)->sample_anchor = intermediate[CSTRING_Sample_anchor][0][0];
+    (*contents)->sample_anchor = (*intermediate)[STRING_Sample_anchor][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_Sample_anchor);
@@ -1191,7 +1208,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //NOTE: SAGE submission needs to be block checked.
   //std::string
   if(!intermediate->count(CSTRING_Sample_type)){
-    (*contents)->sample_type = intermediate[CSTRING_Sample_type][0][0];
+    (*contents)->sample_type = (*intermediate)[STRING_Sample_type][0][0];
   }
 
 
@@ -1199,7 +1216,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //int
   if(!intermediate->count(CSTRING_Sample_tag_count)){
     (*contents)->sample_tag_count =
-                            atoi(intermediate[CSTRING_Sample_tag_count][0][0]);
+                            atoi((*intermediate)[STRING_Sample_tag_count][0][0].c_str());
   }
 
 
@@ -1207,15 +1224,17 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //int
   if(!intermediate->count(CSTRING_Sample_tag_length)){
     (*contents)->sample_tag_length =
-                            atoi(intermediate[CSTRING_Sample_tag_length][0][0]);
+                            atoi((*intermediate)[STRING_Sample_tag_length][0][0].c_str());
   }
 
 
   //TODO: this mess
   if(!intermediate->count(CSTRING_Sample_table_begin)){
-    std::vector<std::string> sample_table_columns;
-    std::vector<std::vector<std::string> > sample_table_matrix;
-    (*contents)->SAMPLE_TABLE_BEGIN
+    (*contents)->sample_table_columns = (*intermediate)[STRING_Sample_table_begin][0];
+    (*intermediate)[STRING_Sample_table_begin][0].erase((*intermediate)[STRING_Sample_table_begin][0].begin());
+    (*contents)->sample_table_matrix = (*intermediate)[STRING_Sample_table_begin];
+
+    //TODO: verify
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1234,7 +1253,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::string
   if(!intermediate->count(CSTRING_SERIES)){
-    (*contents)->series = intermediate[CSTRING_SERIES][0][0];
+    (*contents)->series = (*intermediate)[STRING_SERIES][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_SERIES);
@@ -1245,7 +1264,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::string
   if(!intermediate->count(CSTRING_Series_title)){
-    (*contents)->series_title = intermediate[CSTRING_Series_title][0][0];
+    (*contents)->series_title = (*intermediate)[STRING_Series_title][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n", CSTRING_Series_title);
@@ -1256,7 +1275,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_summary)){
-    (*contents)->series_summary = intermediate[CSTRING_Series_summary][0];
+    (*contents)->series_summary = (*intermediate)[STRING_Series_summary][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1269,7 +1288,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   //std::string;
   if(!intermediate->count(CSTRING_Series_overall_design)){
     (*contents)->series_overall_design =
-                              intermediate[CSTRING_Series_overall_design][0][0];
+                              (*intermediate)[STRING_Series_overall_design][0][0];
   }else{
     #ifdef DEBUG
     fprintf(stderr, "ERROR: \"%s\" missing from file\n",
@@ -1281,66 +1300,66 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_pubmed_id)){
-    (*contents)->series_pubmed_id = intermediate[CSTRING_Series_pubmed_id][0];
+    (*contents)->series_pubmed_id = (*intermediate)[STRING_Series_pubmed_id][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_web_link)){
-    (*contents)->series_web_link = intermediate[CSTRING_Series_web_link][0];
+    (*contents)->series_web_link = (*intermediate)[STRING_Series_web_link][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_contributor)){
     (*contents)->series_contributor =
-                                    intermediate[CSTRING_Series_contributor][0];
+                                    (*intermediate)[STRING_Series_contributor][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_variable_)){
-    (*contents)->series_variable = intermediate[CSTRING_Series_variable_][0];
+    (*contents)->series_variable = (*intermediate)[STRING_Series_variable_][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_variable_description_)){
     (*contents)->series_variable_description =
-                          intermediate[CSTRING_Series_variable_description_][0];
+                          (*intermediate)[STRING_Series_variable_description_][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_variable_sample_list_)){
     (*contents)->series_variable_sample_list =
-                          intermediate[CSTRING_Series_variable_sample_list_][0];
+                          (*intermediate)[STRING_Series_variable_sample_list_][0];
   }
 
 
   //std::vector<std::string>
-  if(!intermediate->count()){
-    (*contents)->series_repeats = intermediate[CSTRING_Series_repeats_][0];
+  if(!intermediate->count(CSTRING_Series_repeats_)){
+    (*contents)->series_repeats = (*intermediate)[STRING_Series_repeats_][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_repeats_sample_list_)){
     (*contents)->series_repeats_sample_list =
-                          intermediate[CSTRING_Series_repeats_sample_list_][0];
+                          (*intermediate)[STRING_Series_repeats_sample_list_][0];
   }
 
 
   //std::vector<std::string>
   if(!intermediate->count(CSTRING_Series_sample_id)){
-    (*contents)->series_sample_id = intermediate[CSTRING_Series_sample_id][0];
+    (*contents)->series_sample_id = (*intermediate)[STRING_Series_sample_id][0];
   }
 
 
   //std::string
   if(!intermediate->count(CSTRING_Series_geo_accession)){
     (*contents)->series_geo_accession =
-                              intermediate[CSTRING_Series_geo_accession][0][0];
+                              (*intermediate)[STRING_Series_geo_accession][0][0];
   }
 
 
@@ -1389,21 +1408,24 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   }
 
   //std::vector<std::string>
-  for(size_t i = 0; i < lastIndex; i++)
-    (*contents)->channel.push_back(struct GeoSoftChannel());
+  for(size_t i = 0; i < lastIndex; i++){
+    struct GeoSoftChannel tmp;
+    (*contents)->channel.push_back(tmp);
+  }
 
-  for(size_t i = 0; i < intermediate[CSTRING_Sample_source_name_ch][0].size(); i++)
+  for(size_t i = 0; i < (*intermediate)[STRING_Sample_source_name_ch][0].size(); i++)
     (*contents)->channel[i].sample_source_name =
-                              intermediate[CSTRING_Sample_source_name_ch][0][i];
+                              (*intermediate)[STRING_Sample_source_name_ch][0][i];
 
-  for(size_t i = 0; i < intermediate[CSTRING_Sample_organism_ch].size(); i++)
+  for(size_t i = 0; i < (*intermediate)[STRING_Sample_organism_ch].size(); i++)
     (*contents)->channel[i].sample_organism =
-                                    intermediate[CSTRING_Sample_organism_ch][i];
+                                    (*intermediate)[STRING_Sample_organism_ch][i];
 
-  for(size_t i = 0; i < intermediate[CSTRING_Sample_characteristics_ch].size(); i++){
-    for(size_t j = 0; j < intermediate[CSTRING_Sample_characteristics_ch][i].size(); j++){}
+  //NOTE: channel checking must be done as a group
+  for(size_t i = 0; i < (*intermediate)[STRING_Sample_characteristics_ch].size(); i++){
+    for(size_t j = 0; j < (*intermediate)[STRING_Sample_characteristics_ch][i].size(); j++){
       std::string tag, value, both;
-      both = intermediate[CSTRING_Sample_characteristics_ch][i][j];
+      both = (*intermediate)[STRING_Sample_characteristics_ch][i][j];
       tag = both.substr(0, both.find(":"));
       value = both.substr(both.find(":") + 1);
       std::pair<std::string, std::string> tagVal = {tag, value};
@@ -1412,42 +1434,40 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   }
 
 
-  //NOTE: channel checking must be done as a group
-  //std::vector<std::vector<std::pair<std::string, std::string> > >
-  if(!intermediate->count(CSTRING_Sample_characteristics_ch)){
-    (*contents)->sample_characteristics =
-                            intermediate[CSTRING_Sample_characteristics_ch][i]);
+  //std::vector<std::vector<std::string> >
+  for(int i = 0; intermediate->count(CSTRING_Sample_biomaterial_provider_ch); i++){
+    (*contents)->channel[i].sample_biomaterial_provider =
+                      (*intermediate)[STRING_Sample_biomaterial_provider_ch][i];
   }
 
 
   //std::vector<std::vector<std::string> >
-  if(!intermediate->count(CSTRING_Sample_biomaterial_provider_ch)){
-    (*contents)->sample_biomaterial_provider =
-                          intermediate[CSTRING_Sample_biomaterial_provider_ch];
+  for(int i = 0; i < intermediate->count(CSTRING_Sample_treatment_protocol_ch); i++){
+    (*contents)->channel[i].sample_treatment_protocol =
+                            (*intermediate)[STRING_Sample_treatment_protocol_ch][i];
   }
 
 
   //std::vector<std::vector<std::string> >
-  if(!intermediate->count(CSTRING_Sample_treatment_protocol_ch)){
-    (*contents)->sample_treatment_protocol =
-                            intermediate[CSTRING_Sample_treatment_protocol_ch];
+  for(int i = 0; i < intermediate->count(CSTRING_Sample_growth_protocol_ch); i++){
+    (*contents)->channel[i].sample_growth_protocol =
+                                (*intermediate)[STRING_Sample_growth_protocol_ch][i];
   }
 
 
-  //std::vector<std::vector<std::string> >
-  if(!intermediate->count(CSTRING_Sample_growth_protocol_ch)){
-    (*contents)->sample_growth_protocol =
-                                intermediate[CSTRING_Sample_growth_protocol_ch];
+  if(!intermediate->count(CSTRING_Sample_extract_protocol_ch)){
+    //TODO
   }
 
 
-  if(!intermediate->count(CSTRING_Sample_extract_protocol_ch))
+  if(!intermediate->count(CSTRING_Sample_label_ch)){
+    //TODO
+  }
 
 
-  if(!intermediate->count(CSTRING_Sample_label_ch))
-
-
-  if(!intermediate->count(CSTRING_Sample_label_protocol_ch))
+  if(!intermediate->count(CSTRING_Sample_label_protocol_ch)){
+    //TODO
+  }
 
 
   //TODO: SAGE block check here
