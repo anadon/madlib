@@ -11,3 +11,4 @@ position.hh
 stack.hh
 lex.yy.c
 lex.yy.h
+lib
