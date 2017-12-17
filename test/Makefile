@@ -59,7 +59,7 @@ HEADERS=diagnostics.hpp                                                \
 all:$(EXEC)
 
 $(EXEC): $(OBJECTS) gtest_main.a
-	$(CPP) $(CPPFLAGS) -flto $(LIBS) $(OBJECTS) lib/madlib.a gtest_main.a -o $(EXEC)
+	$(CPP) $(CPPFLAGS) -flto $(LIBS) $(OBJECTS) ../lib/libmadlib.a gtest_main.a -o $(EXEC)
 
 %.o:%.cpp $(HEADERS)
 	$(CPP) $(CPPFLAGS) -c $< -o $@
