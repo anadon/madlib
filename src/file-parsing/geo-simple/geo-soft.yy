@@ -88,7 +88,7 @@
                     string key, string value, int first_line, int first_column,
                                                               int last_column){
     if(0 == intermediate.count(key)) return true;
-    fprintf(stderr, "Error: repeat insertion of key \"%s\" with value \"%s\" "
+    fprintf(stderr, "Error: repeat insertion of key \"%s\" "
                     "on line %d from columns %d-%d\n", key.c_str(), first_line,
                                                     first_column, last_column);
     return false;
@@ -100,7 +100,7 @@
                                              int first_column, int last_column){
     if(0 == intermediate.count(key)) return true;
     if(0 == intermediate.at(key).at(channel).size()) return true;
-    fprintf(stderr, "Error: repeat insertion of key \"%s\" with value \"%s\" "
+    fprintf(stderr, "Error: repeat insertion of key \"%s\" with value "
                     "on line %d from columns %d-%d\n", key.c_str(), first_line,
                                                     first_column, last_column);
     return false;
@@ -1204,7 +1204,6 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   }
 
 
-  //TODO: create a check block for SAGE submissions
   //NOTE: SAGE submission needs to be block checked.
   //std::string
   if(!intermediate->count(CSTRING_Sample_type)){
@@ -1228,7 +1227,6 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
   }
 
 
-  //TODO: this mess
   if(!intermediate->count(CSTRING_Sample_table_begin)){
     (*contents)->sample_table_columns = (*intermediate)[STRING_Sample_table_begin][0];
     (*intermediate)[STRING_Sample_table_begin][0].erase((*intermediate)[STRING_Sample_table_begin][0].begin());
@@ -1364,9 +1362,7 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
 
   //TODO: Channel block check here
-  //TODO: create channel check block
   //NOTE: channel checking must be done as a group
-
 
 
   //Channel block
@@ -1454,24 +1450,57 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
                                 (*intermediate)[STRING_Sample_growth_protocol_ch][i];
   }
 
+  //std::vector<std::vector<std::string> >
+  for(int i = 0; i < intermediate->count(CSTRING_Sample_extract_protocol_ch); i++){
+    (*contents)->channel[i].sample_extract_protocol =
+                                (*intermediate)[STRING_Sample_growth_protocol_ch][i];
+  }
 
-  if(!intermediate->count(CSTRING_Sample_extract_protocol_ch)){
-    //TODO
+  //std::vector<std::string>
+  for(int i = 0; i < intermediate->count(CSTRING_Sample_label_ch); i++){
+    (*contents)->channel[i].sample_label =
+                                (*intermediate)[STRING_Sample_label_ch][i][0];
   }
 
 
-  if(!intermediate->count(CSTRING_Sample_label_ch)){
-    //TODO
+  //std::vector<std::vector<std::string> >
+  for(int i = 0; i < intermediate->count(CSTRING_Sample_label_protocol_ch); i++){
+    (*contents)->channel[i].sample_label_protocol =
+                                (*intermediate)[STRING_Sample_label_protocol_ch][i];
   }
 
 
-  if(!intermediate->count(CSTRING_Sample_label_protocol_ch)){
-    //TODO
+  //SAGE block check here
+  if((intermediate->count(CSTRING_Sample_anchor)     == 1 &&
+      intermediate->count(CSTRING_Sample_type)       == 1 &&
+      intermediate->count(CSTRING_Sample_tag_count)  == 1 &&
+      intermediate->count(CSTRING_Sample_tag_length) == 1  ) ||
+     (intermediate->count(CSTRING_Sample_anchor)     == 0 &&
+      intermediate->count(CSTRING_Sample_type)       == 0 &&
+      intermediate->count(CSTRING_Sample_tag_count)  == 0 &&
+      intermediate->count(CSTRING_Sample_tag_length) == 0)){
+    status++;
   }
 
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_anchor)){
+    (*contents)->sample_anchor = (*intermediate)[STRING_Sample_anchor][0][0];
+  }
 
-  //TODO: SAGE block check here
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_type)){
+    (*contents)->sample_type = (*intermediate)[STRING_Sample_type][0][0];
+  }
 
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_tag_count)){
+    (*contents)->sample_tag_count = atoi((*intermediate)[STRING_Sample_tag_count][0][0].c_str());
+  }
+
+  //std::string
+  if(!intermediate->count(CSTRING_Sample_tag_length)){
+    (*contents)->sample_tag_length = atoi((*intermediate)[STRING_Sample_tag_length][0][0].c_str());
+  }
 
   return status;
 }
