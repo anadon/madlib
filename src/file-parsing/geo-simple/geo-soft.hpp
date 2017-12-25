@@ -224,7 +224,257 @@ Number of allowed labels: 1
 
 Allowed values and constraints: no content required
 
-Content guidelines: Indicates the start of the data table.
+Content guidelines: Indicates the start of the data table.  Data cells can be
+restricted to certain types if a standard column header is used, but other
+column headers may be used and be tolerated.
+
+TODO: more in depth parsing, validation, and specific representation of cells.
+
+Standard Headers:
+
+TAG: ID
+Datatype: std::string
+Regex: *
+Qualifications: unique in column, required, unique among column headers
+Details: An identifier that unambiguously identifies each row on your Platform
+table. Each ID within a Platform table must be unique. This column heading
+should appear first and may be used only once in the data table. Keep in mind
+that the ID column you provide in your Platform data table corresponds with the
+ID_REF column you provide in accompanying Sample data tables. Sample data tables
+should contain normalized data. If your normalization strategy requires taking
+the average of replicate array features, your Platform should reflect the
+condensed template. In this case, please e-mail or FTP the full template file to
+us and we will attach it to your Platform record as a supplementary file.
+
+TAG: SEQUENCE
+Datatype: std::string
+Regex: [ATCG]+
+Qualifications: unique among column headers
+Details: The nucleotide sequence of each oligo, clone or PCR product.
+
+TAG: GB_ACC
+Datatype: std::string
+Regex: .+\.[0-9]+
+Qualifications:
+Details: GenBank accession - identifies a biological sequence through the GenBank
+sequence accession number assigned to the sequence, or the representative
+GenBank or RefSeq accession number upon which your sequence was designed. It is
+recommended that you include the version number of the accessions upon which
+your sequences were designed (e.g., NM_022975.1 rather than NM_022975). This is
+particularly important for RefSeq accessions which are updated frequently.
+GenBank accessions representing the top BLAST hits for your sequences are not
+acceptable. Also, chromosome, genome and contig accession numbers are generally
+not acceptable as they are not specific enough to accurately identify the
+portion of the sequence printed on arrays (use GB_RANGE instead).
+
+TAG: GB_LIST
+Datatype: std::string
+Regex: *
+Qualifications:
+Details: GenBank accession list - as for GB_ACC, but allows more than one
+GenBank accession number to be presented. For example, your sequences may have
+GenBank accession numbers representing both the 5' and 3' ends of your clones.
+Multiple accession numbers should be separated using commas or spaces.
+Alternatively, more than one GB_ACC column may be supplied.
+
+TAG: GB_RANGE
+Datatype: std::string
+Regex: .+\.[0-9]+\[[0-9]+\.\.[0-9]+\]
+Qualifications: start < end
+Details: GenBank accession range - specifies a particular sequence position
+within a GenBank accession number. Use format ACCESSION.VERSION[start..end].
+Useful for tiling arrays.
+
+TAG: RANGE_GB
+Datatype: std::string
+Regex: .+\.[0-9]+
+Qualifications:
+Details: Use format ACCESSION.VERSION. Should be used in conjunction with
+RANGE_START and RANGE_END. Useful for tiling arrays.
+
+TAG: RANGE_START
+Datatype: long int
+Regex: [0-9]+
+Qualifications: Implicitly requires RANGE_END, less than RANGE_END
+Details: Use in conjunction with RANGE_GB. Indicates the start position
+(relative to the RANGE_GB accession). Useful for tiling arrays.
+
+TAG: RANGE_END
+Datatype: long int
+Regex: [0-9]+
+Qualifications: Implicitly requires RANGE_START, greater than RANGE_START
+Details: Use in conjunction with RANGE_GB. Indicates the end position
+(relative to the RANGE_GB accession). Useful for tiling arrays.
+
+TAG: RANGE_STRAND
+Datatype: std::string
+Regex: {\+}|{\-}|{}|{empty}
+Qualifications:
+Details: Use in conjunction with RANGE_GB. Indicates the strand represented. Use
++ or - or empty. Useful for tiling arrays.
+
+TAG: GI
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: GenBank identifier - as for GB_ACC, but specify the GenBank identifier
+number rather than the GenBank accession number.
+
+TAG: GI_LIST
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: GenBank identifier list - as for GI, but allows more than one GenBank
+identifier to be presented. Multiple GIs should be separated using commas or
+spaces. Alternatively, more than one GI column may be supplied.
+
+TAG: GI_RANGE
+Datatype: std::string
+Regex: GI\[[0-9]+\.\.[0-9]+\]
+Qualifications: First number is less than second
+Details: GenBank identifier range - specifies a particular sequence position on
+a GenBank identifier number. Use format GI[start..end].
+
+TAG: CLONE_ID
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: Clone identifier - identifies a biological sequence through a standard
+clone identifier. Only CLONE_IDs that can be used to identify the sequence
+through an NCBI or other public-database query should be provided in this
+column. Examples include FlyBase IDs, RIKEN clone IDs and IMAGE clone numbers.
+
+TAG: CLONE_ID_LIST
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: CLONE_ID list - as for CLONE_ID, but allows more than one clone
+identifier to be presented. Multiple Clone IDs should be separated using commas
+or spaces. Alternatively, more than one CLONE_ID column may be supplied.
+
+TAG: ORF
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: Open reading frame designator - identifies a biological sequence
+through an experimentally or computationally derived open reading frame
+identifier. The ORF designator is intended to represent a known or predicted DNA
+coding region or locus_tag identified in NCBI's Entrez Genomes division. It may
+be appropriate to include a GENOME_ACC column to reference the GenBank accession
+from which the ORF names are derived.
+
+TAG: ORF_LIST
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: ORF list - as for ORF, but allows more than one open reading frame
+designator to be presented. Multiple ORFs should be separated using commas or
+spaces. Alternatively, more than one ORF column may be supplied.
+
+TAG: GENOME_ACC
+Datatype: std::string
+Regex: .+\.[0-9]+
+Qualifications:
+Details: Genome accession number - specifies the GenBank or RefSeq genome
+accession number from which ORF identifiers are derived. It is important to
+include the version number of the genome accession upon which your sequences
+were generated (e.g., NC_004721.1 rather than NC_004721) because updates to the
+genome sequence may render your ORF designations incorrect.
+
+TAG: SNP_ID
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: SNP identifier - typically specifies a dbSNP refSNP ID with format
+rsXXXXXXXX.
+
+TAG: SNP_ID_LIST
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: SNP identifier list - as for SNP_ID, but allows more than one
+SNP_ID to be presented. Multiple SNP_IDs should be separated using commas or
+spaces. Alternatively, more than one SNP_ID column may be supplied.
+
+TAG: miRNA_ID
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: microRNA identifier - typically has format e.g., hsa-let-7a or
+MIRNLET7A2.
+
+TAG: miRNA_ID_LIST
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: microRNA identifier list - as for miRNA_ID, but allows more than
+one miRNA_ID to be presented. Multiple miRNA_IDs should be separated using
+commas or spaces. Alternatively, more than one miRNA_ID column may be supplied.
+
+TAG: SPOT_ID
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: Alternative spot identifier - use only when no identifier or sequence
+tracking information is available. This column is useful for designating control
+and empty features.
+
+TAG: ORGANISM
+Datatype: std::string
+Regex: .+
+Qualifications: unique among column headers
+Details: The organism source of each feature on your array. This is most useful
+for when your array contains sequences derived from multiple organisms.
+
+TAG: PT_ACC
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: Protein accession - identifies any GenBank or RefSeq protein accession
+number. Protein accession numbers should only be supplied for protein arrays.
+Nucleotide accession numbers should be supplied for nucleotide arrays.
+PT_LIST: Protein accession list - as for PT_ACC, but allows more than one
+protein accession number to be presented. Multiple accession numbers should be
+separated using commas or spaces. Alternatively, more than one PT_ACC column may
+be supplied. Protein accession numbers should only be supplied for protein
+arrays. Nucleotide accession numbers should be supplied for nucleotide arrays.
+
+TAG: PT_GI
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: Protein GenBank or RefSeq identifier. Protein identifiers should only be
+supplied for protein arrays or proteomic mass spectrometry Platforms. Nucleotide
+identifiers should be supplied for nucleotide arrays.
+
+TAG: PT_GI_LIST
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: Protein identifier list - as for PT_GI, but allows more than one
+protein identifier to be presented. Multiple identifiers should be separated
+using commas or spaces. Alternatively, more than one PT_GI column may be
+supplied. Protein identifiers should only be supplied for protein arrays.
+Nucleotide identifiers should be supplied for nucleotide arrays.
+
+TAG: SP_ACC
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: SwissProt accession. SwissProt accession numbers should only be supplied
+for protein arrays. Nucleotide accession numbers should be supplied for
+nucleotide arrays.
+
+TAG: SP_LIST
+Datatype: std::string
+Regex: .+
+Qualifications:
+Details: SwissProt accession list - as for SP_ACC, but allows more than one
+SwissProt accession number to be presented. Multiple accession numbers should be
+separated using commas or spaces. Alternatively, more than one SP_ACC column may
+be supplied. SwissProt accession numbers should only be supplied for protein
+arrays. Nucleotide accession numbers should be supplied for nucleotide arrays.
+
 *******************************************************************************/
 const char* CSTRING_Platform_table_begin = "!Platform_table_begin";
 static const std::string STRING_Platform_table_begin(CSTRING_Platform_table_begin);
