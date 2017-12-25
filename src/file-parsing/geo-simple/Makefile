@@ -6,6 +6,7 @@ all: geo-soft.yy geo-soft.l
 	g++ -c geo-soft.tab.cc
 	mv lex.yy.c lex.yy.cc
 	g++ -c lex.yy.cc
+	g++ -c geo-soft.cpp
 
 clean:
-	rm -f geo-soft.tab.cc geo-soft.tab.hh lex.yy.cc lex.yy.c
+	rm -f geo-soft.tab.cc geo-soft.tab.hh lex.yy.cc lex.yy.c geo-soft.o

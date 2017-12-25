@@ -2,6 +2,8 @@
 #define GEO_SOFT_HPP
 
 #include<string>
+#include<vector>
+#include<unordered_map>
 
 /*******************************************************************************
 Number of allowed labels: 1
@@ -1240,6 +1242,10 @@ struct GeoSoft{
   std::vector<std::string> series_sample_id;
   std::string series_geo_accession;
 };
+
+
+std::unordered_map<std::string, std::vector<std::vector<std::string> > >
+                                                    loadGeoSoftFileIR(const char *fp);
 
 int loadGeoSoftFile(const char *fp, struct GeoSoft **contents);
 
