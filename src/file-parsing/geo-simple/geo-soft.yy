@@ -1094,14 +1094,14 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 
 			//check for single occurrence of certain column headers
 			bool colHeaderPresent;
-			char **headerNames = {"ID",
-			 											"SEQUENCE",
-														"ORGANISM",
-														NULL};
+			const char *headerNames[] = {"ID",
+			 														 "SEQUENCE",
+																	 "ORGANISM",
+																	 NULL};
 			for(size_t i = 0; headerNames[i]; i++){
 				colHeaderPresent = false;
 				for(size_t x = 0; x < numCols; x++){
-					if(0 == strcmp((*contents)->platform_table_column_titles[x], headerNames[i])){
+					if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), headerNames[i])){
 						if(colHeaderPresent){
 							#ifdef DEBUG
 							fprintf(stderr, "ERROR: \"%s\" multiple occurance of column header \"%s\"\n",
@@ -1126,122 +1126,122 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 			//TODO: this could be refined.
 			//Per column validation
 			for(size_t x = 0; x < numCols; x++){
-				if(0 == strcmp((*contents)->platform_table_column_titles[x], "ID")){
+				if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "ID")){
 					//Datatype: std::string
 					//Regex: *
 					//Qualifications: unique in column, required, unique among column headers
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "SEQUENCE")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "SEQUENCE")){
 					//Datatype: std::string
 					//Regex: [ATCG]+
 					//Qualifications: unique among column headers
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "GB_ACC")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "GB_ACC")){
 					//Datatype: std::string
 					//Regex: .+\.[0-9]+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "GB_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "GB_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "GB_RANGE")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "GB_RANGE")){
 					//Datatype: std::string
 					//Regex: .+\.[0-9]+\[[0-9]+\.\.[0-9]+\]
 					//Qualifications: start < end
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "RANGE_GB")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "RANGE_GB")){
 					//Datatype: std::string
 					//Regex: .+\.[0-9]+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "RANGE_START")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "RANGE_START")){
 					//Datatype: long int
 					//Regex: [0-9]+
 					//Qualifications: Implicitly requires RANGE_END, less than RANGE_END
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "RANGE_END")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "RANGE_END")){
 					//Datatype: long int
 					//Regex: [0-9]+
 					//Qualifications: Implicitly requires RANGE_START, greater than RANGE_START
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "RANGE_STRAND")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "RANGE_STRAND")){
 					//Datatype: std:string
 					//Regex: {\+}|{\-}|{}|{empty}
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "GI")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "GI")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "GI_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "GI_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "GI_RANGE")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "GI_RANGE")){
 					//Datatype: std::string
 					//Regex: GI\[[0-9]+\.\.[0-9]+\]
 					//Qualifications: First number is less than second
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "CLONE_ID")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "CLONE_ID")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "CLONE_ID_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "CLONE_ID_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "ORF")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "ORF")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "ORF_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "ORF_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "GENOME_ACC")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "GENOME_ACC")){
 					//Datatype: std::string
 					//Regex: .+\.[0-9]+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "SNP_ID")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "SNP_ID")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "SNP_ID_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "SNP_ID_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "miRNA_ID")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "miRNA_ID")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "miRNA_ID_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "miRNA_ID_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "SPOT_ID")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "SPOT_ID")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "ORGANISM")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "ORGANISM")){
 					//Datatype: std::string
 					//Regex: .+
 					//Qualifications: unique among column headers
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "PT_ACC")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "PT_ACC")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "PT_GI")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "PT_GI")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "PT_GI_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "PT_GI_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "SP_ACC")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "SP_ACC")){
 					//Datatype: std::string
 					//Regex: .+
 
-				}else if(0 == strcmp((*contents)->platform_table_column_titles[x], "SP_LIST")){
+				}else if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), "SP_LIST")){
 					//Datatype: std::string
 					//Regex: .+
 
