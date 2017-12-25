@@ -9,7 +9,7 @@ using std::unordered_map;
 //the intermediate representation, and then the parsing of that intermediate
 //representation in another file, geo-soft.cpp.
 int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
-	int status;
+	int status = 0;
 
 	unordered_map<string, vector<vector<string> > > intermediate;
   intermediate = loadGeoSoftFileIR(fp);
@@ -244,13 +244,12 @@ int loadGeoSoftFile(const char *fp, struct GeoSoft **contents){
 		if(colsConsistent){
 
 			//check for single occurrence of certain column headers
-			bool colHeaderPresent;
 			const char *headerNames[] = {"ID",
 			 														 "SEQUENCE",
 																	 "ORGANISM",
 																	 NULL};
 			for(size_t i = 0; headerNames[i]; i++){
-				colHeaderPresent = false;
+				bool colHeaderPresent = false;
 				for(size_t x = 0; x < numCols; x++){
 					if(0 == strcmp((*contents)->platform_table_column_titles[x].c_str(), headerNames[i])){
 						if(colHeaderPresent){
