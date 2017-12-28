@@ -76,39 +76,25 @@
 
 	void ensureSpaceForKey(
 									unordered_map<string, vector<vector<string> > > &intermediate,
-																																		string key){
-		if(0 == intermediate.count(key)){
-			intermediate[key] = vector<vector<string>>();
-			intermediate[key].push_back(vector<string>());
-		}
-	}
+																																		string key);
 
 	bool isUniqueInsert(
 									unordered_map<string, vector<vector<string> > > &intermediate,
 										string key, string value, int first_line, int first_column,
-																															int last_column){
-		if(0 == intermediate.count(key)) return true;
-		fprintf(stderr, "Error: repeat insertion of key \"%s\" "
-										"on line %d from columns %d-%d\n", key.c_str(), first_line,
-																										first_column, last_column);
-		return false;
-	}
+																															int last_column);
 
 	bool isUniqueInsertForChannel(
 									unordered_map<string, vector<vector<string> > > &intermediate,
 													string key, string value, int channel, int first_line,
-																						 int first_column, int last_column){
-		if(0 == intermediate.count(key)) return true;
-		if(0 == intermediate.at(key).at(channel).size()) return true;
-		fprintf(stderr, "Error: repeat insertion of key \"%s\" with value "
-										"on line %d from columns %d-%d\n", key.c_str(), first_line,
-																										first_column, last_column);
-		return false;
-	}
+																						 int first_column, int last_column);
 
 	void yyerror(YYLTYPE *yylloc, yyscan_t yyscanner, const char *msg);
 
 }
+
+
+
+
 
 
 
@@ -851,6 +837,38 @@ void yyerror(YYLTYPE *yylloc, yyscan_t yyscanner, const char *msg){
 
 }
 
+
+	void ensureSpaceForKey(
+									unordered_map<string, vector<vector<string> > > &intermediate,
+																																		string key){
+		if(0 == intermediate.count(key)){
+			intermediate[key] = vector<vector<string>>();
+			intermediate[key].push_back(vector<string>());
+		}
+	}
+
+	bool isUniqueInsert(
+									unordered_map<string, vector<vector<string> > > &intermediate,
+										string key, string value, int first_line, int first_column,
+																															int last_column){
+		if(0 == intermediate.count(key)) return true;
+		fprintf(stderr, "Error: repeat insertion of key \"%s\" "
+										"on line %d from columns %d-%d\n", key.c_str(), first_line,
+																										first_column, last_column);
+		return false;
+	}
+
+	bool isUniqueInsertForChannel(
+									unordered_map<string, vector<vector<string> > > &intermediate,
+													string key, string value, int channel, int first_line,
+																						 int first_column, int last_column){
+		if(0 == intermediate.count(key)) return true;
+		if(0 == intermediate.at(key).at(channel).size()) return true;
+		fprintf(stderr, "Error: repeat insertion of key \"%s\" with value "
+										"on line %d from columns %d-%d\n", key.c_str(), first_line,
+																										first_column, last_column);
+		return false;
+	}
 
 
 
