@@ -8,7 +8,7 @@
 
 MAJOR_VERSION=1
 MINOR_VERSION=0
-SUB_VERSION=0
+SUB_VERSION=1
 VERSION=$(MAJOR_VERSION).$(MINOR_VERSION).$(SUB_VERSION)
 
 
@@ -33,19 +33,22 @@ HEADERS=include/diagnostics.hpp                                                \
         include/statistics.h
 
 
-COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include
+COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include -fPIC
+
+export
 
 all: release
 
 release: CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x -march=native -I $(INCLUDE)
 release: CFLAGS=-O3 $(COMMON_FLAGS) -std=c99 -march=native -I $(INCLUDE)
-release:$(OLIB)
+release: $(OLIB)
 
 debug: CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x -I $(INCLUDE)
 debug: CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99 -I $(INCLUDE)
 debug: $(OLIB)
 
 test:debug $(TEST_PROG)
+	#@make -f test/Makefile
 	cd test; make
 
 install:$(OLOB)
@@ -58,7 +61,9 @@ install:$(OLOB)
 	cp lib/libmadlib.so /usr/lib/libmadlib.so
 
 clean:
+	#@make -f src/Makefile clean
 	cd src ; make clean
+	#@make -f test/Makefile clean
 	cd test ; make clean
 	rm -f $(OLIB)
 	rm -rf lib
@@ -67,10 +72,12 @@ clean:
 #	$(CPP) $(CPPFLAGS) -flto $(MAINOBJECT) $(LIBS) $(OLIB) -o $(EXEC)
 
 $(OLIB):$(shell find src -type f) $(shell find include -type f)
+	#@make -f src/Makefile
 	cd src ; make
 	mkdir -p lib
 	mv src/libmadlib.so lib/
 	mv src/libmadlib.a lib/
 
 $(TEST_PROG): $(OLIB)
+	#@make test/Makefile
 	cd test ; make

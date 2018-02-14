@@ -3,7 +3,7 @@ CC=gcc
 LIBS=-pthread
 
 ##These should be defined in the calling Makefile
-COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I../include
+COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I$(INCLUDE) -fPIC
 CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x
 CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99
 #CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
