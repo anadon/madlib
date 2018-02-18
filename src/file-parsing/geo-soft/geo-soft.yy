@@ -879,7 +879,6 @@ unordered_map<string, vector<vector<string> > > loadGeoSoftFileIR(
 
 	FPCheck = freopen(fp, "r", stdin);
 	if(NULL == FPCheck)  return tr;
-	stdin = FPCheck;
 
 	intermediate = new unordered_map<string, vector<vector<string> > >();
 
