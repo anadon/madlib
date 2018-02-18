@@ -5,11 +5,11 @@
 
 1. [Description](#Description)
 
-2. [Build and Use Requirements](#Build and Use Requirements)
+2. [Build and Use Requirements](#Requirements)
 
-3. [Build, Debug, and Install Steps](#Build, Debug, and Install Steps)
+3. [Build, Debug, and Install Steps](#Building)
 
-4. [Available Features](#Available Features)
+4. [Available Features](#Features)
 
 5. [Credits](#Credits)
 
