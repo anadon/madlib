@@ -17,8 +17,8 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef UPPER_DIAGONAL_SQUARE_MATRIX_T_HPP
-#define UPPER_DIAGONAL_SQUARE_MATRIX_T_HPP
+#ifndef STD_UPPER_DIAGONAL_SQUARE_MATRIX_T_HPP
+#define STD_UPPER_DIAGONAL_SQUARE_MATRIX_T_HPP
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////

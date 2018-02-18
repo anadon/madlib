@@ -17,8 +17,8 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef QUICKMERGE_HPP
-#define QUICKMERGE_HPP
+#ifndef MADLIB_QUICKMERGE_HPP
+#define MADLIB_QUICKMERGE_HPP
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////

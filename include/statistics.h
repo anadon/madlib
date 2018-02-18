@@ -17,8 +17,8 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef STATISTICS_HPP
-#define STATISTICS_HPP
+#ifndef MADLIB_STATISTICS_HPP
+#define MADLIB_STATISTICS_HPP
 
 
 ////////////////////////////////////////////////////////////////////////

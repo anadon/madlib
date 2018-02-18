@@ -1,5 +1,5 @@
-#ifndef GEO_SOFT_HPP
-#define GEO_SOFT_HPP
+#ifndef MADLIB_GEO_SOFT_HPP
+#define MADLIB_GEO_SOFT_HPP
 
 #include<string>
 #include<vector>

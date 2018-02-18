@@ -17,8 +17,8 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef DIAGNOSTICS_HPP
-#define DIAGNOSTICS_HPP
+#ifndef MADLIB_DIAGNOSTICS_HPP
+#define MADLIB_DIAGNOSTICS_HPP
 
 
 ////////////////////////////////////////////////////////////////////////

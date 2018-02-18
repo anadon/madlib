@@ -19,8 +19,8 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef SPARSE_BITPACKED_ARRAY_H
-#define SPARSE_BITPACKED_ARRAT_H
+#ifndef MADLIB_SPARSE_BITPACKED_ARRAY_H
+#define MADLIB_SPARSE_BITPACKED_ARRAT_H
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////

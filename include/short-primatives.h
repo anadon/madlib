@@ -19,8 +19,8 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef SHORT_PRIMATIVES_H
-#define SHORT_PRIMATIVES_H
+#ifndef MADLIB_SHORT_PRIMATIVES_H
+#define MADLIB_SHORT_PRIMATIVES_H
 
 #include <stddef.h>
 

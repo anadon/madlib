@@ -19,8 +19,8 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef KENDALL_CORRELATION_MATRIX_HPP
-#define KENDALL_CORRELATION_MATRIX_HPP
+#ifndef MADLIB_KENDALL_CORRELATION_MATRIX_HPP
+#define MADLIB_KENDALL_CORRELATION_MATRIX_HPP
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////

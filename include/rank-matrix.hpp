@@ -19,8 +19,8 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef RANK_MATRIX_HPP
-#define RANK_MATRIX_HPP
+#ifndef MADLIB_RANK_MATRIX_HPP
+#define MADLIB_RANK_MATRIX_HPP
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////

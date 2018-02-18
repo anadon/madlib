@@ -17,8 +17,8 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef PEARSON_CORRELATION_MATRIX_HPP
-#define PEARSON_CORRELATION_MATRIX_HPP
+#ifndef MADLIB_PEARSON_CORRELATION_MATRIX_HPP
+#define MADLIB_PEARSON_CORRELATION_MATRIX_HPP
 
 
 ////////////////////////////////////////////////////////////////////////

@@ -19,8 +19,8 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef C_BITPACKET_ARRAY_H
-#define C_BITPACKED_ARRAY_H
+#ifndef MADLIB_C_BITPACKET_ARRAY_H
+#define MADLIB_C_BITPACKED_ARRAY_H
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
@@ -30,12 +30,12 @@
 
 //Always use runtime checks because this code has not been extensively
 //tested
-#ifndef DEBUG
-#define DEBUG
-#define UNDEF_DEBUG
+#ifndef MADLIB_DEBUG
+#define MADLIB_DEBUG
+#define MADLIB_UNDEF_DEBUG
 #endif
 
-#ifdef DEBUG
+#ifdef MADLIB_DEBUG
 #include <stdio.h>
 #include <stdlib.h>
 #endif
@@ -76,7 +76,7 @@ unsigned char getBitAtIndex(const bitArray *toRead, size_t index){
  **********************************************************************/
 void setBitAtIndex(bitArray *toModify, const size_t index,
                                             const unsigned char value){
-  #ifdef DEBUG
+  #ifdef MADLIB_DEBUG
   const unsigned char usableValue = (value != 0);
   #else
   const unsigned char usableValue = value;
@@ -85,9 +85,9 @@ void setBitAtIndex(bitArray *toModify, const size_t index,
   //if(value) toModify[index>>4] |= (1 << (index & 0xf));
   //else      toModify[index>>4] = ~((~toModify[index>>4]) |
   //                                              (1 << (index & 0xf)));
-  toModify[index>>3] ^= (-((signed char)usableValue) ^ 
+  toModify[index>>3] ^= (-((signed char)usableValue) ^
                             toModify[index>>3]) & (1 << (index & 0x7));
-  #ifdef DEBUG
+  #ifdef MADLIB_DEBUG
   if(value != getBitAtIndex(toModify, index)){
     fprintf(stderr, "setBitAtIndex() failure\n");
     fflush(stderr);
@@ -96,9 +96,9 @@ void setBitAtIndex(bitArray *toModify, const size_t index,
   #endif
 }
 
-#ifdef UNDEF_DEBUG
-#undef DEBUG
-#undef UNDEF_DEBUG
+#ifdef MADLIB_UNDEF_DEBUG
+#undef MADLIB_DEBUG
+#undef MADLIB_UNDEF_DEBUG
 #endif
 
 #endif

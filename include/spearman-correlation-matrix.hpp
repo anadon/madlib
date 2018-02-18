@@ -19,8 +19,8 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef SPEARMAN_CORRELATION_MATRIX_HPP
-#define SPEARMAN_CORRELATION_MATRIX_HPP
+#ifndef MADLIB_SPEARMAN_CORRELATION_MATRIX_HPP
+#define MADLIB_SPEARMAN_CORRELATION_MATRIX_HPP
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////

@@ -18,8 +18,8 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef SIMPLE_THREAD_DISPATCH_H
-#define SIMPLE_THREAD_DISPATCH_H
+#ifndef MADLIB_SIMPLE_THREAD_DISPATCH_H
+#define MADLIB_SIMPLE_THREAD_DISPATCH_H
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
