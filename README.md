@@ -1,15 +1,15 @@
-# Marshall's Algorithms and Datastructures Library
+# Marshall's Algorithms and Data structures Library
 --------------------------------------------------------------------------------
 
 ### Table of Contents
 
 1. [Description](#Description)
 
-2. [Build and Use Requirements](#Requirements)
+2. [Requirements](#Requirements)
 
-3. [Build, Debug, and Install Steps](#Building)
+3. [Building](#Building)
 
-4. [Available Features](#Features)
+4. [Features](#Features)
 
 5. [Credits](#Credits)
 
@@ -23,14 +23,14 @@ bioinformatics related works, but I have taken some pains to make them
 general.
 
 --------------------------------------------------------------------------------
-## Build and Use Requirements
+## Requirements
 
 Building Requirements: gcc-libs, g++, libc, git, make, bison >= 3.0.4, flex
 
 Use Requirements: libc
 
 --------------------------------------------------------------------------------
-## Build, Debug, and Install
+## Building
 
 Build:
 >$ make
@@ -43,7 +43,7 @@ Install:
 > \# make install
 
 --------------------------------------------------------------------------------
-## Available Features
+## Features
 
 Algorithms:
 * Pearson Correlation Matrix generation
