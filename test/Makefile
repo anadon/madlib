@@ -40,13 +40,11 @@ OBJECTS=graph-test.o                                                   \
         upper-diagonal-square-matrix-test.o
 
 HEADERS=diagnostics.hpp                                                \
-        kendall-correlation-matrix.hpp                                 \
-        pearson-correlation-matrix.hpp                                 \
+        correlation-matrix.hpp                                         \
         quickmerge.hpp                                                 \
         rank-matrix.hpp                                                \
         short-primatives.h                                             \
         simple-thread-dispatch.hpp                                     \
-        spearman-correlation-matrix.hpp                                \
         statistics.h                                                   \
         edge.tpp                                                       \
         graph.tpp                                                      \

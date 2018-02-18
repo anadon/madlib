@@ -24,11 +24,11 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include "pearson-correlation-matrix.hpp"
-#include "quickmerge.hpp"
-#include "simple-thread-dispatch.hpp"
-#include "statistics.h"
-#include "upper-diagonal-square-matrix.tpp"
+#include <correlation-matrix.hpp>
+#include <quickmerge.hpp>
+#include <simple-thread-dispatch.hpp>
+#include <statistics.h>
+#include <upper-diagonal-square-matrix.tpp>
 
 
 ////////////////////////////////////////////////////////////////////////

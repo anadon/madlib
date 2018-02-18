@@ -26,9 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rank-matrix.hpp"
-#include "pearson-correlation-matrix.hpp"
-#include "spearman-correlation-matrix.hpp"
+#include <rank-matrix.hpp>
+#include <correlation-matrix.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////

@@ -23,13 +23,11 @@ TEMPLATES=include/graph.tpp                                                    \
           include/upper-diagonal-square-matrix.tpp
 
 HEADERS=include/diagnostics.hpp                                                \
-        include/kendall-correlation-matrix.hpp                                 \
-        include/pearson-correlation-matrix.hpp                                 \
+        include/correlation-matrix.hpp                                         \
         include/quickmerge.hpp                                                 \
         include/rank-matrix.hpp                                                \
         include/short-primatives.h                                             \
         include/simple-thread-dispatch.hpp                                     \
-        include/spearman-correlation-matrix.hpp                                \
         include/statistics.h
 
 

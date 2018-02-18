@@ -24,11 +24,11 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include "rank-matrix.hpp"
-#include "kendall-correlation-matrix.hpp"
-#include "simple-thread-dispatch.hpp"
-#include "quickmerge.hpp"
-#include "upper-diagonal-square-matrix.tpp"
+#include <rank-matrix.hpp>
+#include <correlation-matrix.hpp>
+#include <simple-thread-dispatch.hpp>
+#include <quickmerge.hpp>
+#include <upper-diagonal-square-matrix.tpp>
 
 
 ////////////////////////////////////////////////////////////////////////
