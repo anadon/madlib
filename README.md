@@ -1,20 +1,20 @@
-# Marshall's Algorithms and Data structures Library
+# Marshall's Algorithms and Data Structures Library
 --------------------------------------------------------------------------------
 
 ### Table of Contents
 
-1. [Description](#Description)
+1. [Description](#description)
 
-2. [Requirements](#Requirements)
+2. [System Requirements](#requirements)
 
-3. [Building](#Building)
+3. [Building and Installing](#building)
 
-4. [Features](#Features)
+4. [Available Features](#features)
 
-5. [Credits](#Credits)
+5. [Credits](#credits)
 
 --------------------------------------------------------------------------------
-## Description
+## Description <a name = "description"></a>
 
 This is a library I've created which is suitable to housing and testing
 various algorithms or data structures which I have found missing or
@@ -23,14 +23,14 @@ bioinformatics related works, but I have taken some pains to make them
 general.
 
 --------------------------------------------------------------------------------
-## Requirements
+## System Requirements <a name = "requirements"></a>
 
 Building Requirements: gcc-libs, g++, libc, git, make, bison >= 3.0.4, flex
 
 Use Requirements: libc
 
 --------------------------------------------------------------------------------
-## Building
+## Building and Installing <a name = "building"></a>
 
 Build:
 >$ make
@@ -43,7 +43,7 @@ Install:
 > \# make install
 
 --------------------------------------------------------------------------------
-## Features
+## Available Features <a name = "features"></a>
 
 Algorithms:
 * Pearson Correlation Matrix generation
@@ -61,6 +61,6 @@ Datastructures:
 * universal GEO .soft file format container
 
 --------------------------------------------------------------------------------
-## Credits
+## Credits <a name = "credits"></a>
 
 Primary Author: Josh Marshall <jrmarsha@mtu.edu>
