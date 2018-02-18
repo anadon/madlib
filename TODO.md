@@ -22,3 +22,5 @@ Incorporate useful parts of PEPIS
 
  Add GEO .soft file helper functions to extract information related to GDS, GSM,
  GPL subtypes.
+
+Prepend all C/C++ header guards with "MADLIB_"
