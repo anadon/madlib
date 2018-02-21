@@ -25,8 +25,7 @@
 #include <string.h>
 #include <utility>
 
-#include "quickmerge.hpp"
-#include "short-primatives.h"
+#include <quickmerge.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 //PRIVATE FUNCTION DECLARATIONS/////////////////////////////////////////

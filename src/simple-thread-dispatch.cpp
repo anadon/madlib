@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <thread>
 
-#include "simple-thread-dispatch.hpp"
+#include <simple-thread-dispatch.hpp>
 
 
 ////////////////////////////////////////////////////////////////////////

@@ -23,9 +23,8 @@
 
 #include <iostream>
 
-#include "diagnostics.hpp"
-#include "graph.tpp"
-#include "short-primatives.h"
+#include <diagnostics.hpp>
+#include <graph.tpp>
 
 ////////////////////////////////////////////////////////////////////////
 //NAMESPACE USING///////////////////////////////////////////////////////

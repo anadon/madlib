@@ -26,7 +26,7 @@
 #include <math.h>
 #include <pthread.h>
 
-#include "statistics.h"
+#include <statistics.h>
 
 
 #ifdef __cplusplus

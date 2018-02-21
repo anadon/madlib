@@ -26,9 +26,9 @@
 #include <stdlib.h>
 #include <utility>
 
-#include "quickmerge.hpp"
-#include "rank-matrix.hpp"
-#include "simple-thread-dispatch.hpp"
+#include <quickmerge.hpp>
+#include <rank-matrix.hpp>
+#include <simple-thread-dispatch.hpp>
 
 ////////////////////////////////////////////////////////////////////////
 //PRIVATE STRUCTS///////////////////////////////////////////////////////
