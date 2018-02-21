@@ -4,10 +4,10 @@ LIBS=-pthread
 
 ##These should be defined in the calling Makefile
 COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I$(INCLUDE) -fPIC
-CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x
-CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99
-#CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
-#CFLAGS=-O3 $(COMMON_FLAGS) -std=c99
+#CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x
+#CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99
+CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
+CFLAGS=-O3 $(COMMON_FLAGS) -std=c99
 
 STATIC_LIB=libmadlib.a
 DYNAMIC_LIB=libmadlib.so
@@ -43,7 +43,7 @@ $(STATIC_LIB):$(OBJECTS) $(SUBLIBS_OBJECTS)
 	ranlib $(STATIC_LIB)
 
 $(DYNAMIC_LIB):$(OBJECTS) $(SUBLIBS_OBJECTS)
-	gcc $(OBJECTS) $(SPEC_OBJECTS) -shared -o $(DYNAMIC_LIB)
+	$(CPP) $(OBJECTS) $(SPEC_OBJECTS) -shared -o $(DYNAMIC_LIB)
 
 %.o:%.cpp $(HEADERS)
 	$(CPP) $(CPPFLAGS) -fPIC -c $< -o $@
