@@ -19,8 +19,7 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef MADLIB_C_BITPACKET_ARRAY_H
-#define MADLIB_C_BITPACKED_ARRAY_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
@@ -99,6 +98,4 @@ void setBitAtIndex(bitArray *toModify, const size_t index,
 #ifdef MADLIB_UNDEF_DEBUG
 #undef MADLIB_DEBUG
 #undef MADLIB_UNDEF_DEBUG
-#endif
-
 #endif

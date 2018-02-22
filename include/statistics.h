@@ -17,9 +17,7 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef MADLIB_STATISTICS_HPP
-#define MADLIB_STATISTICS_HPP
-
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
@@ -27,7 +25,7 @@
 
 #include <stdlib.h>
 
-#include "short-primatives.h"
+#include <short-primatives.h>
 
 
 #ifdef __cplusplus
@@ -164,6 +162,4 @@ void inplaceCenterMean(f64 *array, csize_t size);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

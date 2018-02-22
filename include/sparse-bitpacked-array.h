@@ -19,8 +19,7 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef MADLIB_SPARSE_BITPACKED_ARRAY_H
-#define MADLIB_SPARSE_BITPACKED_ARRAT_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
@@ -97,5 +96,3 @@ void sparseSetBitAtIndex(SparseBitpackedArray *input,
  * aligned operations
  **********************************************************************/
 void optimizeSparseBitpackedArray(SparseBitpackedArray *toOptimise);
-
-#endif

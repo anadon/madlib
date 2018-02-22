@@ -17,8 +17,7 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef MADLIB_QUICKMERGE_HPP
-#define MADLIB_QUICKMERGE_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
@@ -26,7 +25,7 @@
 
 #include <utility>
 
-#include "short-primatives.h"
+#include <short-primatives.h>
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -59,9 +58,6 @@ void sortDoubleSizeTPairHighToLow(std::pair<f64, std::size_t> *toSort,
  **********************************************************************/
 void sortDoubleSizeTPairLowToHigh(std::pair<f64, std::size_t> *toSort,
                                                           csize_t size);
-
-
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////
