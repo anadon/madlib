@@ -18,15 +18,13 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef MADLIB_SIMPLE_THREAD_DISPATCH_H
-#define MADLIB_SIMPLE_THREAD_DISPATCH_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include "short-primatives.h"
-
+#include <short-primatives.h>
 
 ////////////////////////////////////////////////////////////////////////
 //STRUCT DEFINITIONS////////////////////////////////////////////////////
@@ -59,6 +57,3 @@ struct multithreadLoad{
  *
  **********************************************************************/
 void autoThreadLauncher(void* (*func)(void*), void *sharedArgs);
-
-
-#endif

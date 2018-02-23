@@ -1,5 +1,4 @@
-#ifndef MADLIB_GEO_SOFT_HPP
-#define MADLIB_GEO_SOFT_HPP
+#pragma once
 
 #include<string>
 #include<vector>
@@ -1248,5 +1247,3 @@ std::unordered_map<std::string, std::vector<std::vector<std::string> > >
                                                     loadGeoSoftFileIR(const char *fp);
 
 int loadGeoSoftFile(const char *fp, struct GeoSoft **contents);
-
-#endif

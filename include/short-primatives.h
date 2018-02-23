@@ -19,35 +19,35 @@
     <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef MADLIB_SHORT_PRIMATIVES_H
-#define MADLIB_SHORT_PRIMATIVES_H
+#pragma once
 
 #include <stddef.h>
+#include <stdint.h>
 
 //RAW TYPES/////////////////////////////////////////////////////////////
 
-typedef char  s8;
-typedef short s16;
-typedef int   s32;
-typedef long  s64;
+typedef int8_t  s8;
+typedef int16_t s16;
+typedef int32_t s32;
+typedef int64_t s64;
 
-typedef unsigned char  u8;
-typedef unsigned short u16;
-typedef unsigned int   u32;
-typedef unsigned long  u64;
+typedef uint8_t  u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
 
 typedef float  f32;
 typedef double f64;
 
-typedef const char  cs8;
-typedef const short cs16;
-typedef const int   cs32;
-typedef const long  cs64;
+typedef const int8_t  cs8;
+typedef const int16_t cs16;
+typedef const int32_t cs32;
+typedef const int64_t cs64;
 
-typedef const unsigned char  cu8;
-typedef const unsigned short cu16;
-typedef const unsigned int   cu32;
-typedef const unsigned long  cu64;
+typedef const uint8_t  cu8;
+typedef const uint16_t cu16;
+typedef const uint32_t cu32;
+typedef const uint64_t cu64;
 
 typedef const float  cf32;
 typedef const double cf64;
@@ -59,5 +59,3 @@ typedef const size_t csize_t;
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
-#endif

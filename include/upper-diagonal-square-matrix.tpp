@@ -17,8 +17,7 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
-#ifndef STD_UPPER_DIAGONAL_SQUARE_MATRIX_T_HPP
-#define STD_UPPER_DIAGONAL_SQUARE_MATRIX_T_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////
 //INCLUDES//////////////////////////////////////////////////////////////
@@ -29,7 +28,7 @@
 #include <tgmath.h>
 #include <utility>
 
-#include "short-primatives.h"
+#include <short-primatives.h>
 
 ////////////////////////////////////////////////////////////////////////
 //CLASS DEFINITION//////////////////////////////////////////////////////
@@ -224,5 +223,3 @@ template <typename T> void UpperDiagonalSquareMatrix<T>::zeroData(){
   size_t memSize = numberOfElements() * sizeof(T);
   memset(oneDMatrix, 0, memSize);
 }
-
-#endif

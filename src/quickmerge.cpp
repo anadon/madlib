@@ -83,7 +83,7 @@ void sortDoubleSizeTPairHighToLow(std::pair<f64, std::size_t> *toSort,
 
   if(1 >= size) return;
 
-
+  //Groom the data and negate worst case scenarios
   for(i = 0; i < size-1; i++){
     if(toSort[i].first < toSort[i+1].first){
       decreasingStart = i;
@@ -102,6 +102,7 @@ void sortDoubleSizeTPairHighToLow(std::pair<f64, std::size_t> *toSort,
   indiciesOfInterest[0] = 0;
   size_t IOISize = 1;
 
+  //group ordered segments
   for(i = 0; i < size-1; i++){
     if(toSort[i].first < toSort[i+1].first)
       indiciesOfInterest[IOISize++] = (i+1);
@@ -114,6 +115,7 @@ void sortDoubleSizeTPairHighToLow(std::pair<f64, std::size_t> *toSort,
   tmpPtr = malloc(sizeof(*newIndiciesOfInterest) * size);
   newIndiciesOfInterest = (size_t*) tmpPtr;
 
+  //while there are multiple segments, merge them
   while(IOISize > 2){
     size_t NIOISize = 0;
     for(i = 0; i < IOISize-2; i+=2){
@@ -139,6 +141,8 @@ void sortDoubleSizeTPairHighToLow(std::pair<f64, std::size_t> *toSort,
 }
 
 
+//Given a range of continuous indexes describing two sorted segments of values,
+//sort them into a new array over the same range.
 void sortDoubleSizeTPairHighToLowHelper(std::pair<f64, std::size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
                                     std::pair<f64, std::size_t> *sortSpace){
@@ -171,6 +175,7 @@ void sortDoubleSizeTPairLowToHigh(std::pair<f64, std::size_t> *toSort,
   if(1 >= size) return;
 
 
+  //Groom the data and negate worst case scenarios
   for(i = 0; i < size-1; i++){
     if(toSort[i].first > toSort[i+1].first){
       decreasingStart = i;
@@ -191,6 +196,7 @@ void sortDoubleSizeTPairLowToHigh(std::pair<f64, std::size_t> *toSort,
   indiciesOfInterest[0] = 0;
   size_t IOISize = 1;
 
+  //group ordered segments
   for(i = 0; i < size-1; i++){
     if(toSort[i].first > toSort[i+1].first)
       indiciesOfInterest[IOISize++] = (i+1);
@@ -205,6 +211,7 @@ void sortDoubleSizeTPairLowToHigh(std::pair<f64, std::size_t> *toSort,
   tmpPtr = malloc(sizeof(*newIndiciesOfInterest) * size);
   newIndiciesOfInterest = (size_t*) tmpPtr;
 
+  //while there are multiple segments, merge them
   while(IOISize > 2){
     size_t NIOISize = 0;
     for(i = 0; i < IOISize-2; i+=2){
@@ -230,6 +237,8 @@ void sortDoubleSizeTPairLowToHigh(std::pair<f64, std::size_t> *toSort,
 }
 
 
+//Given a range of continuous indexes describing two sorted segments of values,
+//sort them into a new array over the same range.
 void sortDoubleSizeTPairLowToHighHelper(std::pair<f64, std::size_t> *toSort,
                 csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
                                     std::pair<f64, std::size_t> *sortSpace){
