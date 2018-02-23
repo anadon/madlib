@@ -3,15 +3,15 @@
 
 ### Table of Contents
 
-1. [Description](#description)
+1.  [Description](#description)
 
-2. [System Requirements](#requirements)
+2.  [System Requirements](#requirements)
 
-3. [Building and Installing](#building)
+3.  [Building and Installing](#building)
 
-4. [Available Features](#features)
+4.  [Available Features](#features)
 
-5. [Credits](#credits)
+5.  [Credits](#credits)
 
 --------------------------------------------------------------------------------
 ## Description <a name = "description"></a>
@@ -40,27 +40,28 @@ Debug:
 >$ ./test/test.out
 
 Install:
-> \# make install
+>\# make install
 
 --------------------------------------------------------------------------------
 ## Available Features <a name = "features"></a>
 
 Algorithms:
-* Pearson Correlation Matrix generation
-* Kendall Correlation Matrix generation
-* Spearman Correlation Matrix generation
-* Simple Semi-Automated Thread dispatcher using pthreads
-* Various statistical functions
-* Quick-Merge Sort
-* GEO's .soft file format general parser
+*   Pearson Correlation Matrix generation
+*   Kendall Correlation Matrix generation
+*   Spearman Correlation Matrix generation
+*   Simple Semi-Automated Thread dispatcher using pthreads
+*   Various statistical functions
+*   Quick-Merge Sort
+*   GEO's .soft file format general parser
 
 Datastructures:
-* Upper Diagonal Square Matrix template, memory optimized
-* Undirected Graph, Vertex, and Edge templates
-* bitpacked array, and sparse bitpacked array
-* universal GEO .soft file format container
+*   Upper Diagonal Square Matrix template, memory optimized
+*   Undirected Graph, Vertex, and Edge templates
+*   bitpacked array, and sparse bitpacked array
+*   universal GEO .soft file format container
 
 --------------------------------------------------------------------------------
 ## Credits <a name = "credits"></a>
 
-Primary Author: Josh Marshall <jrmarsha@mtu.edu>
+Primary Author: Josh Marshall (jrmarsha@mtu.edu) <br>
+Conributors: Victor Claremboux
