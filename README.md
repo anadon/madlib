@@ -36,7 +36,7 @@ Build:
 >$ make
 
 Debug:
->$ make debug
+>$ make debug <br>
 >$ ./test/test.out
 
 Install:
