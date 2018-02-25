@@ -7,7 +7,7 @@
 
 2.  [System Requirements](#requirements)
 
-3.  [Building and Installing](#building)
+3.  [Building, Installing, and Generating Documentation](#building)
 
 4.  [Available Features](#features)
 
@@ -29,6 +29,8 @@ Building Requirements: gcc-libs, g++, libc, git, make, bison >= 3.0.4, flex
 
 Use Requirements: libc
 
+Documentation Requirements: Doxygen
+
 --------------------------------------------------------------------------------
 ## Building and Installing <a name = "building"></a>
 
@@ -41,6 +43,10 @@ Debug:
 
 Install:
 >\# make install
+
+Generate Documentation:
+>$cd doc/ <br>
+>$doxygen Doxyfile
 
 --------------------------------------------------------------------------------
 ## Available Features <a name = "features"></a>
