@@ -12,3 +12,7 @@ stack.hh
 lex.yy.c
 lex.yy.h
 lib
+doc/html
+doc/latex
+doc/man
+doc/manual
