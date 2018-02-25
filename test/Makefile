@@ -46,10 +46,8 @@ HEADERS=diagnostics.hpp                                                \
         short-primatives.h                                             \
         simple-thread-dispatch.hpp                                     \
         statistics.h                                                   \
-        edge.tpp                                                       \
-        graph.tpp                                                      \
-        upper-diagonal-square-matrix.tpp                               \
-        vertex.tpp                                                     \
+        graph.hpp                                                      \
+        upper-diagonal-square-matrix.hpp                               \
         $(GTEST_HEADERS)
 
 

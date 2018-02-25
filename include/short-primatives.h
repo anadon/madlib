@@ -1,4 +1,4 @@
-/*Copyright 2017 Josh Marshall*****************************************/
+/*Copyright 2017-2018 Josh Marshall********************************************/
 
 /***********************************************************************
     This file is part of "Marshall's  Datastructures and Algorithms".
@@ -17,6 +17,11 @@
     You should have received a copy of the GNU General Public License
     along with "Marshall's  Datastructures and Algorithms".  If not, see
     <http://www.gnu.org/licenses/>.
+***********************************************************************/
+
+/*******************************************************************//**
+@file
+@brief Give more concise names to common variables types.
 ***********************************************************************/
 
 #pragma once

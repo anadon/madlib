@@ -1,4 +1,4 @@
-/*Copyright 2016-2017 Josh Marshall************************************/
+/*Copyright 2016-2018 Josh Marshall********************************************/
 
 /***********************************************************************
     This file is part of TF-Cluster.
@@ -15,6 +15,11 @@
 
     You should have received a copy of the GNU General Public License
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
+***********************************************************************/
+
+/*******************************************************************//**
+@file
+@brief A number of basic statistical functions not included in C++.
 ***********************************************************************/
 
 #pragma once

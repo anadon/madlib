@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <unordered_map>
-#include <graph.tpp>
+#include <graph.hpp>
 
 #include "gtest/gtest.h"
 

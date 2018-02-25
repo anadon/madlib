@@ -1,4 +1,4 @@
-/*Copyright 2016-2017 Josh Marshall************************************/
+/*Copyright 2016-2018 Josh Marshall********************************************/
 
 /***********************************************************************
     This file is part of TF-Cluster.
@@ -15,6 +15,12 @@
 
     You should have received a copy of the GNU General Public License
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
+***********************************************************************/
+
+/*******************************************************************//**
+@file
+@brief A graph iplementation with the goal to be general enough and high quality
+enough to propose for inclusion to the C++ Standard Template Library.
 ***********************************************************************/
 
 #pragma once

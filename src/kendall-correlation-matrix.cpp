@@ -28,7 +28,7 @@
 #include <correlation-matrix.hpp>
 #include <simple-thread-dispatch.hpp>
 #include <quickmerge.hpp>
-#include <upper-diagonal-square-matrix.tpp>
+#include <upper-diagonal-square-matrix.hpp>
 
 
 ////////////////////////////////////////////////////////////////////////

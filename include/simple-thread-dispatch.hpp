@@ -1,4 +1,4 @@
-/*Copyright 2016-2017 Josh Marshall************************************/
+/*Copyright 2016-2018 Josh Marshall********************************************/
 
 /***********************************************************************
     This file is part of Marshall's Algorithms and Datastructures.
@@ -16,6 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with Marshall's Algorithms and Datastructures.  If not, see
     <http://www.gnu.org/licenses/>.
+***********************************************************************/
+
+/*******************************************************************//**
+@file
+@brief A simple barrier style multithreading system.
 ***********************************************************************/
 
 #pragma once

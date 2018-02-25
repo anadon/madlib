@@ -19,8 +19,8 @@ LIBS=-pthread
 INCLUDE=$(shell pwd)/include
 OLIB=lib/libmadlib.a lib/libmadlib.so
 
-TEMPLATES=include/graph.tpp                                                    \
-          include/upper-diagonal-square-matrix.tpp
+TEMPLATES=include/graph.hpp                                                    \
+          include/upper-diagonal-square-matrix.hpp
 
 HEADERS=include/diagnostics.hpp                                                \
         include/correlation-matrix.hpp                                         \

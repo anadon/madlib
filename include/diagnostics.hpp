@@ -1,4 +1,4 @@
-/*Copyright 2016-2017 Josh Marshall************************************/
+/*Copyright 2016-2018 Josh Marshall********************************************/
 
 /***********************************************************************
     This file is part of TF-Cluster.
@@ -17,6 +17,11 @@
     along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
+/*******************************************************************//**
+@file
+@brief Functions to look at the contents of data structures in this library.
+***********************************************************************/
+
 #pragma once
 
 ////////////////////////////////////////////////////////////////////////
@@ -28,7 +33,7 @@
 #include <vector>
 
 #include <short-primatives.h>
-#include <upper-diagonal-square-matrix.tpp>
+#include <upper-diagonal-square-matrix.hpp>
 
 
 ////////////////////////////////////////////////////////////////////////
