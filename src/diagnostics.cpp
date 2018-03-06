@@ -49,7 +49,7 @@ void printCoincidenceMatrix(UpperDiagonalSquareMatrix<u8> *matrix,
   for(size_t i = 0; i < n; i++)
     mtr[i] = (f64*) malloc(sizeof(**mtr) * n);
 
-  for(size_t i = 0; i < n; i++){\
+  for(size_t i = 0; i < n; i++){
     mtr[i][i] = maxMatch;
     for(size_t j = i+1; j < n; j++){
       mtr[i][j] = mtr[j][i] = matrix->getValueAtIndex(i, j);
