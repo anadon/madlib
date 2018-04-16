@@ -45,22 +45,19 @@
  *
  * @param[in] expressionData A number of rows monitoring a variable over
  * a number of columns reporting samples for that variable.
- *
- * @param[in] numRows expressionData[numRows][]
- *
- * @param[in] numCols expressionData[][numCols]
+ * expressionData[numRows][numCols].
  *
  * @param[in] againstRows An optional argument to limit calculation to a
- * set of rows.
+ * set of rows.  Default = nullptr.
  *
  * @param[in] againstRowsLength The number of samples to calculate in
- * againstRows.
+ * againstRows.  Default = 0.
  *
  **********************************************************************/
 extern std::vector<std::vector<double> >
 calculateKendallsTauCorrelationCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows = NULL,
+  csize_t *againstRows = nullptr,
   csize_t againstRowsLength = 0);
 
 
@@ -71,22 +68,19 @@ calculateKendallsTauCorrelationCorrelationMatrix(
  *
  * @param[in] expressionData A number of rows monitoring a variable over
  * a number of columns reporting samples for that variable.
- *
- * @param[in] numRows expressionData[numRows][]
- *
- * @param[in] numCols expressionData[][numCols]
+ * expressionData[numRows][numCols].
  *
  * @param[in] againstRows An optional argument to limit calculation to a
- * set of rows.
+ * set of rows.  Default = nullptr.
  *
  * @param[in] againstRowsLength The number of samples to calculate in
- * againstRows.
+ * againstRows.  Default = 0.
  *
  **********************************************************************/
 extern std::vector<std::vector<double> >
 calculatePearsonCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows = NULL,
+  csize_t *againstRows = nullptr,
   csize_t againstRowsLength = 0);
 
 
@@ -97,22 +91,19 @@ calculatePearsonCorrelationMatrix(
  *
  * @param[in] expressionData A number of rows monitoring a variable over
  * a number of columns reporting samples for that variable.
- *
- * @param[in] numRows expressionData[numRows][]
- *
- * @param[in] numCols expressionData[][numCols]
+ * expressionData[numRows][numCols].
  *
  * @param[in] againstRows An optional argument to limit calculation to a
- * set of rows.
+ * set of rows.  Default = nullptr.
  *
  * @param[in] againstRowsLength The number of samples to calculate in
- * againstRows.
+ * againstRows.  Default = 0.
  *
  **********************************************************************/
 extern std::vector<std::vector<double> >
 calculateSpearmanCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows = NULL,
+  csize_t *againstRows = nullptr,
   csize_t againstRowsLength = 0);
 
 ////////////////////////////////////////////////////////////////////////

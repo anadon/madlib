@@ -43,13 +43,8 @@
  * into a matrix of ranks, such that the ordering of values in columns
  * becomes their value, maintaining relative high to low ordering.
  *
- * @param[in] expressionData
- *
- * @param[in] numRows expressionData[numRows][]
- *
- * @param[in] numCols expressionData[][numCols]
- *
- * TODO: document maxMatch usage
+ * @param[in, out] expressionData Used in [row][column] format, rank the values
+ * in each column.
  **********************************************************************/
 void calculateRankMatrix(std::vector<std::vector<double> > &expressionData);
 

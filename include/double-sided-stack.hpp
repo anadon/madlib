@@ -1,4 +1,28 @@
-//TODO: all documentation; entering into Doxygen
+/*Copyright 2018 Josh Marshall*************************************************/
+
+/***********************************************************************
+    This file is part of "Marshall's  Datastructures and Algorithms".
+
+    "Marshall's  Datastructures and Algorithms" is free software: you
+    can redistribute it and/or modify it under the terms of the GNU
+    General Public License as published by the Free Software Foundation,
+    either version 3 of the License, or (at your option) any later
+    version.
+
+    "Marshall's  Datastructures and Algorithms" is distributed in the
+    hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.  See the GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with "Marshall's  Datastructures and Algorithms".  If not, see
+    <http://www.gnu.org/licenses/>.
+***********************************************************************/
+
+/*******************************************************************//**
+@file
+@brief Rank each column of an input matrix
+***********************************************************************/
 
 #pragma once
 
@@ -48,36 +72,127 @@ class DoubleSidedStack{
 
 public:
 
+/*******************************************************************//**
+ * \brief Create a DoubleSidedStack with space for 'maxSize' number of elements.
+ *
+ * @param[in] maxSize The number of elements to allocate for.
+ *
+ **********************************************************************/
   DoubleSidedStack(size_t maxSize);
+
 
   ~DoubleSidedStack();
 
+
+/*******************************************************************//**
+ * \brief Add a copy of the passed element to the front stack.
+ *
+ * @param[in] element The element to add to the front stack.
+ *
+ **********************************************************************/
   void push_front(T element);
 
+
+/*******************************************************************//**
+ * \brief Add a copy of the passed element to the back stack.
+ *
+ * @param[in] element The element to add to the back stack.
+ *
+ **********************************************************************/
   void push_back(T elements);
 
+
+/*******************************************************************//**
+ * \brief Remove an element from the top of the front stack, and return a copy
+ * of the removed element.
+ *
+ * @return Element popped.
+ **********************************************************************/
   T pop_front();
 
+
+/*******************************************************************//**
+ * \brief Remove an element from the top of the back stack, and return a copy
+ * of the removed element.
+ *
+ * @return Element popped.
+ **********************************************************************/
   T pop_back();
 
+
+/*******************************************************************//**
+ * \brief Return a copy of the element on the top of the front stack.
+ *
+ * @return Element on top of front stack.
+ **********************************************************************/
   T peek_front();
 
+
+/*******************************************************************//**
+ * \brief Return a copy of the element on the top of the back stack.
+ *
+ * @return Element on top of back stack.
+ **********************************************************************/
   T peek_back();
 
+
+/*******************************************************************//**
+ * \brief Return a copy of the element at the [index] element, without respect
+ * to stacks, but the underlying array.
+ *
+ * @param[in] index The index in the underlying array.
+ *
+ * @return a copy of the [index] element.
+ **********************************************************************/
   T at(size_t index);
 
+
+/*******************************************************************//**
+ * \brief Return the count of the number of elements currently stored.
+ *
+ * @return The count of the number of elements currently stored.
+ **********************************************************************/
   size_t size();
 
+
+/*******************************************************************//**
+ * \brief Return the count of the number of elements currently stored in the
+ * front stack.
+ *
+ * @return The count of the number of elements currently stored in the front
+ * stack.
+ **********************************************************************/
   size_t numElementsFront();
 
+
+/*******************************************************************//**
+ * \brief Return the count of the number of elements currently stored in the
+ * back stack.
+ *
+ * @return The count of the number of elements currently stored in the back
+ * stack.
+ **********************************************************************/
   size_t numElementsBack();
 
+
+/*******************************************************************//**
+* \brief Remove all elements in the front stack.
+**********************************************************************/
   void empty_front();
 
+
+/*******************************************************************//**
+* \brief Remove all elements in the back stack.
+**********************************************************************/
   void empty_back();
 
+
+/*******************************************************************//**
+* \brief Remove all elements.
+**********************************************************************/
   void empty();
 };
+
 
 template<typename T>
 DoubleSidedStack<T>::DoubleSidedStack(size_t maxSize): maxNumElements(maxSize){
