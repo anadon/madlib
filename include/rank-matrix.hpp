@@ -31,6 +31,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include <unistd.h>
+#include <vector>
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -50,8 +51,7 @@
  *
  * TODO: document maxMatch usage
  **********************************************************************/
-void calculateRankMatrix(double **expressionData, const size_t numRows,
-                                                  const size_t numCols);
+void calculateRankMatrix(std::vector<std::vector<double> > &expressionData);
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////

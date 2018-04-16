@@ -33,27 +33,22 @@
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-extern f64** calculateSpearmanCorrelationMatrix(cf64 **expressionData,
-                csize_t numRows, csize_t numCols, csize_t *againstRows,
-                                            csize_t againstRowsLength){
-  f64 **rankedMatrix, **tr;
+extern std::vector<std::vector<double> >
+calculateSpearmanCorrelationMatrix(
+  std::vector<std::vector<double> > *expressionData,
+  csize_t *againstRows,
+  csize_t againstRowsLength)
+{
+  std::vector<std::vector<double> > *rankedMatrix, tr;
   void *tmpPtr;
 
-  tmpPtr = malloc(sizeof(*rankedMatrix) * numRows);
-  rankedMatrix = (double**) tmpPtr;
-  for(size_t i = 0; i < numRows; i++){
-    const size_t memSize = sizeof(**rankedMatrix) * numCols;
-    tmpPtr = malloc(memSize);
-    memcpy(tmpPtr, expressionData[i], memSize);
-    rankedMatrix[i] = (double*) tmpPtr;
-  }
-  calculateRankMatrix(rankedMatrix, numRows, numCols);
+  *rankedMatrix = *expressionData;
 
-  tr = calculatePearsonCorrelationMatrix((cf64**) rankedMatrix, numRows,
-                              numCols, againstRows, againstRowsLength);
+  calculateRankMatrix(*rankedMatrix);
 
-  for(size_t i = 0; i < numRows; i++) free(rankedMatrix[i]);
-  free(rankedMatrix);
+  tr = calculatePearsonCorrelationMatrix( rankedMatrix, againstRows, againstRowsLength);
+
+  delete rankedMatrix;
 
   return tr;
 }

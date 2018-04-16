@@ -3,11 +3,11 @@ CC=gcc
 LIBS=-pthread
 
 ##These should be defined in the calling Makefile
-COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I$(INCLUDE) -fPIC
+#COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I$(INCLUDE) -fPIC
 #CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x
 #CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99
-CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
-CFLAGS=-O3 $(COMMON_FLAGS) -std=c99
+#CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
+#CFLAGS=-O3 $(COMMON_FLAGS) -std=c99
 
 STATIC_LIB=libmadlib.a
 DYNAMIC_LIB=libmadlib.so
@@ -17,7 +17,6 @@ SUBLIBS_OBJECTS=file-parsing.o
 SOURCES=diagnostics.cpp                                                \
 				kendall-correlation-matrix.cpp                                 \
 				pearson-correlation-matrix.cpp                                 \
-				quickmerge.cpp                                                 \
 				rank-matrix.cpp                                                \
 				simple-thread-dispatch.cpp                                     \
 				spearman-correlation-matrix.cpp                                \
@@ -27,7 +26,6 @@ SOURCES=diagnostics.cpp                                                \
 OBJECTS= diagnostics.o                                                 \
 				 kendall-correlation-matrix.o                                  \
 				 pearson-correlation-matrix.o                                  \
-				 quickmerge.o                                                  \
 				 rank-matrix.o                                                 \
 				 simple-thread-dispatch.o                                      \
 				 spearman-correlation-matrix.o                                 \

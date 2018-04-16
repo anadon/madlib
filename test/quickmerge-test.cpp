@@ -49,7 +49,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_ONE) {
                                   pair<double, size_t>{0, 8},
                                   pair<double, size_t>{0, 9}};
 
-  sortDoubleSizeTPairHighToLow(case1, 10);
+  madlib::sortHighToLow(case1, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case1[i].first, case1[i+1].first);
@@ -69,7 +69,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_TWO){
                                   pair<double, size_t>{1, 8},
                                   pair<double, size_t>{1, 9}};
 
-  sortDoubleSizeTPairHighToLow(case2, 10);
+  madlib::sortHighToLow(case2, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case2[i].first, case2[i+1].first);
@@ -89,7 +89,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_THREE){
                                   pair<double, size_t>{8, 8},
                                   pair<double, size_t>{9, 9}};
 
-  sortDoubleSizeTPairHighToLow(case3, 10);
+  madlib::sortHighToLow(case3, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case3[i].first, case3[i+1].first);
@@ -109,7 +109,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_FOUR){
                                   pair<double, size_t>{0.8, 8},
                                   pair<double, size_t>{0.9, 9}};
 
-  sortDoubleSizeTPairHighToLow(case4, 10);
+  madlib::sortHighToLow(case4, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case4[i].first, case4[i+1].first);
@@ -129,7 +129,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_FIVE){
                                   pair<double, size_t>{1, 8},
                                   pair<double, size_t>{0, 9}};
 
-  sortDoubleSizeTPairHighToLow(case5, 10);
+  madlib::sortHighToLow(case5, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case5[i].first, case5[i+1].first);
@@ -149,7 +149,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_SIX){
                                   pair<double, size_t>{0.1, 8},
                                   pair<double, size_t>{0.0, 9}};
 
-  sortDoubleSizeTPairHighToLow(case6, 10);
+  madlib::sortHighToLow(case6, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case6[i].first, case6[i+1].first);
@@ -169,7 +169,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_SEVEN){
                                   pair<double, size_t>{9, 8},
                                   pair<double, size_t>{8, 9}};
 
-  sortDoubleSizeTPairHighToLow(case7, 10);
+  madlib::sortHighToLow(case7, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case7[i].first, case7[i+1].first);
@@ -189,7 +189,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_EIGHT){
                                   pair<double, size_t>{0.9, 8},
                                   pair<double, size_t>{0.8, 9}};
 
-  sortDoubleSizeTPairHighToLow(case8, 10);
+  madlib::sortHighToLow(case8, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case8[i].first, case8[i+1].first);
@@ -209,7 +209,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_NINE){
                                   pair<double, size_t>{7, 8},
                                   pair<double, size_t>{9, 9}};
 
-  sortDoubleSizeTPairHighToLow(case9, 10);
+  madlib::sortHighToLow(case9, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case9[i].first, case9[i+1].first);
@@ -229,7 +229,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_TEN){
                                    pair<double, size_t>{0.7, 8},
                                    pair<double, size_t>{0.9, 9}};
 
-  sortDoubleSizeTPairHighToLow(case10, 10);
+  madlib::sortHighToLow(case10, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case10[i].first, case10[i+1].first);
@@ -249,7 +249,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_ELEVEN){
                                    pair<double, size_t>{3, 8},
                                    pair<double, size_t>{4, 9}};
 
-  sortDoubleSizeTPairHighToLow(case11, 10);
+  madlib::sortHighToLow(case11, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case11[i].first, case11[i+1].first);
@@ -269,7 +269,7 @@ TEST(SORT_HIGH_TO_LOW, TEST_TWELVE){
                                    pair<double, size_t>{0.3, 8},
                                    pair<double, size_t>{0.4, 9}};
 
-  sortDoubleSizeTPairHighToLow(case12, 10);
+  madlib::sortHighToLow(case12, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(case12[i].first, case12[i+1].first);
@@ -290,7 +290,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_ONE){
                                   pair<double, size_t>{0, 8},
                                   pair<double, size_t>{0, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case1, 10);
+  madlib::sortLowToHigh(case1, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case1[i].first, case1[i+1].first);
@@ -310,7 +310,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_TWO){
                                   pair<double, size_t>{1, 8},
                                   pair<double, size_t>{1, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case2, 10);
+  madlib::sortLowToHigh(case2, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case2[i].first, case2[i+1].first);
@@ -330,7 +330,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_THREE){
                                   pair<double, size_t>{8, 8},
                                   pair<double, size_t>{9, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case3, 10);
+  madlib::sortLowToHigh(case3, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case3[i].first, case3[i+1].first);
@@ -350,7 +350,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_FOUR){
                                   pair<double, size_t>{0.8, 8},
                                   pair<double, size_t>{0.9, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case4, 10);
+  madlib::sortLowToHigh(case4, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case4[i].first, case4[i+1].first);
@@ -370,7 +370,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_FIVE){
                                   pair<double, size_t>{1, 8},
                                   pair<double, size_t>{0, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case5, 10);
+  madlib::sortLowToHigh(case5, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case5[i].first, case5[i+1].first);
@@ -390,7 +390,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_SIX){
                                   pair<double, size_t>{0.1, 8},
                                   pair<double, size_t>{0.0, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case6, 10);
+  madlib::sortLowToHigh(case6, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case6[i].first, case6[i+1].first);
@@ -410,7 +410,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_SEVEN){
                                   pair<double, size_t>{9, 8},
                                   pair<double, size_t>{8, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case7, 10);
+  madlib::sortLowToHigh(case7, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case7[i].first, case7[i+1].first);
@@ -430,7 +430,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_EIGHT){
                                   pair<double, size_t>{0.9, 8},
                                   pair<double, size_t>{0.8, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case8, 10);
+  madlib::sortLowToHigh(case8, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case8[i].first, case8[i+1].first);
@@ -450,7 +450,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_NINE){
                                   pair<double, size_t>{7, 8},
                                   pair<double, size_t>{9, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case9, 10);
+  madlib::sortLowToHigh(case9, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case9[i].first, case9[i+1].first);
@@ -470,7 +470,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_TEN){
                                    pair<double, size_t>{0.7, 8},
                                    pair<double, size_t>{0.9, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case10, 10);
+  madlib::sortLowToHigh(case10, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case10[i].first, case10[i+1].first);
@@ -490,7 +490,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_ELEVEN){
                                    pair<double, size_t>{3, 8},
                                    pair<double, size_t>{4, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case11, 10);
+  madlib::sortLowToHigh(case11, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case11[i].first, case11[i+1].first);
@@ -510,7 +510,7 @@ TEST(SORT_LOW_TO_HIGH, TEST_TWELVE){
                                    pair<double, size_t>{0.3, 8},
                                    pair<double, size_t>{0.4, 9}};
 
-  sortDoubleSizeTPairLowToHigh(case12, 10);
+  madlib::sortLowToHigh(case12, 10);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case12[i].first, case12[i+1].first);

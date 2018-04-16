@@ -11,7 +11,8 @@ USER_DIR = .
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = RANK_MATRIX_TEST SORT_LOW_TO_HIGH SORT_HIGH_TO_LOW GRAPH UpperDiagonalMatrixTest
+TESTS = RANK_MATRIX_TEST SORT_LOW_TO_HIGH SORT_HIGH_TO_LOW GRAPH \
+        UpperDiagonalMatrixTest DoubleSidedStack
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -22,7 +23,7 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 COMMON_FLAGS=-I../include -Igoogletest/googletest/include/ -pipe -Wall \
              -Wextra -Wconversion -march=native
 CPP_LIBS=-Llib -Lgoogletest/build/googlemock/gtest/
-CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x -isystem \
+CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++1z -isystem \
          -I$(GTEST_DIR)/include
 
 EXEC=test.out
@@ -31,13 +32,15 @@ SOURCES=graph-test.cpp                                                 \
         quickmerge-test.cpp                                            \
         rank-matrix-test.cpp                                           \
         statistics-test.cpp                                            \
-        upper-diagonal-square-matrix-test.cpp
+        upper-diagonal-square-matrix-test.cpp                          \
+				double-sided-stack-test.cpp
 
 OBJECTS=graph-test.o                                                   \
         quickmerge-test.o                                              \
         rank-matrix-test.o                                             \
         statistics-test.o                                              \
-        upper-diagonal-square-matrix-test.o
+        upper-diagonal-square-matrix-test.o                            \
+				double-sided-stack-test.o
 
 HEADERS=diagnostics.hpp                                                \
         correlation-matrix.hpp                                         \
@@ -48,6 +51,7 @@ HEADERS=diagnostics.hpp                                                \
         statistics.h                                                   \
         graph.hpp                                                      \
         upper-diagonal-square-matrix.hpp                               \
+        double-sided-stack.hpp                                         \
         $(GTEST_HEADERS)
 
 

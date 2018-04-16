@@ -43,22 +43,18 @@ using std::size_t;
 ////////////////////////////////////////////////////////////////////////
 
 struct tauCorrHelpStructCrossReference{
-  cf64 **expressionData;
-  csize_t numRows;
-  csize_t numCols;
+  std::vector<std::vector<double> > *expressionData;
   csize_t *againstRows;
   csize_t againstRowsLength;
 
-  f64 **results;
+  std::vector<std::vector<double> > *results;
 };
 
 typedef struct tauCorrHelpStructCrossReference TCHSCR;
 
 
 struct tauCorrHelpStructBruteForce{
-  cf64 **expressionData;
-  csize_t numRows;
-  csize_t numCols;
+  std::vector<std::vector<double> > *expressionData;
 
   UpperDiagonalSquareMatrix<f64> *results;
 };
@@ -96,14 +92,14 @@ void *tauCorrelationHelperCrossReference(void *protoArgs){
 
   TCHSCR *args = (TCHSCR*) arg->specifics;
 
-  cf64 **expressionData = args->expressionData;
-  csize_t numGenes = args->numRows;
-  csize_t corrVecLeng = args->numCols;
+  std::vector<std::vector<double> > *expressionData = args->expressionData;
+  csize_t numGenes = (*expressionData).size();
+  csize_t corrVecLeng = (*expressionData)[0].size();
 
   csize_t *TFCorrData = args->againstRows;
   csize_t numTFs = args->againstRowsLength;
 
-  f64 **results = args->results;
+  std::vector<std::vector<double> > *results = args->results;
 
   csize_t minimum = (numTFs * numerator) / denominator;
   csize_t maximum = (numTFs * (numerator+1)) / denominator;
@@ -114,12 +110,12 @@ void *tauCorrelationHelperCrossReference(void *protoArgs){
       ssize_t coordinateDisccordinatePairTally = 0;
       for(size_t i = 0; i < corrVecLeng; i++){
         double left, right;
-        left = expressionData[x][i];
-        right = expressionData[TFCorrData[y]][i];
+        left = (*expressionData)[x][i];
+        right = (*expressionData)[TFCorrData[y]][i];
         coordinateDisccordinatePairTally += left == right ? 1 : -1;
       }
       coordinateDisccordinatePairTally *= 2;
-      results[y][x] = ((f64) coordinateDisccordinatePairTally) /
+      (*results)[y][x] = ((f64) coordinateDisccordinatePairTally) /
                       (corrVecLeng*(corrVecLeng-1));
     }
   }
@@ -136,9 +132,9 @@ void *tauCorrelationHelperBruteForce(void *protoArgs){
 
   TCHSBF *args = (TCHSBF*) arg->specifics;
 
-  cf64 **expressionData = args->expressionData;
-  csize_t numRows = args->numRows;
-  csize_t numCols = args->numCols;
+  std::vector<std::vector<double> > *expressionData = args->expressionData;
+  csize_t numRows = (*expressionData).size();
+  csize_t numCols = (*expressionData)[0].size();
 
   UpperDiagonalSquareMatrix<f64> *results = args->results;
 
@@ -154,8 +150,8 @@ void *tauCorrelationHelperBruteForce(void *protoArgs){
   for(size_t x = startXY.first; x < numRows; x++){
     ssize_t coordinateDisccordinatePairTally = 0;
     for(size_t i = 0; i < numCols; i++){
-        double left = expressionData[x][i];
-        double right = expressionData[tmpSY][i];
+        double left = (*expressionData)[x][i];
+        double right = (*expressionData)[tmpSY][i];
         coordinateDisccordinatePairTally += left == right ? 1 : -1;
     }
     coordinateDisccordinatePairTally *= 2;
@@ -169,8 +165,8 @@ void *tauCorrelationHelperBruteForce(void *protoArgs){
     for(size_t x = y+1; x < numRows; x++){
       ssize_t coordinateDisccordinatePairTally = 0;
       for(size_t i = 0; i < numCols; i++){
-        double left = expressionData[x][i];
-        double right = expressionData[y][i];
+        double left = (*expressionData)[x][i];
+        double right = (*expressionData)[y][i];
         coordinateDisccordinatePairTally += left == right ? 1 : -1;
       }
       coordinateDisccordinatePairTally *= 2;
@@ -184,8 +180,8 @@ void *tauCorrelationHelperBruteForce(void *protoArgs){
   for(size_t x = tmpEY; x < endXY.first; x++){
     ssize_t coordinateDisccordinatePairTally = 0;
     for(size_t i = 0; i < numCols; i++){
-        double left = expressionData[x][i];
-        double right = expressionData[tmpEY][i];
+        double left = (*expressionData)[x][i];
+        double right = (*expressionData)[tmpEY][i];
         coordinateDisccordinatePairTally += left == right ? 1 : -1;
     }
     coordinateDisccordinatePairTally *= 2;
@@ -198,41 +194,37 @@ void *tauCorrelationHelperBruteForce(void *protoArgs){
 }
 
 
-extern f64** calculateKendallsTauCorrelationCorrelationMatrix(
-                cf64 **expressionData, csize_t numRows, csize_t numCols,
-                      csize_t *againstRows, csize_t againstRowsLength){
-  f64 **tr, **rankedMatrix;
+extern std::vector<std::vector<double> >
+calculateKendallsTauCorrelationCorrelationMatrix(
+  std::vector<std::vector<double> > *expressionData,
+  csize_t *againstRows,
+  csize_t againstRowsLength,
+  bool modifyExpressionData = false)
+{
+  std::vector<std::vector<double> > tr;
+  std::vector<std::vector<double> > *rankedMatrix;
+  //if(false == modifyExpressionData){
+  //  rankedMatrix &= expressionData;
+  //}else{
+    rankedMatrix = expressionData;
+  //}
   void *tmpPtr;
-
-  tmpPtr = malloc(sizeof(*rankedMatrix) * numRows);
-  rankedMatrix = (double**) tmpPtr;
-  for(size_t i = 0; i < numRows; i++){
-    const size_t memSize = sizeof(**rankedMatrix) * numCols;
-    tmpPtr = malloc(memSize);
-    memcpy(tmpPtr, expressionData[i], memSize);
-    rankedMatrix[i] = (double*) tmpPtr;
-  }
+  csize_t numRows = (*rankedMatrix).size();
 
 
-  calculateRankMatrix(rankedMatrix, numRows, numCols);
+  calculateRankMatrix(*rankedMatrix);
 
   //just calculate everything
   if( NULL == againstRows || numRows/2 < againstRowsLength){
-
-    tmpPtr = malloc(sizeof(*tr) * againstRowsLength);
-    tr = (f64**) tmpPtr; //[TF index][gene index]
     for(size_t i = 0; i < againstRowsLength; i++){
-      tmpPtr = malloc(sizeof(**tr) * numRows);
-      tr[i] = (f64*) tmpPtr;
+      tr.push_back(std::vector<double>(numRows));
     }
 
     TCHSCR instructions = {
-        (cf64**) rankedMatrix,
-        numRows,
-        numCols,
+        rankedMatrix,
         againstRows,
         againstRowsLength,
-        tr
+        &tr
       };
 
     autoThreadLauncher(tauCorrelationHelperCrossReference,
@@ -244,9 +236,7 @@ extern f64** calculateKendallsTauCorrelationCorrelationMatrix(
     corrMatr = new UpperDiagonalSquareMatrix<f64>(numRows);
 
     TCHSBF instructions = {
-        (cf64**) rankedMatrix,
-        numRows,
-        numCols,
+        rankedMatrix,
         corrMatr
       };
 
@@ -254,11 +244,9 @@ extern f64** calculateKendallsTauCorrelationCorrelationMatrix(
                                                 (void*) &instructions);
 
     if(NULL == againstRows){
-      tmpPtr = malloc(sizeof(*tr) * numRows);
-      tr = (f64**) tmpPtr;
+      tr.reserve(numRows);
       for(size_t i = 0; i < numRows; i++){
-        tmpPtr = malloc(sizeof(**tr) * numRows);
-        tr[i] = (f64*) tmpPtr;
+        tr.push_back(std::vector<double>(numRows));
       }
 
       for(size_t y = 0; y < numRows; y++){
@@ -269,11 +257,9 @@ extern f64** calculateKendallsTauCorrelationCorrelationMatrix(
       }
 
     }else{
-      tmpPtr = malloc(sizeof(*tr) * againstRowsLength);
-      tr = (f64**) tmpPtr;
+      tr.reserve(againstRowsLength);
       for(size_t i = 0; i < againstRowsLength; i++){
-        tmpPtr = malloc(sizeof(**tr) * numRows);
-        tr[i] = (f64*) tmpPtr;
+        tr.push_back(std::vector<double>(numRows));
       }
 
       for(size_t yPrime = 0; yPrime < againstRowsLength; yPrime++){
@@ -286,11 +272,7 @@ extern f64** calculateKendallsTauCorrelationCorrelationMatrix(
     }
 
     delete corrMatr;
-
   }
-
-  for(size_t i = 0; i < numRows; i++) free(rankedMatrix[i]);
-  free(rankedMatrix);
 
   return tr;
 }

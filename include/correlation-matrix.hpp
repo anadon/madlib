@@ -30,6 +30,7 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+#include <vector>
 #include <short-primatives.h>
 
 
@@ -56,9 +57,11 @@
  * againstRows.
  *
  **********************************************************************/
-f64** calculateKendallsTauCorrelationCorrelationMatrix(
-                cf64 **expressionData, csize_t numRows, csize_t numCols,
-            csize_t *againstRows = NULL, csize_t againstRowsLength = 0);
+extern std::vector<std::vector<double> >
+calculateKendallsTauCorrelationCorrelationMatrix(
+  std::vector<std::vector<double> > *expressionData,
+  csize_t *againstRows = NULL,
+  csize_t againstRowsLength = 0);
 
 
 /*******************************************************************//**
@@ -80,9 +83,11 @@ f64** calculateKendallsTauCorrelationCorrelationMatrix(
  * againstRows.
  *
  **********************************************************************/
-f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
-          csize_t numRows, csize_t numCols, csize_t *againstRows = NULL,
-                                        csize_t againstRowsLength = 0);
+extern std::vector<std::vector<double> >
+calculatePearsonCorrelationMatrix(
+  std::vector<std::vector<double> > *expressionData,
+  csize_t *againstRows = NULL,
+  csize_t againstRowsLength = 0);
 
 
 /*******************************************************************//**
@@ -104,9 +109,11 @@ f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
  * againstRows.
  *
  **********************************************************************/
-extern f64** calculateSpearmanCorrelationMatrix(cf64 **expressionData,
-          csize_t numRows, csize_t numCols, csize_t *againstRows = NULL,
-                                          csize_t againstRowsLength = 0);
+extern std::vector<std::vector<double> >
+calculateSpearmanCorrelationMatrix(
+  std::vector<std::vector<double> > *expressionData,
+  csize_t *againstRows = NULL,
+  csize_t againstRowsLength = 0);
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////

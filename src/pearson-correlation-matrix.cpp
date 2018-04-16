@@ -246,42 +246,6 @@ void *correlationHelperBruteForce(void *protoArgs){
 }
 
 
-/*
-void *rankHelper(void *protoArgs){
-  void *tmpPtr;
-  std::pair<f64, size_t> *toSort;
-
-  struct multithreadLoad *arg = (struct multithreadLoad*) protoArgs;
-  csize_t numerator = arg->numerator;
-  csize_t denominator = arg->denominator;
-
-  const RHS *args = (RHS*) arg->specifics;
-  f64 **geneCorrData = args->expressionData;
-  csize_t numGenes = args->numRows;
-  csize_t corrVecLeng = args->numCols;
-
-  tmpPtr = malloc(sizeof(*toSort) * corrVecLeng);
-  toSort = (pair<f64, size_t>*) tmpPtr;
-
-  csize_t minimum = (numGenes * numerator) / denominator;
-  csize_t maximum = (numGenes * (numerator+1)) / denominator;
-
-  for(size_t i = minimum; i < maximum; i++){
-    for(size_t j = 0; j < corrVecLeng; j++){
-      toSort[j] = pair<f64, size_t>(geneCorrData[i][j], j);
-    }
-    sortDoubleSizeTPairLowToHigh(toSort, corrVecLeng);
-    for(size_t j = 0; j < corrVecLeng; j++){
-      geneCorrData[i][toSort[j].second] = j;
-    }
-  }
-
-  free(toSort);
-
-  return NULL;
-}*/
-
-
 f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
                 csize_t numRows, csize_t numCols, csize_t *againstRows,
                                             csize_t againstRowsLength){

@@ -31,18 +31,19 @@ HEADERS=include/diagnostics.hpp                                                \
         include/statistics.h
 
 
-COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include -fPIC
+#COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include -fPIC \
+             -std=c++1z
 
 export
 
 all: release
 
-release: CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x -march=native -I $(INCLUDE)
-release: CFLAGS=-O3 $(COMMON_FLAGS) -std=c99 -march=native -I $(INCLUDE)
+release: CPPFLAGS=-O3 $(COMMON_FLAGS) -march=native -std=c++1z -fPIC -I $(INCLUDE)
+release: CFLAGS=-O3 $(COMMON_FLAGS) -march=native -I -fPIC $(INCLUDE)
 release: $(OLIB)
 
-debug: CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x -I $(INCLUDE)
-debug: CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99 -I $(INCLUDE)
+debug: CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++1z -fPIC -I $(INCLUDE)
+debug: CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -fPIC -I $(INCLUDE)
 debug: $(OLIB)
 
 test:debug $(TEST_PROG)

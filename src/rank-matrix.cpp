@@ -23,6 +23,7 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+#include <algorithm>
 #include <stdlib.h>
 #include <utility>
 
@@ -34,13 +35,6 @@
 //PRIVATE STRUCTS///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-struct rankHelpStruct{
-  f64 **expressionData;
-  csize_t numRows;
-  csize_t numCols;
-};
-
-typedef struct rankHelpStruct RHS;
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -56,47 +50,36 @@ void *rankHelper(void *protoArgs);
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-void calculateRankMatrix(f64 **expressionData,
-                                      csize_t numRows, csize_t numCols){
-  RHS RHSinstructions = {
-      expressionData,
-      numRows,
-      numCols
-    };
-
-  autoThreadLauncher(rankHelper, (void*) &RHSinstructions);
+void calculateRankMatrix(std::vector<std::vector<double> > &expressionData){
+  autoThreadLauncher(rankHelper, (void*) &expressionData);
 }
 
 
 void *rankHelper(void *protoArgs){
   void *tmpPtr;
-  std::pair<f64, size_t> *toSort;
   struct multithreadLoad *arg = (struct multithreadLoad*) protoArgs;
   csize_t numerator = arg->numerator;
   csize_t denominator = arg->denominator;
 
-  const RHS *args = (RHS*) arg->specifics;
-  f64 **expressionData = args->expressionData;
-  csize_t numGenes = args->numRows;
-  csize_t corrVecLeng = args->numCols;
+  std::vector<std::vector<double> > *expressionData = (std::vector<std::vector<double> >*) (arg->specifics);
+  csize_t numGenes = (*expressionData).size();
+  csize_t corrVecLeng = (*expressionData)[0].size();
 
   csize_t minimum = (numGenes * numerator) / denominator;
   csize_t maximum = (numGenes * (numerator+1)) / denominator;
 
-  tmpPtr = malloc(sizeof(*toSort) * corrVecLeng);
-  toSort = (std::pair<f64, size_t>*) tmpPtr;
 
   for(size_t i = minimum; i < maximum; i++){
+    std::vector<std::pair<f64, size_t> > toSort((*expressionData)[i].size());
     for(size_t j = 0; j < corrVecLeng; j++){
-      toSort[j] = std::pair<cf64, size_t>(expressionData[i][j], j);
+      toSort[j] = std::pair<cf64, size_t>((*expressionData)[i][j], j);
     }
-    sortDoubleSizeTPairLowToHigh(toSort, corrVecLeng);
+    std::sort(toSort.begin(), toSort.end());
     for(size_t j = 0; j < corrVecLeng; j++){
-      expressionData[i][toSort[j].second] = j;
+      (*expressionData)[i][toSort[j].second] = j;
     }
   }
 
-  free(toSort);
 
   return NULL;
 }
