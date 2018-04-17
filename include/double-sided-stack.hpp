@@ -28,6 +28,7 @@
 
 #include <exception>
 #include <stdexcept>
+#include <string>
 
 using std::exception;
 
@@ -191,6 +192,12 @@ public:
 * \brief Remove all elements.
 **********************************************************************/
   void empty();
+
+
+/*******************************************************************//**
+* \brief String representation of DoubleSidedStack.
+**********************************************************************/
+  friend std::ostream& operator<<(std::ostream &os, const DoubleSidedStack &obj);
 };
 
 
@@ -295,4 +302,42 @@ template<typename T>
 void DoubleSidedStack<T>::empty(){
   empty_front();
   empty_back();
+}
+
+template<typename T>
+std::ostream& operator<<(
+  std::ostream &os,
+  const DoubleSidedStack<T> &obj)
+{
+
+  os << std::string("[ ");
+  if(obj.numElementsFront() > 0){
+    os << obj.at(0);
+    for(size_t i = 0; i < obj.frontNextIndex; i++){
+      os << std::string(" | ") << obj.at(i);
+    }
+  }
+  for(size_t i = obj.frontNextIndex; i < obj.backNextIndex; i++){
+    os << std::string(" _ | ");
+  }
+  if(obj.frontNextIndex <= obj.backNextIndex){
+    os << std::string(" _ ");
+  }
+
+  if(obj.numElementsBack() > 0){
+    os << std::string(" | ");
+  }
+  if(obj.numElementsFront() > 0){
+    if(obj.size() > obj.numElementsBack()){
+      os << std::string(" | ");
+    }
+    for(size_t i = obj.backNextIndex + 1; i < obj.maxNumElements - 1; i++){
+      os << obj.at(i) << std::string(" | ");
+    }
+    os << obj.at(obj.maxNumElements - 1);
+  }
+  os << std::string(" ]");
+
+
+  return os;
 }
