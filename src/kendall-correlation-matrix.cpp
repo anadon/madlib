@@ -44,8 +44,7 @@ using std::size_t;
 
 struct tauCorrHelpStructCrossReference{
   std::vector<std::vector<double> > *expressionData;
-  csize_t *againstRows;
-  csize_t againstRowsLength;
+  const std::vector<size_t> *againstRows;
 
   std::vector<std::vector<double> > *results;
 };
@@ -96,8 +95,11 @@ void *tauCorrelationHelperCrossReference(void *protoArgs){
   csize_t numGenes = (*expressionData).size();
   csize_t corrVecLeng = (*expressionData)[0].size();
 
-  csize_t *TFCorrData = args->againstRows;
-  csize_t numTFs = args->againstRowsLength;
+  const std::vector<size_t> *TFCorrData = args->againstRows;
+  size_t numTFs = 0;
+  if(TFCorrData != nullptr){
+    numTFs = TFCorrData->size();
+  }
 
   std::vector<std::vector<double> > *results = args->results;
 
@@ -111,7 +113,7 @@ void *tauCorrelationHelperCrossReference(void *protoArgs){
       for(size_t i = 0; i < corrVecLeng; i++){
         double left, right;
         left = (*expressionData)[x][i];
-        right = (*expressionData)[TFCorrData[y]][i];
+        right = (*expressionData)[(*TFCorrData)[y]][i];
         coordinateDisccordinatePairTally += left == right ? 1 : -1;
       }
       coordinateDisccordinatePairTally *= 2;
@@ -197,9 +199,7 @@ void *tauCorrelationHelperBruteForce(void *protoArgs){
 extern std::vector<std::vector<double> >
 calculateKendallsTauCorrelationCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows,
-  csize_t againstRowsLength,
-  bool modifyExpressionData = false)
+  const std::vector<size_t> *againstRows)
 {
   std::vector<std::vector<double> > tr;
   std::vector<std::vector<double> > *rankedMatrix;
@@ -215,15 +215,14 @@ calculateKendallsTauCorrelationCorrelationMatrix(
   calculateRankMatrix(*rankedMatrix);
 
   //just calculate everything
-  if( NULL == againstRows || numRows/2 < againstRowsLength){
-    for(size_t i = 0; i < againstRowsLength; i++){
+  if( NULL == againstRows || numRows/2 < againstRows->size()){
+    for(size_t i = 0; i < againstRows->size(); i++){
       tr.push_back(std::vector<double>(numRows));
     }
 
     TCHSCR instructions = {
         rankedMatrix,
         againstRows,
-        againstRowsLength,
         &tr
       };
 
@@ -232,8 +231,8 @@ calculateKendallsTauCorrelationCorrelationMatrix(
 
   }else{//only calculate things we need
 
-    UpperDiagonalSquareMatrix<f64> *corrMatr;
-    corrMatr = new UpperDiagonalSquareMatrix<f64>(numRows);
+    UpperDiagonalSquareMatrix<double> *corrMatr;
+    corrMatr = new UpperDiagonalSquareMatrix<double>(numRows);
 
     TCHSBF instructions = {
         rankedMatrix,
@@ -257,13 +256,13 @@ calculateKendallsTauCorrelationCorrelationMatrix(
       }
 
     }else{
-      tr.reserve(againstRowsLength);
-      for(size_t i = 0; i < againstRowsLength; i++){
+      tr.reserve(againstRows->size());
+      for(size_t i = 0; i < againstRows->size(); i++){
         tr.push_back(std::vector<double>(numRows));
       }
 
-      for(size_t yPrime = 0; yPrime < againstRowsLength; yPrime++){
-        csize_t y = againstRows[yPrime];
+      for(size_t yPrime = 0; yPrime < againstRows->size(); yPrime++){
+        csize_t y = (*againstRows)[yPrime];
         for(size_t x = 0; x < numRows; x++){
           tr[yPrime][x] = corrMatr->getValueAtIndex(x, y);
         }

@@ -24,6 +24,8 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+#include <vector>
+
 #include <correlation-matrix.hpp>
 #include <quickmerge.hpp>
 #include <simple-thread-dispatch.hpp>
@@ -36,46 +38,37 @@
 ////////////////////////////////////////////////////////////////////////
 
 struct corrHelpStructCrossReference{
-  cf64 *sumsOfSquares;
-  cf64 **expressionData;
-  csize_t numRows;
-  csize_t numCols;
-  csize_t *againstRows;
-  csize_t againstRowsLength;
+  std::vector<double> *sumsOfSquares;
+  std::vector<std::vector<double> > *expressionData;
+  const std::vector<size_t> *againstRows;
 
-  f64 **results;
+  std::vector<std::vector<double> > *results;
 };
 
 typedef struct corrHelpStructCrossReference CHSCR;
 
 
 struct corrHelpStructBruteForce{
-  cf64 *sumsOfSquares;
-  cf64 **expressionData;
-  csize_t numRows;
-  csize_t numCols;
+  std::vector<double> *sumsOfSquares;
+  std::vector<std::vector<double> > *expressionData;
 
-  UpperDiagonalSquareMatrix<f64> *results;
+  UpperDiagonalSquareMatrix<double> *results;
 };
 
 typedef struct corrHelpStructBruteForce CHSBF;
 
 
 struct rankHelpStruct{
-  cf64 **geneCorrData;
-  csize_t numRows;
-  csize_t numCols;
+  std::vector<std::vector<double> > *geneCorrData;
 };
 
 typedef struct rankHelpStruct RHS;
 
 
 struct CAPHStruct{
-    cf64 **expressionData;
-    csize_t numRows;
-    csize_t numCols;
+    const std::vector<std::vector<double> > *expressionData;
 
-    f64 *sumsOfSquares;
+    std::vector<double> *sumsOfSquares;
 };
 
 typedef struct CAPHStruct CAPHS;
@@ -113,15 +106,12 @@ void *centerAndPrecomputeHelper(void *protoArgs);
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-f64* centerAndPrecomputeSquares(cf64 **expressionData, csize_t numRows,
-                                                      csize_t numCols){
-  f64 *tr = (f64*) malloc(sizeof(*tr) * numRows);
+std::vector<double> centerAndPrecomputeSquares(const std::vector<std::vector<double> > &expressionData){
+  std::vector<double> tr(expressionData.size());
 
   CAPHS instructions = {
-      expressionData,
-      numRows,
-      numCols,
-      tr
+      &expressionData,
+      &tr
     };
 
   autoThreadLauncher(centerAndPrecomputeHelper, (void*) &instructions);
@@ -136,17 +126,17 @@ void *centerAndPrecomputeHelper(void *protoArg){
   csize_t numerator = arg->numerator;
 
   CAPHS *args = (CAPHS*) arg->specifics;
-  cf64 **expressionData = args->expressionData;
-  csize_t numRows = args->numRows;
-  csize_t numCols = args->numCols;
-  f64 *sumsOfSquares = args->sumsOfSquares;
+  const std::vector<std::vector<double> > *expressionData = args->expressionData;
+  csize_t numRows = (*expressionData).size();
+  csize_t numCols = (*expressionData)[0].size();
+  std::vector<double> *sumsOfSquares = args->sumsOfSquares;
 
   csize_t minimum = (numRows * numerator) / denominator;
   csize_t maximum = (numRows * (numerator+1)) / denominator;
 
   for(size_t i = minimum; i < maximum; i++){
-    f64* tmpVec = centerMean(expressionData[i], numCols);
-    sumsOfSquares[i] = getSumOfSquares(tmpVec, numCols);
+    f64* tmpVec = centerMean((*expressionData)[i].data(), numCols);
+    (*sumsOfSquares)[i] = getSumOfSquares(tmpVec, numCols);
     free(tmpVec);
   }
 
@@ -163,24 +153,27 @@ void *correlationHelperCrossReference(void *protoArgs){
 
   CHSCR *args = (CHSCR*)arg->specifics;
 
-  cf64 *sumsOfSquares = args->sumsOfSquares;
-  cf64 **geneCorrData = args->expressionData;
-  csize_t corrVecLeng = args->numCols;
-  csize_t numGenes = args->numRows;
-  csize_t *againstRows = args->againstRows;//indexes into geneCorrData
-  csize_t againstRowsLength = args -> againstRowsLength;
+  std::vector<double> *sumsOfSquares = args->sumsOfSquares;
+  std::vector<std::vector<double> > *geneCorrData = args->expressionData;
+  csize_t corrVecLeng = (*geneCorrData)[0].size();
+  csize_t numGenes = (*geneCorrData).size();
+  const std::vector<size_t> *againstRows = args->againstRows;//indexes into geneCorrData
+  size_t againstRowsLength = 0;
+  if(againstRows != nullptr){
+    againstRowsLength = againstRows->size();
+  }
 
-  f64 **results = args->results;
+  std::vector<std::vector<double> > *results = args->results;
 
   csize_t minimum = (againstRowsLength * numerator) / denominator;
   csize_t maximum = (againstRowsLength * (numerator+1)) / denominator;
 
   for(size_t y = minimum; y < maximum; y++){
     for(size_t x = 0; x < numGenes; x++){
-      cf64 abCrossSum = getSumOfMultipliedArrays(geneCorrData[x],
-                              geneCorrData[againstRows[y]], corrVecLeng);
-      results[y][x] = getCenteredCorrelationBasic(sumsOfSquares[x],
-                              sumsOfSquares[againstRows[y]], abCrossSum);
+      cf64 abCrossSum = getSumOfMultipliedArrays((*geneCorrData)[x].data(),
+                              (*geneCorrData)[(*againstRows)[y]].data(), corrVecLeng);
+      (*results)[y][x] = getCenteredCorrelationBasic((*sumsOfSquares)[x],
+                              (*sumsOfSquares)[(*againstRows)[y]], abCrossSum);
     }
   }
 
@@ -197,13 +190,13 @@ void *correlationHelperBruteForce(void *protoArgs){
 
   CHSBF *args = (CHSBF*)arg->specifics;
 
-  cf64 *sumsOfSquares = args->sumsOfSquares;
-  cf64 **geneCorrData = args->expressionData;
-  csize_t corrVecLeng = args->numCols;
-  csize_t numGenes = args->numRows;
+  std::vector<double> *sumsOfSquares = args->sumsOfSquares;
+  std::vector<std::vector<double> > *geneCorrData = args->expressionData;
+  csize_t corrVecLeng = (*geneCorrData)[0].size();
+  csize_t numGenes = (*geneCorrData).size();
 
 
-  UpperDiagonalSquareMatrix<f64> *results = args->results;
+  UpperDiagonalSquareMatrix<double> *results = args->results;
 
   csize_t minimum = (results->numberOfElements() * numerator)
                                                           / denominator;
@@ -218,63 +211,57 @@ void *correlationHelperBruteForce(void *protoArgs){
   csize_t tmpSY = startXY.second;
 
   for(size_t x = startXY.first; x < numGenes; x++){
-    cf64 abCrossSum = getSumOfMultipliedArrays(geneCorrData[x],
-                                      geneCorrData[tmpSY], corrVecLeng);
+    cf64 abCrossSum = getSumOfMultipliedArrays((*geneCorrData)[x].data(),
+                                      (*geneCorrData)[tmpSY].data(), corrVecLeng);
     results->setValueAtIndex(x, tmpSY, getCenteredCorrelationBasic(
-                  sumsOfSquares[x], sumsOfSquares[tmpSY], abCrossSum));
+                  (*sumsOfSquares)[x], (*sumsOfSquares)[tmpSY], abCrossSum));
   }
 
   for(size_t y = startXY.second+1; y < endXY.second; y++){
     results->setValueAtIndex(y, y, 1.0);
     for(size_t x = y+1; x < numGenes; x++){
-      cf64 abCrossSum = getSumOfMultipliedArrays(geneCorrData[x],
-                                      geneCorrData[y], corrVecLeng);
+      cf64 abCrossSum = getSumOfMultipliedArrays((*geneCorrData)[x].data(),
+                                      (*geneCorrData)[y].data(), corrVecLeng);
       results->setValueAtIndex(x, y, getCenteredCorrelationBasic(
-                    sumsOfSquares[x], sumsOfSquares[y], abCrossSum));
+                    (*sumsOfSquares)[x], (*sumsOfSquares)[y], abCrossSum));
     }
   }
 
   csize_t tmpEY = endXY.second;
     for(size_t x = tmpEY; x < endXY.first; x++){
-    cf64 abCrossSum = getSumOfMultipliedArrays(geneCorrData[x],
-                                      geneCorrData[tmpEY], corrVecLeng);
+    cf64 abCrossSum = getSumOfMultipliedArrays((*geneCorrData)[x].data(),
+                                      (*geneCorrData)[tmpEY].data(), corrVecLeng);
     results->setValueAtIndex(x, tmpEY, getCenteredCorrelationBasic(
-                  sumsOfSquares[x], sumsOfSquares[tmpEY], abCrossSum));
+                  (*sumsOfSquares)[x], (*sumsOfSquares)[tmpEY], abCrossSum));
   }
 
   return NULL;
 }
 
 
-f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
-                csize_t numRows, csize_t numCols, csize_t *againstRows,
-                                            csize_t againstRowsLength){
+std::vector<std::vector<double> > calculatePearsonCorrelationMatrix(
+  std::vector<std::vector<double> > *expressionData,
+  const std::vector<size_t> *againstRows)
+{
 
-  f64 *sumsOfSquares;
-  f64 **tr;
-  void *tmpPtr;
+  std::vector<double> sumsOfSquares;
+  std::vector<std::vector<double> > tr;
+  csize_t numRows = expressionData->size();
 
-  sumsOfSquares = centerAndPrecomputeSquares(expressionData, numRows,
-                                                              numCols);
+  sumsOfSquares = centerAndPrecomputeSquares(*expressionData);
 
-  if(NULL != againstRows && againstRowsLength < numRows/2 ){
-
-    tmpPtr = malloc(sizeof(*tr) * againstRowsLength);
-    tr = (f64**) tmpPtr; //[TF index][gene index]
-    for(size_t i = 0; i < againstRowsLength; i++){
-      tmpPtr = malloc(sizeof(**tr)* numRows);
-      tr[i] = (f64*) tmpPtr;
+  if(NULL != againstRows && againstRows->size() < numRows/2 ){
+    tr.reserve(againstRows->size());
+    for(size_t i = 0; i < againstRows->size(); i++){
+      tr.push_back(std::vector<double>(numRows));
     }
 
 
     CHSCR instructions = {
-      sumsOfSquares,
-      (cf64**) expressionData,
-      numRows,
-      numCols,
+      &sumsOfSquares,
+      expressionData,
       againstRows,
-      againstRowsLength,
-      tr
+      &tr
     };
 
     autoThreadLauncher(correlationHelperCrossReference, (void*) &instructions);
@@ -282,14 +269,12 @@ f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
 
   }else{
 
-    UpperDiagonalSquareMatrix<f64> *corrMatr;
+    UpperDiagonalSquareMatrix<double> *corrMatr;
     corrMatr = new UpperDiagonalSquareMatrix<f64>(numRows);
 
     CHSBF instructions = {
-      sumsOfSquares,
-      (cf64**) expressionData,
-      numRows,
-      numCols,
+      &sumsOfSquares,
+      expressionData,
 
       corrMatr
     };
@@ -297,12 +282,9 @@ f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
     autoThreadLauncher(correlationHelperBruteForce,
                                                 (void*) &instructions);
     if(NULL == againstRows){
-
-      tmpPtr = malloc(sizeof(*tr) * numRows);
-      tr = (f64**) tmpPtr; //[TF index][gene index]
-      for(size_t i = 0; i < againstRowsLength; i++){
-        tmpPtr = malloc(sizeof(**tr)* numRows);
-        tr[i] = (f64*) tmpPtr;
+      tr.reserve(againstRows->size());
+      for(size_t i = 0; i < againstRows->size(); i++){
+        tr.push_back(std::vector<double>(numRows));
       }
 
       for(size_t y = 0; y < numRows; y++){
@@ -313,16 +295,13 @@ f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
       }
 
     }else{
-
-      tmpPtr = malloc(sizeof(*tr) * againstRowsLength);
-      tr = (f64**) tmpPtr; //[TF index][gene index]
-      for(size_t i = 0; i < againstRowsLength; i++){
-        tmpPtr = malloc(sizeof(**tr)* numRows);
-        tr[i] = (f64*) tmpPtr;
+      tr.reserve(againstRows->size());
+      for(size_t i = 0; i < againstRows->size(); i++){
+        tr.push_back(std::vector<double>(numRows));
       }
 
-      for(size_t yPrime = 0; yPrime < againstRowsLength; yPrime++){
-        csize_t y = againstRows[yPrime];
+      for(size_t yPrime = 0; yPrime < againstRows->size(); yPrime++){
+        csize_t y = (*againstRows)[yPrime];
         for(size_t x = 0; x < numRows; x++){
           tr[yPrime][x] = corrMatr->getValueAtIndex(y, x);
         }
@@ -332,8 +311,6 @@ f64** calculatePearsonCorrelationMatrix(cf64 **expressionData,
     delete corrMatr;
 
   }
-
-  free(sumsOfSquares);
 
   return tr;
 }

@@ -36,8 +36,7 @@
 extern std::vector<std::vector<double> >
 calculateSpearmanCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows,
-  csize_t againstRowsLength)
+  const std::vector<size_t> *againstRows)
 {
   std::vector<std::vector<double> > *rankedMatrix, tr;
   void *tmpPtr;
@@ -46,7 +45,7 @@ calculateSpearmanCorrelationMatrix(
 
   calculateRankMatrix(*rankedMatrix);
 
-  tr = calculatePearsonCorrelationMatrix( rankedMatrix, againstRows, againstRowsLength);
+  tr = calculatePearsonCorrelationMatrix( rankedMatrix, againstRows);
 
   delete rankedMatrix;
 

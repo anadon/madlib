@@ -57,8 +57,7 @@
 extern std::vector<std::vector<double> >
 calculateKendallsTauCorrelationCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows = nullptr,
-  csize_t againstRowsLength = 0);
+  const std::vector<size_t> *againstRows = nullptr);
 
 
 /*******************************************************************//**
@@ -80,8 +79,7 @@ calculateKendallsTauCorrelationCorrelationMatrix(
 extern std::vector<std::vector<double> >
 calculatePearsonCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows = nullptr,
-  csize_t againstRowsLength = 0);
+  const std::vector<size_t> *againstRows = nullptr);
 
 
 /*******************************************************************//**
@@ -103,8 +101,7 @@ calculatePearsonCorrelationMatrix(
 extern std::vector<std::vector<double> >
 calculateSpearmanCorrelationMatrix(
   std::vector<std::vector<double> > *expressionData,
-  csize_t *againstRows = nullptr,
-  csize_t againstRowsLength = 0);
+  const std::vector<size_t> *againstRows = nullptr);
 
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
