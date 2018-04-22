@@ -42,23 +42,23 @@ OBJECTS=graph-test.o                                                   \
         upper-diagonal-square-matrix-test.o                            \
 				double-sided-stack-test.o
 
-HEADERS=diagnostics.hpp                                                \
-        correlation-matrix.hpp                                         \
-        quickmerge.hpp                                                 \
-        rank-matrix.hpp                                                \
-        short-primatives.h                                             \
-        simple-thread-dispatch.hpp                                     \
-        statistics.h                                                   \
-        graph.hpp                                                      \
-        upper-diagonal-square-matrix.hpp                               \
-        double-sided-stack.hpp                                         \
+HEADERS=include/diagnostics.hpp                                                \
+        include/correlation-matrix.hpp                                         \
+        include/quickmerge.hpp                                                 \
+        include/rank-matrix.hpp                                                \
+        include/short-primatives.h                                             \
+        include/simple-thread-dispatch.hpp                                     \
+        include/statistics.h                                                   \
+        include/graph.hpp                                                      \
+        include/upper-diagonal-square-matrix.hpp                               \
+        include/double-sided-stack.hpp                                         \
         $(GTEST_HEADERS)
 
 
 
-all:$(EXEC)
+all:$(EXEC) $(HEADERS)
 
-$(EXEC): $(OBJECTS) gtest_main.a
+$(EXEC): $(OBJECTS) gtest_main.a $(HEADERS)
 	$(CPP) $(CPPFLAGS) -flto $(LIBS) $(OBJECTS) ../lib/libmadlib.a gtest_main.a -o $(EXEC)
 
 %.o:%.cpp $(HEADERS)
