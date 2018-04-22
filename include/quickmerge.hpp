@@ -58,7 +58,7 @@ template <typename T> void
 sort(
   T *toSort,
   csize_t size,
-  bool (*cmp) (T&, T&) = [] (T& left, T& right) -> bool { left < right; });
+  bool (*cmp) (T&, T&) = [] (T& left, T& right) -> bool { return left < right; });
 
 
 template <typename T> void
@@ -104,7 +104,7 @@ template <typename T> void sortLowToHigh(T *toSort, csize_t size);
 
 //These can also sort pairs correctly, but not stably.
 template <typename T> void sortHighToLow(T *toSort, csize_t size){
-  sort <T>(toSort, size, [] (T& left, T& right) -> bool { left >= right; } );
+  sort <T>(toSort, size, [] (T& left, T& right) -> bool { return left >= right; } );
 }
 
 
@@ -116,7 +116,6 @@ template <typename T> void sortLowToHigh(T *toSort, csize_t size){
 template <typename T> void sort(T *toSort, csize_t size, bool (*cmp) (T&, T&) ){
   size_t reverseOrderStart, reverseOrderEnd;
   size_t i;
-  void *tmpPtr;
 
   if(1 >= size) return;
 
@@ -125,22 +124,24 @@ template <typename T> void sort(T *toSort, csize_t size, bool (*cmp) (T&, T&) ){
   for(i = 0; i < size-1; i++){
     if(!cmp(toSort[i], toSort[i+1])){
       reverseOrderStart = i;
-      for(i += 2; i < size && !cmp(toSort[i-1], toSort[i]); i++);
-      reverseOrderEnd = i-1;
-      for(size_t j = 0; j < (reverseOrderEnd - reverseOrderStart)/2; j++){
-        T tmp = toSort[j + reverseOrderStart];
-        toSort[j + reverseOrderStart] = toSort[reverseOrderEnd - j];
-        toSort[reverseOrderEnd - j] = tmp;
+      for(i += 1; i < size - 1 && !cmp(toSort[i], toSort[i+1]); i++);
+      reverseOrderEnd = i;
+      while(reverseOrderStart < reverseOrderEnd){
+        T tmp = toSort[reverseOrderStart];
+        toSort[reverseOrderStart] = toSort[reverseOrderEnd];
+        toSort[reverseOrderEnd] = tmp;
+        reverseOrderStart++;
+        reverseOrderEnd--;
       }
     }
   }
 
 
-  size_t *indiciesOfInterest;
-  tmpPtr = malloc(sizeof(*indiciesOfInterest) * size);
-  indiciesOfInterest = (size_t*) tmpPtr;
-  indiciesOfInterest[0] = 0;
-  size_t IOISize = 1;
+  size_t *indiciesOfInterest = new size_t[size+1];
+//  tmpPtr = malloc(sizeof(*indiciesOfInterest) * size);
+//  indiciesOfInterest = (size_t*) tmpPtr;;
+  size_t IOISize = 0;
+  indiciesOfInterest[IOISize++] = 0;
 
   //group ordered segments
   for(i = 0; i < size-1; i++){
@@ -149,13 +150,13 @@ template <typename T> void sort(T *toSort, csize_t size, bool (*cmp) (T&, T&) ){
   }
   indiciesOfInterest[IOISize++] = size;
 
-  std::pair<f64, size_t> *sortSpace;
-  tmpPtr = malloc(sizeof(*sortSpace) * size);
-  sortSpace = (T*) tmpPtr;
+  T *sortSpace = new T[size];
+//  tmpPtr = malloc(sizeof(*sortSpace) * size);
+//  sortSpace = (T*) tmpPtr;
 
-  size_t *newIndiciesOfInterest;
-  tmpPtr = malloc(sizeof(*newIndiciesOfInterest) * size);
-  newIndiciesOfInterest = (size_t*) tmpPtr;
+  size_t *newIndiciesOfInterest = new size_t[size+1];//TODO: more precise allocation
+//  tmpPtr = malloc(sizeof(*newIndiciesOfInterest) * size);
+//  newIndiciesOfInterest = (size_t*) tmpPtr;
 
   //while there are multiple segments, merge them
   while(IOISize > 2){
@@ -176,9 +177,9 @@ template <typename T> void sort(T *toSort, csize_t size, bool (*cmp) (T&, T&) ){
     IOISize = NIOISize;
   }
 
-  free(indiciesOfInterest);
-  free(newIndiciesOfInterest);
-  free(sortSpace);
+  delete[] indiciesOfInterest;
+  delete[] newIndiciesOfInterest;
+  delete[] sortSpace;
 }
 
 

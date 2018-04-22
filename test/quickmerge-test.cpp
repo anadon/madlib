@@ -276,6 +276,18 @@ TEST(SORT_HIGH_TO_LOW, TEST_TWELVE){
   }
 }
 
+
+TEST(SORT_HIGH_TO_LOW, TEST_THIRTEEN){
+  pair<double, size_t> case13[] = {pair<double, size_t>{0, 0},
+                                   pair<double, size_t>{-1, 1}};
+
+  madlib::sortHighToLow(case13, 2);
+
+  for(int i = 0; i < 2-1; i++){
+    EXPECT_GE(case13[i].first, case13[i+1].first);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 TEST(SORT_LOW_TO_HIGH, TEST_ONE){
@@ -514,6 +526,18 @@ TEST(SORT_LOW_TO_HIGH, TEST_TWELVE){
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_LE(case12[i].first, case12[i+1].first);
+  }
+}
+
+
+TEST(SORT_LOW_TO_HIGH, TEST_THIRTEEN){
+  pair<double, size_t> case13[] = {pair<double, size_t>{0, 0},
+                                   pair<double, size_t>{-1, 1}};
+
+  madlib::sortLowToHigh(case13, 2);
+
+  for(int i = 0; i < 2-1; i++){
+    EXPECT_LE(case13[i].first, case13[i+1].first);
   }
 }
 
