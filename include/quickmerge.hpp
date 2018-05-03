@@ -31,11 +31,16 @@ TODO: Add benchmarking, reformat, update documentation
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <string.h>
-#include <utility>
+#include <cassert>
+#include <algorithm>
+#include <iterator>
+#include <vector>
 
-#include <short-primatives.h>
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 
 namespace madlib{
 
@@ -54,22 +59,27 @@ namespace madlib{
  * for low to high
  *
  **********************************************************************/
-template <typename T> void
-sort(
-  T *toSort,
-  csize_t size,
-  bool (*cmp) (T&, T&) = [] (T& left, T& right) -> bool { return left < right; });
+//template <typename T>
 
+template<typename _BidirectionalIterator>
+  void quickmerge(
+    _BidirectionalIterator first,
+    _BidirectionalIterator last);
 
-template <typename T> void
-sortHelper(
-  T *toSort,
-  csize_t leftIndex,
-  csize_t rightIndex,
-  csize_t endIndex,
-  T *sortSpace,
-  bool (*cmp) (T&, T&) );
+template<typename _BidirectionalIterator, typename _Compare>
+void quickmerge(
+  _BidirectionalIterator first,
+  _BidirectionalIterator last,
+  _Compare comp = std::less_equal<>() );
 
+  template<typename _BidirectionalIterator>
+  void quickmerge(
+    _BidirectionalIterator first,
+    _BidirectionalIterator last)
+{
+  quickmerge(first, last, std::less_equal<>());
+}
+//  bool (*cmp) (T&, T&) = [] (T& left, T& right) -> bool { return left <= right; });
 
 
 /*******************************************************************//**
@@ -82,7 +92,10 @@ sortHelper(
  * @param[in] size Number of elements in toSort.
  *
  **********************************************************************/
-template <typename T> void sortHighToLow(T *toSort, csize_t size);
+ template<typename _BidirectionalIterator>
+void quickmergeHighToLow(
+  _BidirectionalIterator first,
+  _BidirectionalIterator last);
 
 
 /*******************************************************************//**
@@ -95,115 +108,112 @@ template <typename T> void sortHighToLow(T *toSort, csize_t size);
  * @param[in] size Number of elements in toSort.
  *
  **********************************************************************/
-template <typename T> void sortLowToHigh(T *toSort, csize_t size);
 
 ////////////////////////////////////////////////////////////////////////
 //FUNCTION DEFINITIONS//////////////////////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////
 
 
-//These can also sort pairs correctly, but not stably.
-template <typename T> void sortHighToLow(T *toSort, csize_t size){
-  sort <T>(toSort, size, [] (T& left, T& right) -> bool { return left >= right; } );
+//These can also sort pairs correctly
+template<typename _BidirectionalIterator>
+void quickmergeHighToLow(
+  _BidirectionalIterator first,
+  _BidirectionalIterator last)
+{
+  quickmerge(first, last, std::greater_equal<>() );
 }
 
 
-template <typename T> void sortLowToHigh(T *toSort, csize_t size){
-  sort <T> (toSort, size);
+template<typename _BidirectionalIterator>
+void quickmergeLowToHigh(
+  _BidirectionalIterator first,
+  _BidirectionalIterator last)
+{
+  quickmerge(first, last);
 }
 
 
-template <typename T> void sort(T *toSort, csize_t size, bool (*cmp) (T&, T&) ){
-  size_t reverseOrderStart, reverseOrderEnd;
-  size_t i;
 
-  if(1 >= size) return;
+template<typename _ForwardIterator, typename _Compare>
+auto groomInput(
+  _ForwardIterator first,
+  _ForwardIterator last,
+  _Compare comp ){
+  std::vector<_ForwardIterator> indicesOfInterest;
+  indicesOfInterest.reserve(std::distance(first, last));
+  indicesOfInterest.clear();
+  indicesOfInterest.push_back(first);
 
-
-  //Groom the data and negate worst case scenarios
-  for(i = 0; i < size-1; i++){
-    if(!cmp(toSort[i], toSort[i+1])){
-      reverseOrderStart = i;
-      for(i += 1; i < size - 1 && !cmp(toSort[i], toSort[i+1]); i++);
-      reverseOrderEnd = i;
-      while(reverseOrderStart < reverseOrderEnd){
-        T tmp = toSort[reverseOrderStart];
-        toSort[reverseOrderStart] = toSort[reverseOrderEnd];
-        toSort[reverseOrderEnd] = tmp;
-        reverseOrderStart++;
-        reverseOrderEnd--;
+//Groom the data and negate worst case scenarios, and prepare the segment to
+//merge later.
+//TODO: Prove this, Pull out first loop tp handle the case of first and simplify
+//the 'if'?
+  constexpr bool isBidirectionalIterator = std::is_base_of_v<std::bidirectional_iterator_tag, typename std::iterator_traits<_ForwardIterator>::iterator_category>;
+  if constexpr (isBidirectionalIterator){
+    for(auto i = first; i != last; i++){
+      auto reverseOrderStart = i;
+      for(; std::next(i) != last && !comp(*i, *std::next(i)); i++);
+      auto reverseOrderEnd = std::next(i);
+      if(reverseOrderStart != reverseOrderEnd){
+        std::reverse(reverseOrderStart, reverseOrderEnd);
+        if(reverseOrderStart != first && !comp(*std::prev(reverseOrderStart), *reverseOrderStart)){
+          indicesOfInterest.push_back(reverseOrderStart);
+        }
       }
     }
-  }
-
-
-  size_t *indiciesOfInterest = new size_t[size+1];
-//  tmpPtr = malloc(sizeof(*indiciesOfInterest) * size);
-//  indiciesOfInterest = (size_t*) tmpPtr;;
-  size_t IOISize = 0;
-  indiciesOfInterest[IOISize++] = 0;
-
-  //group ordered segments
-  for(i = 0; i < size-1; i++){
-    if(!cmp(toSort[i], toSort[i+1]))
-      indiciesOfInterest[IOISize++] = (i+1);
-  }
-  indiciesOfInterest[IOISize++] = size;
-
-  T *sortSpace = new T[size];
-//  tmpPtr = malloc(sizeof(*sortSpace) * size);
-//  sortSpace = (T*) tmpPtr;
-
-  size_t *newIndiciesOfInterest = new size_t[size+1];//TODO: more precise allocation
-//  tmpPtr = malloc(sizeof(*newIndiciesOfInterest) * size);
-//  newIndiciesOfInterest = (size_t*) tmpPtr;
-
-  //while there are multiple segments, merge them
-  while(IOISize > 2){
-    size_t NIOISize = 0;
-    for(i = 0; i < IOISize-2; i+=2){
-      sortHelper(toSort, indiciesOfInterest[i],
-                      indiciesOfInterest[i+1], indiciesOfInterest[i+2],
-                                                            sortSpace, cmp);
-
-      newIndiciesOfInterest[NIOISize++] = indiciesOfInterest[i];
+  }else{
+    for(auto i = std::next(first); i != last; i++){
+      indicesOfInterest.push_back(i);
     }
-    if(!(IOISize & 1)){
-      newIndiciesOfInterest[NIOISize++] = indiciesOfInterest[IOISize-2];
-    }
-    newIndiciesOfInterest[NIOISize++] = size;
-    memcpy(indiciesOfInterest, newIndiciesOfInterest,
-                                NIOISize * sizeof(*indiciesOfInterest));
-    IOISize = NIOISize;
   }
+  indicesOfInterest.push_back(last);
 
-  delete[] indiciesOfInterest;
-  delete[] newIndiciesOfInterest;
-  delete[] sortSpace;
+  indicesOfInterest.shrink_to_fit();
+
+  return indicesOfInterest;
 }
 
 
-//Given a range of continuous indexes describing two sorted segments of values,
-//sort them into a new array over the same range.
-template <typename T> void sortHelper(T *toSort,
-                csize_t leftIndex, csize_t rightIndex, csize_t endIndex,
-                                    T *sortSpace, bool (*cmp) (T&, T&) ){
-  size_t leftParser, rightParser, mergedParser;
+template<typename _BidirectionalIterator, typename _Compare>
+void quickmerge(
+  _BidirectionalIterator first,
+  _BidirectionalIterator last,
+  _Compare comp )
+{
+  using iterator_category = typename std::iterator_traits<_BidirectionalIterator>::iterator_category;
+  static_assert(std::is_base_of_v<std::bidirectional_iterator_tag, iterator_category>, "Passed iterators must at least forward iterators");
 
-  leftParser = leftIndex;
-  rightParser = rightIndex;
-  mergedParser = 0;
-  while(leftParser < rightIndex && rightParser < endIndex)
-    sortSpace[mergedParser++] =
-        cmp(toSort[leftParser], toSort[rightParser]) ?
-        toSort[leftParser++] : toSort[rightParser++];
+  if(first == last ||
+     std::next(first) == last) return;
 
-  while(leftParser < rightIndex)
-    sortSpace[mergedParser++] = toSort[leftParser++];
-  while(rightParser < endIndex)
-    sortSpace[mergedParser++] = toSort[rightParser++];
-  memcpy(&toSort[leftIndex], sortSpace,
-                              sizeof(*toSort) * (endIndex - leftIndex));
+  //std::vector<_BidirectionalIterator>
+  auto indicesOfInterest = groomInput(first, last, comp);
+
+//while there are multiple segments, merge them
+  std::vector<_BidirectionalIterator> newIndicesOfInterest;
+  newIndicesOfInterest.reserve((indicesOfInterest.size()/2) + 1);
+
+  assert(typeid(indicesOfInterest) == typeid(newIndicesOfInterest));
+
+  while(indicesOfInterest.size() > 2){
+    newIndicesOfInterest.clear();
+
+    auto currItr = indicesOfInterest.begin();
+    while(std::distance(currItr, indicesOfInterest.end()) > 2){
+      auto leftStart  = *currItr; currItr++;
+      auto rightStart = *currItr; currItr++;
+      auto endRange   = *currItr;
+
+      newIndicesOfInterest.push_back(leftStart);
+
+      std::inplace_merge(leftStart, rightStart, endRange, comp);
+    }
+
+    if(std::distance(currItr, indicesOfInterest.end()) > 0){
+      std::move(currItr, indicesOfInterest.end(), std::back_inserter(newIndicesOfInterest));
+    }
+    indicesOfInterest.swap(newIndicesOfInterest);
+  }
 }
 
 };//end namespace
