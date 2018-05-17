@@ -48,6 +48,7 @@ debug: $(OLIB)
 
 test:debug $(TEST_PROG)
 	#@make -f test/Makefile
+	git submodule update --init test/googletest/
 	cd test; make
 
 install:$(OLOB)
