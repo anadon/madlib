@@ -24,26 +24,24 @@ TEMPLATES=include/graph.hpp                                                    \
 
 HEADERS=include/diagnostics.hpp                                                \
         include/correlation-matrix.hpp                                         \
-        include/quickmerge.hpp                                                 \
+        include/timsort.hpp                                                 \
         include/rank-matrix.hpp                                                \
         include/short-primatives.h                                             \
         include/simple-thread-dispatch.hpp                                     \
         include/statistics.h
 
 
-#COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -march=native -I../include -fPIC \
-             -std=c++1z
 
 export
 
 all: release
 
-release: CPPFLAGS=-O3 $(COMMON_FLAGS) -march=native -std=c++1z -fPIC -I $(INCLUDE)
-release: CFLAGS=-O3 $(COMMON_FLAGS) -march=native -I -fPIC $(INCLUDE)
+release: CPPFLAGS=-O3 -march=native -std=c++17 -fPIC -I $(INCLUDE)
+release: CFLAGS=-O3 -march=native -I $(INCLUDE) -fPIC
 release: $(OLIB)
 
-debug: CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++1z -fPIC -I $(INCLUDE)
-debug: CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -fPIC -I $(INCLUDE)
+debug: CPPFLAGS=-ggdb -pg -O0 -std=c++17 -fPIC -I $(INCLUDE)
+debug: CFLAGS=-ggdb -pg -O0 -fPIC -I $(INCLUDE)
 debug: $(OLIB)
 
 test:debug $(TEST_PROG)

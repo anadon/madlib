@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <utility>
 
-#include <quickmerge.hpp>
+#include <timsort.hpp>
 #include <rank-matrix.hpp>
 #include <simple-thread-dispatch.hpp>
 

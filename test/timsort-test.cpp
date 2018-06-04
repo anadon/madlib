@@ -21,7 +21,7 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include <quickmerge.hpp>
+#include <timsort.hpp>
 
 #include <array>
 #include <deque>
@@ -212,14 +212,22 @@ static const vector<pair<double, size_t> > case13 = {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool printOEA = false;
+static bool printOEA = true;
 
 void printExpectedAndActual(
   const vector<pair<double, size_t> > origin,
   const vector<pair<double, size_t> > expect,
-  const vector<pair<double, size_t> > actual)
-{
+  const vector<pair<double, size_t> > actual
+){
   if(!printOEA) return;
+  bool shouldPrint = false;
+  for(size_t i = 0; i < expect.size(); i++){
+    if(expect[i] != actual[i]){
+      shouldPrint = true;
+      break;
+    }
+  }
+  if(!shouldPrint) return;
   cout << "--------------------------------------------------------------------------------" << endl;
   cout << "original\texpected\tactual" << endl;
   for(size_t i = 0; i < expect.size(); i++){
@@ -228,6 +236,298 @@ void printExpectedAndActual(
     cout << actual[i].first << ", " << actual[i].second << "}" << endl;
   }
 }
+
+static bool printOA = false;
+
+void printOriginalAndActual(
+  const vector<pair<double, size_t> > origin,
+  const vector<pair<double, size_t> > actual
+){
+  if(!printOA) return;
+  assert(origin.size() == actual.size());
+  cout << "--------------------------------------------------------------------------------" << endl;
+  cout << "original\tactual" << endl;
+  for(size_t i = 0; i < actual.size(); i++){
+    cout << "{" << origin[i].first << ", " << origin[i].second << "} <=> {";
+    cout << actual[i].first << ", " << actual[i].second << "}" << endl;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//INPUT RUNS DETECTION TESTS////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+TEST(RUNS, TEST_ONE) {
+  auto test_data(case1);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0, 0}//,
+    //pair<double, size_t>{0, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+
+}
+
+
+TEST(RUNS, TEST_TWO){
+  auto test_data(case2);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{1, 0}//,
+    //pair<double, size_t>{1, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_THREE){
+  auto test_data(case3);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0, 0}//,
+    //pair<double, size_t>{9, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_FOUR){
+  auto test_data(case4);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0.0, 0}//,
+    //pair<double, size_t>{0.9, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_FIVE){
+  auto test_data(case5);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{9, 0}//,
+    //pair<double, size_t>{0, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_SIX){
+  auto test_data(case6);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0.9, 0}//,
+    //pair<double, size_t>{0, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_SEVEN){
+  auto test_data(case7);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{1, 0},
+    pair<double, size_t>{0, 1},
+    pair<double, size_t>{3, 2},
+    pair<double, size_t>{2, 3},
+    pair<double, size_t>{5, 4},
+    pair<double, size_t>{4, 5},
+    pair<double, size_t>{7, 6},
+    pair<double, size_t>{6, 7},
+    pair<double, size_t>{9, 8}//,
+    //pair<double, size_t>{8, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_EIGHT){
+  auto test_data(case8);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0.1, 0},
+    pair<double, size_t>{0.0, 1},
+    pair<double, size_t>{0.3, 2},
+    pair<double, size_t>{0.2, 3},
+    pair<double, size_t>{0.5, 4},
+    pair<double, size_t>{0.4, 5},
+    pair<double, size_t>{0.7, 6},
+    pair<double, size_t>{0.6, 7},
+    pair<double, size_t>{0.9, 8}//,
+    //pair<double, size_t>{0.8, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_NINE){
+  auto test_data(case9);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0, 0},
+    pair<double, size_t>{2, 1},
+    pair<double, size_t>{1, 2},
+    pair<double, size_t>{4, 3},
+    pair<double, size_t>{3, 4},
+    pair<double, size_t>{6, 5},
+    pair<double, size_t>{5, 6},
+    pair<double, size_t>{8, 7},
+    pair<double, size_t>{7, 8}//,
+    //pair<double, size_t>{9, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_TEN){
+  auto test_data(case10);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0.0, 0},
+    pair<double, size_t>{0.2, 1},
+    pair<double, size_t>{0.1, 2},
+    pair<double, size_t>{0.4, 3},
+    pair<double, size_t>{0.3, 4},
+    pair<double, size_t>{0.6, 5},
+    pair<double, size_t>{0.5, 6},
+    pair<double, size_t>{0.8, 7},
+    pair<double, size_t>{0.7, 8}//,
+    //pair<double, size_t>{0.9, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_ELEVEN){
+  auto test_data(case11);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{5, 0},
+    pair<double, size_t>{9, 4},
+    pair<double, size_t>{0, 5}//,
+    //pair<double, size_t>{4, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_TWELVE){
+  auto test_data(case12);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0.5, 0},
+    pair<double, size_t>{0.9, 4},
+    pair<double, size_t>{0.0, 5}//,
+    //pair<double, size_t>{0.4, 9}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
+
+TEST(RUNS, TEST_THIRTEEN){
+  auto test_data(case13);
+
+  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
+
+  vector<pair<double, size_t> > eIOI = {
+    pair<double, size_t>{0, 0}//,
+    //pair<double, size_t>{-1, 1}
+  };
+
+  ASSERT_EQ(eIOI.size(), IOI.size()-1);
+
+  for(size_t i = 0; i < IOI.size()-1; i++){
+    EXPECT_EQ(*(IOI[i]), eIOI[i]);
+  }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //INPUT GROOMING TESTS//////////////////////////////////////////////////////////
@@ -475,6 +775,32 @@ TEST(GROOM_HIGH_TO_LOW, TEST_SIX){
 }
 
 
+/*******************************************************************************
+INPUT:
+{1, 0}  X <- nIOI
+{0, 1}  X
+{3, 2}  X <- nIOI
+{2, 3}  X
+{5, 4}  X
+{4, 5}  X
+{7, 6}  X
+{6, 7}  X
+{9, 8}  X
+{8, 9}  O
+{_, _}  X <- last <- i
+
+
+RUNS:
+{1, 0},
+{0, 1},
+{3, 2},
+{2, 3},
+{5, 4},
+{4, 5},
+{7, 6},
+{6, 7},
+{9, 8}
+//*****************************************************************************/
 TEST(GROOM_HIGH_TO_LOW, TEST_SEVEN){
   auto test_data(case7);
 
@@ -482,15 +808,15 @@ TEST(GROOM_HIGH_TO_LOW, TEST_SEVEN){
 
   vector<pair<double, size_t> > expected = {
     pair<double, size_t>{1, 0},
-    pair<double, size_t>{3, 2},
-    pair<double, size_t>{0, 1},
-    pair<double, size_t>{5, 4},
-    pair<double, size_t>{2, 3},
-    pair<double, size_t>{7, 6},
-    pair<double, size_t>{4, 5},
     pair<double, size_t>{9, 8},
+    pair<double, size_t>{8, 9},
+    pair<double, size_t>{7, 6},
     pair<double, size_t>{6, 7},
-    pair<double, size_t>{8, 9}
+    pair<double, size_t>{5, 4},
+    pair<double, size_t>{4, 5},
+    pair<double, size_t>{3, 2},
+    pair<double, size_t>{2, 3},
+    pair<double, size_t>{0, 1}
   };
 
   ASSERT_EQ(case7.size(), test_data.size());
@@ -505,11 +831,7 @@ TEST(GROOM_HIGH_TO_LOW, TEST_SEVEN){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{1, 0},
-    pair<double, size_t>{3, 2},
-    pair<double, size_t>{5, 4},
-    pair<double, size_t>{7, 6},
-    pair<double, size_t>{9, 8},
-    pair<double, size_t>{8, 9}
+    pair<double, size_t>{9, 8}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -527,15 +849,15 @@ TEST(GROOM_HIGH_TO_LOW, TEST_EIGHT){
 
   vector<pair<double, size_t> > expected = {
     pair<double, size_t>{0.1, 0},
-    pair<double, size_t>{0.3, 2},
-    pair<double, size_t>{0.0, 1},
-    pair<double, size_t>{0.5, 4},
-    pair<double, size_t>{0.2, 3},
-    pair<double, size_t>{0.7, 6},
-    pair<double, size_t>{0.4, 5},
     pair<double, size_t>{0.9, 8},
+    pair<double, size_t>{0.8, 9},
+    pair<double, size_t>{0.7, 6},
     pair<double, size_t>{0.6, 7},
-    pair<double, size_t>{0.8, 9}
+    pair<double, size_t>{0.5, 4},
+    pair<double, size_t>{0.4, 5},
+    pair<double, size_t>{0.3, 2},
+    pair<double, size_t>{0.2, 3},
+    pair<double, size_t>{0, 1}
   };
 
   ASSERT_EQ(case8.size(), test_data.size());
@@ -550,11 +872,7 @@ TEST(GROOM_HIGH_TO_LOW, TEST_EIGHT){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{0.1, 0},
-    pair<double, size_t>{0.3, 2},
-    pair<double, size_t>{0.5, 4},
-    pair<double, size_t>{0.7, 6},
-    pair<double, size_t>{0.9, 8},
-    pair<double, size_t>{0.8, 9}
+    pair<double, size_t>{0.9, 8}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -571,16 +889,16 @@ TEST(GROOM_HIGH_TO_LOW, TEST_NINE){
   auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
 
   vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{2, 1},
-    pair<double, size_t>{0, 0},
-    pair<double, size_t>{4, 3},
-    pair<double, size_t>{1, 2},
-    pair<double, size_t>{6, 5},
-    pair<double, size_t>{3, 4},
-    pair<double, size_t>{8, 7},
-    pair<double, size_t>{5, 6},
     pair<double, size_t>{9, 9},
+    pair<double, size_t>{8, 7},
     pair<double, size_t>{7, 8},
+    pair<double, size_t>{6, 5},
+    pair<double, size_t>{5, 6},
+    pair<double, size_t>{4, 3},
+    pair<double, size_t>{3, 4},
+    pair<double, size_t>{2, 1},
+    pair<double, size_t>{1, 2},
+    pair<double, size_t>{0, 0},
   };
 
   ASSERT_EQ(case9.size(), test_data.size());
@@ -594,10 +912,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_NINE){
 
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{2, 1},
-    pair<double, size_t>{4, 3},
-    pair<double, size_t>{6, 5},
-    pair<double, size_t>{8, 7},
     pair<double, size_t>{9, 9}
   };
 
@@ -615,16 +929,16 @@ TEST(GROOM_HIGH_TO_LOW, TEST_TEN){
   auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
 
   vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.2, 1},
-    pair<double, size_t>{0.0, 0},
-    pair<double, size_t>{0.4, 3},
-    pair<double, size_t>{0.1, 2},
-    pair<double, size_t>{0.6, 5},
-    pair<double, size_t>{0.3, 4},
-    pair<double, size_t>{0.8, 7},
-    pair<double, size_t>{0.5, 6},
     pair<double, size_t>{0.9, 9},
-    pair<double, size_t>{0.7, 8}
+    pair<double, size_t>{0.8, 7},
+    pair<double, size_t>{0.7, 8},
+    pair<double, size_t>{0.6, 5},
+    pair<double, size_t>{0.5, 6},
+    pair<double, size_t>{0.4, 3},
+    pair<double, size_t>{0.3, 4},
+    pair<double, size_t>{0.2, 1},
+    pair<double, size_t>{0.1, 2},
+    pair<double, size_t>{0.0, 0},
   };
 
   ASSERT_EQ(case10.size(), test_data.size());
@@ -638,10 +952,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_TEN){
 
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.2, 1},
-    pair<double, size_t>{0.4, 3},
-    pair<double, size_t>{0.6, 5},
-    pair<double, size_t>{0.8, 7},
     pair<double, size_t>{0.9, 9}
   };
 
@@ -1116,7 +1426,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_NINE){
 
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0, 0}
+    pair<double, size_t>{0, 0},
+    pair<double, size_t>{1, 2}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1156,7 +1467,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_TEN){
 
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.0, 0}
+    pair<double, size_t>{0.0, 0},
+    pair<double, size_t>{0.1, 2}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1178,11 +1490,11 @@ TEST(GROOM_LOW_TO_HIGH, TEST_ELEVEN){
     pair<double, size_t>{7, 2},
     pair<double, size_t>{8, 3},
     pair<double, size_t>{0, 5},
-    pair<double, size_t>{9, 4},
     pair<double, size_t>{1, 6},
     pair<double, size_t>{2, 7},
     pair<double, size_t>{3, 8},
-    pair<double, size_t>{4, 9}
+    pair<double, size_t>{4, 9},
+    pair<double, size_t>{9, 4}
   };
 
   ASSERT_EQ(case11.size(), test_data.size());
@@ -1197,8 +1509,7 @@ TEST(GROOM_LOW_TO_HIGH, TEST_ELEVEN){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{5, 0},
-    pair<double, size_t>{0, 5},
-    pair<double, size_t>{1, 6}
+    pair<double, size_t>{0, 5}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1220,11 +1531,11 @@ TEST(GROOM_LOW_TO_HIGH, TEST_TWELVE){
     pair<double, size_t>{0.7, 2},
     pair<double, size_t>{0.8, 3},
     pair<double, size_t>{0.0, 5},
-    pair<double, size_t>{0.9, 4},
     pair<double, size_t>{0.1, 6},
     pair<double, size_t>{0.2, 7},
     pair<double, size_t>{0.3, 8},
-    pair<double, size_t>{0.4, 9}
+    pair<double, size_t>{0.4, 9},
+    pair<double, size_t>{0.9, 4}
   };
 
   ASSERT_EQ(case12.size(), test_data.size());
@@ -1239,8 +1550,7 @@ TEST(GROOM_LOW_TO_HIGH, TEST_TWELVE){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{0.5, 0},
-    pair<double, size_t>{0.0, 5},
-    pair<double, size_t>{0.1, 6}
+    pair<double, size_t>{0.0, 5}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1290,7 +1600,9 @@ TEST(GROOM_LOW_TO_HIGH, TEST_THIRTEEN){
 TEST(SORT_HIGH_TO_LOW, TEST_ONE) {
   auto test_data(case1);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case1, test_data);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(test_data[i].first, test_data[i+1].first);
@@ -1301,7 +1613,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_ONE) {
 TEST(SORT_HIGH_TO_LOW, TEST_TWO){
   auto test_data(case2);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case2, test_data);
 
   for(int i = 0; i < 10-1; i++){
     EXPECT_GE(test_data[i].first, test_data[i+1].first);
@@ -1312,7 +1626,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_TWO){
 TEST(SORT_HIGH_TO_LOW, TEST_THREE){
   auto test_data(case3);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case3, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1323,7 +1639,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_THREE){
 TEST(SORT_HIGH_TO_LOW, TEST_FOUR){
   auto test_data(case4);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case4, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1334,7 +1652,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_FOUR){
 TEST(SORT_HIGH_TO_LOW, TEST_FIVE){
   auto test_data(case5);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case5, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1345,7 +1665,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_FIVE){
 TEST(SORT_HIGH_TO_LOW, TEST_SIX){
   auto test_data(case6);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case6, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1356,7 +1678,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_SIX){
 TEST(SORT_HIGH_TO_LOW, TEST_SEVEN){
   auto test_data(case7);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case7, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1367,7 +1691,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_SEVEN){
 TEST(SORT_HIGH_TO_LOW, TEST_EIGHT){
   auto test_data(case8);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case8, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1378,7 +1704,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_EIGHT){
 TEST(SORT_HIGH_TO_LOW, TEST_NINE){
   auto test_data(case9);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case9, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1389,7 +1717,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_NINE){
 TEST(SORT_HIGH_TO_LOW, TEST_TEN){
   auto test_data(case10);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case10, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1400,7 +1730,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_TEN){
 TEST(SORT_HIGH_TO_LOW, TEST_ELEVEN){
   auto test_data(case11);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case11, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1411,7 +1743,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_ELEVEN){
 TEST(SORT_HIGH_TO_LOW, TEST_TWELVE){
   auto test_data(case12);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case12, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1422,7 +1756,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_TWELVE){
 TEST(SORT_HIGH_TO_LOW, TEST_THIRTEEN){
   auto test_data(case13);
 
-  madlib::quickmergeHighToLow(test_data.begin(), test_data.end());
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case13, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1435,7 +1771,9 @@ TEST(SORT_HIGH_TO_LOW, TEST_THIRTEEN){
 TEST(SORT_LOW_TO_HIGH, TEST_ONE){
   auto test_data(case1);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case1, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1446,7 +1784,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_ONE){
 TEST(SORT_LOW_TO_HIGH, TEST_TWO){
   auto test_data(case2);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case2, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1457,7 +1797,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_TWO){
 TEST(SORT_LOW_TO_HIGH, TEST_THREE){
   auto test_data(case3);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case3, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1468,7 +1810,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_THREE){
 TEST(SORT_LOW_TO_HIGH, TEST_FOUR){
   auto test_data(case4);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case4, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1479,7 +1823,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_FOUR){
 TEST(SORT_LOW_TO_HIGH, TEST_FIVE){
   auto test_data(case5);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case5, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1490,7 +1836,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_FIVE){
 TEST(SORT_LOW_TO_HIGH, TEST_SIX){
   auto test_data(case6);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case6, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1501,7 +1849,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_SIX){
 TEST(SORT_LOW_TO_HIGH, TEST_SEVEN){
   auto test_data(case7);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case7, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1512,7 +1862,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_SEVEN){
 TEST(SORT_LOW_TO_HIGH, TEST_EIGHT){
   auto test_data(case8);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case8, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1523,7 +1875,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_EIGHT){
 TEST(SORT_LOW_TO_HIGH, TEST_NINE){
   auto test_data(case9);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case9, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1534,7 +1888,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_NINE){
 TEST(SORT_LOW_TO_HIGH, TEST_TEN){
   auto test_data(case10);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case10, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1545,7 +1901,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_TEN){
 TEST(SORT_LOW_TO_HIGH, TEST_ELEVEN){
   auto test_data(case11);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case11, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1556,7 +1914,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_ELEVEN){
 TEST(SORT_LOW_TO_HIGH, TEST_TWELVE){
   auto test_data(case12);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case12, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1567,7 +1927,9 @@ TEST(SORT_LOW_TO_HIGH, TEST_TWELVE){
 TEST(SORT_LOW_TO_HIGH, TEST_THIRTEEN){
   auto test_data(case13);
 
-  madlib::quickmergeLowToHigh(test_data.begin(), test_data.end());
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case13, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);

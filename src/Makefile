@@ -1,27 +1,20 @@
-CPP=g++
-CC=gcc
-LIBS=-pthread
 
-##These should be defined in the calling Makefile
-#COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I$(INCLUDE) -fPIC
-#CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x
-#CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99
-#CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
-#CFLAGS=-O3 $(COMMON_FLAGS) -std=c99
+LIBS=-pthread
 
 STATIC_LIB=libmadlib.a
 DYNAMIC_LIB=libmadlib.so
 SUBLIBS_OBJECTS=file-parsing.o
 
 
-SOURCES=diagnostics.cpp                                                \
-				kendall-correlation-matrix.cpp                                 \
-				pearson-correlation-matrix.cpp                                 \
-				rank-matrix.cpp                                                \
-				simple-thread-dispatch.cpp                                     \
-				spearman-correlation-matrix.cpp                                \
-				statistics.c                                                   \
-				sparse-bitpacked-array.c
+CPPSOURCES=diagnostics.cpp                                                \
+					 kendall-correlation-matrix.cpp                                 \
+					 pearson-correlation-matrix.cpp                                 \
+					 rank-matrix.cpp                                                \
+					 simple-thread-dispatch.cpp                                     \
+					 spearman-correlation-matrix.cpp
+
+CSOURCES=statistics.c                                                   \
+				 sparse-bitpacked-array.c
 
 OBJECTS= diagnostics.o                                                 \
 				 kendall-correlation-matrix.o                                  \
@@ -44,10 +37,10 @@ $(DYNAMIC_LIB):$(OBJECTS) $(SUBLIBS_OBJECTS)
 	$(CPP) $(OBJECTS) $(SPEC_OBJECTS) -shared -o $(DYNAMIC_LIB)
 
 %.o:%.cpp $(HEADERS)
-	$(CPP) $(CPPFLAGS) -fPIC -c $< -o $@
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
 %.o:%.c $(HEADERS)
-	$(CC) $(CFLAGS) -fPIC -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(SUBLIBS_OBJECTS):
 	$(eval SUBDIR := $(basename $@))

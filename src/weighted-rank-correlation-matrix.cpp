@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include <correlation-matrix.hpp>
-#include <quickmerge.hpp>
+#include <timsort.hpp>
 #include <simple-thread-dispatch.hpp>
 #include <statistics.h>
 #include <upper-diagonal-square-matrix.hpp>

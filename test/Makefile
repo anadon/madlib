@@ -29,14 +29,14 @@ CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++1z -isystem \
 EXEC=test.out
 
 SOURCES=graph-test.cpp                                                 \
-        quickmerge-test.cpp                                            \
+        timsort-test.cpp                                            \
         rank-matrix-test.cpp                                           \
         statistics-test.cpp                                            \
         upper-diagonal-square-matrix-test.cpp                          \
 				double-sided-stack-test.cpp
 
 OBJECTS=graph-test.o                                                   \
-        quickmerge-test.o                                              \
+        timsort-test.o                                              \
         rank-matrix-test.o                                             \
         statistics-test.o                                              \
         upper-diagonal-square-matrix-test.o                            \
@@ -44,7 +44,7 @@ OBJECTS=graph-test.o                                                   \
 
 HEADERS=include/diagnostics.hpp                                                \
         include/correlation-matrix.hpp                                         \
-        include/quickmerge.hpp                                                 \
+        include/timsort.hpp                                                 \
         include/rank-matrix.hpp                                                \
         include/short-primatives.h                                             \
         include/simple-thread-dispatch.hpp                                     \

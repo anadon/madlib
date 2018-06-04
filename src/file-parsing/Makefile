@@ -1,17 +1,5 @@
-CPP=g++
-CC=gcc
-#LIBS=-pthread
-
-##These should be defined in the calling Makefile
-#COMMON_FLAGS=-pipe -Wall -Wextra -Wconversion -Wmissing-declarations -march=native -I../include
-#CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++0x
-#CFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c99
-#CPPFLAGS=-O3 $(COMMON_FLAGS) -std=c++0x
-#CFLAGS=-O3 $(COMMON_FLAGS) -std=c99
-
 #NOTE: This does not automatically rebuild changed subdirecories, and so each
 #change requires a make-clean, and make.
-
 #TODO: make this rebuild updated subdirectories automatically
 
 

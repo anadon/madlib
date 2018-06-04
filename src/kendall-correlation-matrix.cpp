@@ -27,7 +27,7 @@
 #include <rank-matrix.hpp>
 #include <correlation-matrix.hpp>
 #include <simple-thread-dispatch.hpp>
-#include <quickmerge.hpp>
+#include <timsort.hpp>
 #include <upper-diagonal-square-matrix.hpp>
 
 
