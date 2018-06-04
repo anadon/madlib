@@ -74,20 +74,21 @@ namespace madlib{
  **********************************************************************/
 
 template<
-  typename _BidirectionalIterator,
+  typename _ForwardIterator,
   typename _Compare>
 void
 timsort(
-  _BidirectionalIterator first,
-  _BidirectionalIterator last,
+  _ForwardIterator first,
+  _ForwardIterator last,
   _Compare comp = std::less_equal<>() );
 
 
-template<typename _BidirectionalIterator>
+template<
+  typename _ForwardIterator>
 void
 timsort(
-  _BidirectionalIterator first,
-  _BidirectionalIterator last
+  _ForwardIterator first,
+  _ForwardIterator last
 ){
   timsort(first, last, std::less_equal<>());
 }
@@ -109,75 +110,24 @@ timsort(
 // ////////////////////////////////////////////////////////////////////////
 
 template<
-  typename _BidirectionalIterator>
+  typename _ForwardIterator>
 void
 timsortHighToLow(
-  _BidirectionalIterator first,
-  _BidirectionalIterator last
+  _ForwardIterator first,
+  _ForwardIterator last
 ){
   timsort(first, last, std::greater_equal<>() );
 }
 
 
 template<
-  typename _BidirectionalIterator>
+  typename _ForwardIterator>
 void
 timsortLowToHigh(
-  _BidirectionalIterator first,
-  _BidirectionalIterator last
+  _ForwardIterator first,
+  _ForwardIterator last
 ){
   timsort(first, last);
-}
-
-
-
-/********************************************************************
- * This alternate implementation of inplace_merge.  Higher memory
- * use, but should be faster if the operation needs to go out of
- * cache.
- *
- //TODO: Group moves by marking the start of a group of elements to move, and
- //end if they're all in the same side?  This may or may not help performance,
- //and is likely architecture dependant.
-********************************************************************/
-template<
-  typename _Data_Type,
-  template <typename, typename...> class _ForwardIterator,
-  template <typename, typename...> class _OutputIterator,
-  typename _Compare>
-void
-inplace_merge(
-  _ForwardIterator<_Data_Type> leftStart,
-  _ForwardIterator<_Data_Type> rightStart,
-  _ForwardIterator<_Data_Type> endRange,
-  _OutputIterator<_Data_Type>  sortedResult,
-  _Compare comp
-){
-  //handle trivial cases.
-  if(leftStart == endRange){
-    return;
-  }
-  if(leftStart == rightStart || rightStart == endRange){
-    std::move(leftStart, endRange, storedResult);
-    return;
-  }
-
-  _ForwardIterator<_Data_Type> curr_left = leftStart;
-  _ForwardIterator<_Data_Type> curr_right = rightStart;
-
-  while(true){
-    if(comp(*curr_left, *curr_right)){
-      sortedResult = *curr_left;
-      std::advance(curr_left);
-      if(curr_left == rightStart) break;
-    }else{
-      sortedResult = *curr_right;
-      std::advance(curr_right);
-      if(curr_right == endRange) break;
-    }
-  }
-  std::move(curr_left, rightStart, sortedResult);
-  std::move(curr_right, endRange, sortedResult);
 }
 
 
@@ -186,13 +136,11 @@ assumes first != last
 *******************************************************************************/
 template<
   typename _ForwardIterator>
-auto identifyMismatches(
+auto
+identifyMismatches(
   _ForwardIterator first,
   _ForwardIterator last
 ){
-
-  //constexpr bool isBidirectionalIterator = std::is_base_of_v<std::bidirectional_iterator_tag, typename std::iterator_traits<_ForwardIterator>::iterator_category>;
-
 
   std::vector<_ForwardIterator> indicesOfInterest;
   indicesOfInterest.reserve(std::distance(first, last));
@@ -219,8 +167,11 @@ auto identifyMismatches(
 }
 
 
-template<typename _ForwardIterator, typename _Compare>
-auto groomInput(
+template<
+  typename _ForwardIterator,
+  typename _Compare>
+auto
+groomInput(
   _ForwardIterator first,
   _ForwardIterator last,
   _Compare comp
@@ -231,7 +182,7 @@ auto groomInput(
   }
   std::vector<_ForwardIterator> indicesOfInterest = identifyMismatches(first, last);
   if(indicesOfInterest.size() == 2){
-    if(!comp(*first, *std::next(first))){
+    if(!comp(*first, *std::prev(last))){
       std::reverse(first, last);
     }
     return indicesOfInterest;
@@ -240,11 +191,7 @@ auto groomInput(
   std::vector<_ForwardIterator> nIOI;
   nIOI.reserve(indicesOfInterest.size()/2 + 1);
   nIOI.clear();
-//Groom the data and negate worst case scenarios, and prepare the segment to
-//merge later.
-//TODO: Prove this, Pull out first loop tp handle the case of first and simplify
-//the 'if'?
-  //constexpr bool isBidirectionalIterator = std::is_base_of_v<std::bidirectional_iterator_tag, typename std::iterator_traits<_ForwardIterator>::iterator_category>;
+
 
   //Added to track what should be done for small portions of unsorted data.
   //If a small portion is sorted, ignore.  If a small portion is highly ordered
@@ -255,10 +202,9 @@ auto groomInput(
   //interest in a short iterator distance, with the particular values for this
   //decision being made as compile time and dependant on the targeted
   //architecture.  This is to take advantage of cache locality.
-  constexpr const size_t BLOCK_SIZE = 4096;// / sizeof(*first);//NOTE: tunable
-  const int HIGHLY_UNORDERED_CUTOFF = 2;
+  constexpr const size_t BLOCK_SIZE = 4096 / sizeof(*first);//NOTE: tunable
+  //const int HIGHLY_UNORDERED_CUTOFF = 2;
 
-  //NOTE: last != indicesOfInterest.end()
   assert(first == *indicesOfInterest.begin());
   assert(last  == *std::prev(indicesOfInterest.end()));
 
@@ -266,8 +212,11 @@ auto groomInput(
   for(auto i = indicesOfInterest.begin(); *i != last;){
     nIOI.push_back(*i);
     if(std::next(*i) == last) break;
-    //NOTE: this can only happen once, but when merged with identifyRuns it is
-    //useful in this form.
+    //NOTE: identifyRuns can return an instance when two or more successive
+    //groups are in order when an ascending/descending group is followed by a
+    //equal group or vica versa and this repeats.  Staircase like input can only
+    //be identified as in order robustly this way until identifyRuns is
+    //reintegrated into this function.
     if(comp(**i, *std::next(*i))){
       //just skip everything already in order
       do{
@@ -300,7 +249,9 @@ auto groomInput(
 }
 
 
-template<typename _ForwardIterator, typename _Compare>
+template<
+  typename _ForwardIterator,
+  typename _Compare>
 void timsort(
   _ForwardIterator first,
   _ForwardIterator last,
@@ -312,16 +263,31 @@ void timsort(
   if(first == last ||
      std::next(first) == last) return;
 
+  typename std::iterator_traits<_ForwardIterator>::value_type T;
+  std::vector< decltype(T) > workspaceIn;
+  std::move(first, last, std::back_inserter(workspaceIn));
+  auto _first = workspaceIn.begin();
+  auto _last = workspaceIn.end();
+
   //std::vector<_BidirectionalIterator>
-  auto indicesOfInterest = groomInput(first, last, comp);
-  if(indicesOfInterest.size() == 2) return;
+  auto indicesOfInterest = groomInput(_first, _last, comp);
+  if(indicesOfInterest.size() == 2){
+    std::move(workspaceIn.begin(), workspaceIn.end(), first);
+    return;
+  }
 
 //while there are multiple segments, merge them
-  std::vector<_ForwardIterator> newIndicesOfInterest;
+  decltype(indicesOfInterest) newIndicesOfInterest;
   newIndicesOfInterest.reserve((indicesOfInterest.size()/2) + 1);
+
+  std::vector< decltype(T) > workspaceOut;
+  workspaceOut.reserve(workspaceIn.size());
+  workspaceOut.clear();
+
 
   while(indicesOfInterest.size() > 2){
     newIndicesOfInterest.clear();
+    auto end_iter = std::back_inserter(workspaceOut);
 
     auto currItr = indicesOfInterest.begin();
     while(std::distance(currItr, indicesOfInterest.end()) > 2){
@@ -329,7 +295,7 @@ void timsort(
       auto rightStart = *currItr; currItr++;
       auto endRange   = *currItr;
 
-      inplace_merge(leftStart, rightStart, endRange, comp);
+      std::merge(leftStart, rightStart, rightStart, endRange, end_iter, comp);
 
       newIndicesOfInterest.push_back(leftStart);
     }
@@ -338,7 +304,9 @@ void timsort(
       std::move(currItr, indicesOfInterest.end(), std::back_inserter(newIndicesOfInterest));
     }
     indicesOfInterest.swap(newIndicesOfInterest);
+    swap(workspaceIn, workspaceOut);
   }
+  std::move(workspaceIn.begin(), workspaceIn.end(), first);
 }
 
 };//end namespace
