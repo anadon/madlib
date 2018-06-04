@@ -196,7 +196,6 @@ TEST(DoubleSidedStack, BoundsProtectionThree){
   DoubleSidedStack<int> tester(10);
   //To prevent accidentally being right, repeat the tests twice with different
   //input values so that memory much be changed in the expected way.
-  int testVal = 0;
 
   tester.push_front(0);
   tester.push_front(1);

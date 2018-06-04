@@ -202,7 +202,7 @@ groomInput(
   //interest in a short iterator distance, with the particular values for this
   //decision being made as compile time and dependant on the targeted
   //architecture.  This is to take advantage of cache locality.
-  constexpr const size_t BLOCK_SIZE = 4096 / sizeof(*first);//NOTE: tunable
+  constexpr const ssize_t BLOCK_SIZE = 4096 / sizeof(*first);//NOTE: tunable
   //const int HIGHLY_UNORDERED_CUTOFF = 2;
 
   assert(first == *indicesOfInterest.begin());
