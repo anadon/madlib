@@ -257,8 +257,6 @@ void timsort(
   _ForwardIterator last,
   _Compare comp
 ){
-  //using iterator_category = typename std::iterator_traits<_ForwardIterator>::iterator_category;
-  //static_assert(std::is_base_of_v<std::forward_iterator_tag, iterator_category>, "Passed iterators must at least forward iterators");
 
   if(first == last ||
      std::next(first) == last) return;
