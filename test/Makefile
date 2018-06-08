@@ -1,5 +1,5 @@
-CPP=g++
-CC=gcc
+#CPP=g++
+#CC=gcc
 LIBS=-pthread
 
 # Points to the root of Google Test, relative to where this file is.
@@ -29,22 +29,24 @@ CPPFLAGS=-ggdb -pg -O0 $(COMMON_FLAGS) -std=c++1z -isystem \
 EXEC=test.out
 
 SOURCES=graph-test.cpp                                                 \
-        timsort-test.cpp                                            \
+        timsort-test.cpp                                               \
         rank-matrix-test.cpp                                           \
         statistics-test.cpp                                            \
         upper-diagonal-square-matrix-test.cpp                          \
-				double-sided-stack-test.cpp
+        double-sided-stack-test.cpp                                    \
+        alphabet-sort-test.cpp
 
 OBJECTS=graph-test.o                                                   \
-        timsort-test.o                                              \
+        timsort-test.o                                                 \
         rank-matrix-test.o                                             \
         statistics-test.o                                              \
         upper-diagonal-square-matrix-test.o                            \
-				double-sided-stack-test.o
+        double-sided-stack-test.o                                      \
+        alphabet-sort-test.o
 
 HEADERS=include/diagnostics.hpp                                                \
         include/correlation-matrix.hpp                                         \
-        include/timsort.hpp                                                 \
+        include/timsort.hpp                                                    \
         include/rank-matrix.hpp                                                \
         include/short-primatives.h                                             \
         include/simple-thread-dispatch.hpp                                     \
@@ -52,6 +54,7 @@ HEADERS=include/diagnostics.hpp                                                \
         include/graph.hpp                                                      \
         include/upper-diagonal-square-matrix.hpp                               \
         include/double-sided-stack.hpp                                         \
+        include/alphabet_sort.hpp                                              \
         $(GTEST_HEADERS)
 
 
