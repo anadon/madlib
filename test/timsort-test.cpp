@@ -30,228 +30,8 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "sort-test-resources.hpp"
 
-
-////////////////////////////////////////////////////////////////////////
-//USING NAMESPACE///////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-
-using std::pair;
-using std::array;
-using std::deque;
-using std::vector;
-using std::cout;
-using std::endl;
-
-
-////////////////////////////////////////////////////////////////////////////////
-//TEST DATA/////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-static const vector<pair<double, size_t> > case1 = {
-  pair<double, size_t>{0, 0},
-  pair<double, size_t>{0, 1},
-  pair<double, size_t>{0, 2},
-  pair<double, size_t>{0, 3},
-  pair<double, size_t>{0, 4},
-  pair<double, size_t>{0, 5},
-  pair<double, size_t>{0, 6},
-  pair<double, size_t>{0, 7},
-  pair<double, size_t>{0, 8},
-  pair<double, size_t>{0, 9}
-};
-
-static const vector<pair<double, size_t> > case2 = {
-  pair<double, size_t>{1, 0},
-  pair<double, size_t>{1, 1},
-  pair<double, size_t>{1, 2},
-  pair<double, size_t>{1, 3},
-  pair<double, size_t>{1, 4},
-  pair<double, size_t>{1, 5},
-  pair<double, size_t>{1, 6},
-  pair<double, size_t>{1, 7},
-  pair<double, size_t>{1, 8},
-  pair<double, size_t>{1, 9}
-};
-
-static const vector<pair<double, size_t> > case3 = {
-  pair<double, size_t>{0, 0},
-  pair<double, size_t>{1, 1},
-  pair<double, size_t>{2, 2},
-  pair<double, size_t>{3, 3},
-  pair<double, size_t>{4, 4},
-  pair<double, size_t>{5, 5},
-  pair<double, size_t>{6, 6},
-  pair<double, size_t>{7, 7},
-  pair<double, size_t>{8, 8},
-  pair<double, size_t>{9, 9}
-};
-
-static const vector<pair<double, size_t> > case4 = {
-  pair<double, size_t>{0.0, 0},
-  pair<double, size_t>{0.1, 1},
-  pair<double, size_t>{0.2, 2},
-  pair<double, size_t>{0.3, 3},
-  pair<double, size_t>{0.4, 4},
-  pair<double, size_t>{0.5, 5},
-  pair<double, size_t>{0.6, 6},
-  pair<double, size_t>{0.7, 7},
-  pair<double, size_t>{0.8, 8},
-  pair<double, size_t>{0.9, 9}
-};
-
-static const vector<pair<double, size_t> > case5 = {
-  pair<double, size_t>{9, 0},
-  pair<double, size_t>{8, 1},
-  pair<double, size_t>{7, 2},
-  pair<double, size_t>{6, 3},
-  pair<double, size_t>{5, 4},
-  pair<double, size_t>{4, 5},
-  pair<double, size_t>{3, 6},
-  pair<double, size_t>{2, 7},
-  pair<double, size_t>{1, 8},
-  pair<double, size_t>{0, 9}
-};
-
-static const vector<pair<double, size_t> > case6 = {
-  pair<double, size_t>{0.9, 0},
-  pair<double, size_t>{0.8, 1},
-  pair<double, size_t>{0.7, 2},
-  pair<double, size_t>{0.6, 3},
-  pair<double, size_t>{0.5, 4},
-  pair<double, size_t>{0.4, 5},
-  pair<double, size_t>{0.3, 6},
-  pair<double, size_t>{0.2, 7},
-  pair<double, size_t>{0.1, 8},
-  pair<double, size_t>{0.0, 9}
-};
-
-static const vector<pair<double, size_t> > case7 = {
-  pair<double, size_t>{1, 0},
-  pair<double, size_t>{0, 1},
-  pair<double, size_t>{3, 2},
-  pair<double, size_t>{2, 3},
-  pair<double, size_t>{5, 4},
-  pair<double, size_t>{4, 5},
-  pair<double, size_t>{7, 6},
-  pair<double, size_t>{6, 7},
-  pair<double, size_t>{9, 8},
-  pair<double, size_t>{8, 9}
-};
-
-static const vector<pair<double, size_t> > case8 = {
-  pair<double, size_t>{0.1, 0},
-  pair<double, size_t>{0.0, 1},
-  pair<double, size_t>{0.3, 2},
-  pair<double, size_t>{0.2, 3},
-  pair<double, size_t>{0.5, 4},
-  pair<double, size_t>{0.4, 5},
-  pair<double, size_t>{0.7, 6},
-  pair<double, size_t>{0.6, 7},
-  pair<double, size_t>{0.9, 8},
-  pair<double, size_t>{0.8, 9}
-};
-
-static const vector<pair<double, size_t> > case9 = {
-  pair<double, size_t>{0, 0},
-  pair<double, size_t>{2, 1},
-  pair<double, size_t>{1, 2},
-  pair<double, size_t>{4, 3},
-  pair<double, size_t>{3, 4},
-  pair<double, size_t>{6, 5},
-  pair<double, size_t>{5, 6},
-  pair<double, size_t>{8, 7},
-  pair<double, size_t>{7, 8},
-  pair<double, size_t>{9, 9}
-};
-
-static const vector<pair<double, size_t> > case10 = {
-  pair<double, size_t>{0.0, 0},
-  pair<double, size_t>{0.2, 1},
-  pair<double, size_t>{0.1, 2},
-  pair<double, size_t>{0.4, 3},
-  pair<double, size_t>{0.3, 4},
-  pair<double, size_t>{0.6, 5},
-  pair<double, size_t>{0.5, 6},
-  pair<double, size_t>{0.8, 7},
-  pair<double, size_t>{0.7, 8},
-  pair<double, size_t>{0.9, 9}
-};
-
-static const vector<pair<double, size_t> > case11 = {
-  pair<double, size_t>{5, 0},
-  pair<double, size_t>{6, 1},
-  pair<double, size_t>{7, 2},
-  pair<double, size_t>{8, 3},
-  pair<double, size_t>{9, 4},
-  pair<double, size_t>{0, 5},
-  pair<double, size_t>{1, 6},
-  pair<double, size_t>{2, 7},
-  pair<double, size_t>{3, 8},
-  pair<double, size_t>{4, 9}
-};
-
-static const vector<pair<double, size_t> > case12 = {
-  pair<double, size_t>{0.5, 0},
-  pair<double, size_t>{0.6, 1},
-  pair<double, size_t>{0.7, 2},
-  pair<double, size_t>{0.8, 3},
-  pair<double, size_t>{0.9, 4},
-  pair<double, size_t>{0.0, 5},
-  pair<double, size_t>{0.1, 6},
-  pair<double, size_t>{0.2, 7},
-  pair<double, size_t>{0.3, 8},
-  pair<double, size_t>{0.4, 9}
-};
-
-static const vector<pair<double, size_t> > case13 = {
-  pair<double, size_t>{0, 0},
-  pair<double, size_t>{-1, 1}
-};
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-static bool printOEA = true;
-
-void printExpectedAndActual(
-  const vector<pair<double, size_t> > origin,
-  const vector<pair<double, size_t> > expect,
-  const vector<pair<double, size_t> > actual
-){
-  if(!printOEA) return;
-  bool shouldPrint = false;
-  for(size_t i = 0; i < expect.size(); i++){
-    if(expect[i] != actual[i]){
-      shouldPrint = true;
-      break;
-    }
-  }
-  if(!shouldPrint) return;
-  cout << "--------------------------------------------------------------------------------" << endl;
-  cout << "original\texpected\tactual" << endl;
-  for(size_t i = 0; i < expect.size(); i++){
-    cout << "{" << origin[i].first << ", " << origin[i].second << "} <=> {";
-    cout << expect[i].first << ", " << expect[i].second << "} <=> {";
-    cout << actual[i].first << ", " << actual[i].second << "}" << endl;
-  }
-}
-
-static bool printOA = false;
-
-void printOriginalAndActual(
-  const vector<pair<double, size_t> > origin,
-  const vector<pair<double, size_t> > actual
-){
-  if(!printOA) return;
-  assert(origin.size() == actual.size());
-  cout << "--------------------------------------------------------------------------------" << endl;
-  cout << "original\tactual" << endl;
-  for(size_t i = 0; i < actual.size(); i++){
-    cout << "{" << origin[i].first << ", " << origin[i].second << "} <=> {";
-    cout << actual[i].first << ", " << actual[i].second << "}" << endl;
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 //INPUT RUNS DETECTION TESTS////////////////////////////////////////////////////
@@ -273,25 +53,6 @@ TEST(RUNS, TEST_ONE) {
   for(size_t i = 0; i < IOI.size()-1; i++){
     EXPECT_EQ(*(IOI[i]), eIOI[i]);
   }
-
-}
-
-
-TEST(RUNS, TEST_TWO){
-  auto test_data(case2);
-
-  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
-
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{1, 0}//,
-    //pair<double, size_t>{1, 9}
-  };
-
-  ASSERT_EQ(eIOI.size(), IOI.size()-1);
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
 }
 
 
@@ -301,26 +62,7 @@ TEST(RUNS, TEST_THREE){
   auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
 
   vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0, 0}//,
-    //pair<double, size_t>{9, 9}
-  };
-
-  ASSERT_EQ(eIOI.size(), IOI.size()-1);
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(RUNS, TEST_FOUR){
-  auto test_data(case4);
-
-  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
-
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.0, 0}//,
-    //pair<double, size_t>{0.9, 9}
+    pair<double, size_t>{0, 0}
   };
 
   ASSERT_EQ(eIOI.size(), IOI.size()-1);
@@ -337,26 +79,7 @@ TEST(RUNS, TEST_FIVE){
   auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
 
   vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{9, 0}//,
-    //pair<double, size_t>{0, 9}
-  };
-
-  ASSERT_EQ(eIOI.size(), IOI.size()-1);
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(RUNS, TEST_SIX){
-  auto test_data(case6);
-
-  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
-
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.9, 0}//,
-    //pair<double, size_t>{0, 9}
+    pair<double, size_t>{9, 0}
   };
 
   ASSERT_EQ(eIOI.size(), IOI.size()-1);
@@ -381,34 +104,7 @@ TEST(RUNS, TEST_SEVEN){
     pair<double, size_t>{4, 5},
     pair<double, size_t>{7, 6},
     pair<double, size_t>{6, 7},
-    pair<double, size_t>{9, 8}//,
-    //pair<double, size_t>{8, 9}
-  };
-
-  ASSERT_EQ(eIOI.size(), IOI.size()-1);
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(RUNS, TEST_EIGHT){
-  auto test_data(case8);
-
-  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
-
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.1, 0},
-    pair<double, size_t>{0.0, 1},
-    pair<double, size_t>{0.3, 2},
-    pair<double, size_t>{0.2, 3},
-    pair<double, size_t>{0.5, 4},
-    pair<double, size_t>{0.4, 5},
-    pair<double, size_t>{0.7, 6},
-    pair<double, size_t>{0.6, 7},
-    pair<double, size_t>{0.9, 8}//,
-    //pair<double, size_t>{0.8, 9}
+    pair<double, size_t>{9, 8}
   };
 
   ASSERT_EQ(eIOI.size(), IOI.size()-1);
@@ -433,34 +129,7 @@ TEST(RUNS, TEST_NINE){
     pair<double, size_t>{6, 5},
     pair<double, size_t>{5, 6},
     pair<double, size_t>{8, 7},
-    pair<double, size_t>{7, 8}//,
-    //pair<double, size_t>{9, 9}
-  };
-
-  ASSERT_EQ(eIOI.size(), IOI.size()-1);
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(RUNS, TEST_TEN){
-  auto test_data(case10);
-
-  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
-
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.0, 0},
-    pair<double, size_t>{0.2, 1},
-    pair<double, size_t>{0.1, 2},
-    pair<double, size_t>{0.4, 3},
-    pair<double, size_t>{0.3, 4},
-    pair<double, size_t>{0.6, 5},
-    pair<double, size_t>{0.5, 6},
-    pair<double, size_t>{0.8, 7},
-    pair<double, size_t>{0.7, 8}//,
-    //pair<double, size_t>{0.9, 9}
+    pair<double, size_t>{7, 8}
   };
 
   ASSERT_EQ(eIOI.size(), IOI.size()-1);
@@ -479,28 +148,7 @@ TEST(RUNS, TEST_ELEVEN){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{5, 0},
     pair<double, size_t>{9, 4},
-    pair<double, size_t>{0, 5}//,
-    //pair<double, size_t>{4, 9}
-  };
-
-  ASSERT_EQ(eIOI.size(), IOI.size()-1);
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(RUNS, TEST_TWELVE){
-  auto test_data(case12);
-
-  auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
-
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.5, 0},
-    pair<double, size_t>{0.9, 4},
-    pair<double, size_t>{0.0, 5}//,
-    //pair<double, size_t>{0.4, 9}
+    pair<double, size_t>{0, 5}
   };
 
   ASSERT_EQ(eIOI.size(), IOI.size()-1);
@@ -517,8 +165,7 @@ TEST(RUNS, TEST_THIRTEEN){
   auto IOI = madlib::identifyMismatches(test_data.begin(), test_data.end());
 
   vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0, 0}//,
-    //pair<double, size_t>{-1, 1}
+    pair<double, size_t>{0, 0}
   };
 
   ASSERT_EQ(eIOI.size(), IOI.size()-1);
@@ -575,46 +222,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_ONE) {
 }
 
 
-TEST(GROOM_HIGH_TO_LOW, TEST_TWO){
-  auto test_data(case2);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{1, 9},
-    pair<double, size_t>{1, 8},
-    pair<double, size_t>{1, 7},
-    pair<double, size_t>{1, 6},
-    pair<double, size_t>{1, 5},
-    pair<double, size_t>{1, 4},
-    pair<double, size_t>{1, 3},
-    pair<double, size_t>{1, 2},
-    pair<double, size_t>{1, 1},
-    pair<double, size_t>{1, 0}
-  };
-
-  ASSERT_EQ(case2.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case2, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{1, 9}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
 TEST(GROOM_HIGH_TO_LOW, TEST_THREE){
   auto test_data(case3);
 
@@ -633,7 +240,7 @@ TEST(GROOM_HIGH_TO_LOW, TEST_THREE){
     pair<double, size_t>{0, 0}
   };
 
-  ASSERT_EQ(case2.size(), test_data.size());
+  ASSERT_EQ(case3.size(), test_data.size());
   ASSERT_EQ(expected.size(), test_data.size());
 
   printExpectedAndActual(case3, expected, test_data);
@@ -645,46 +252,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_THREE){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{9, 9}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(GROOM_HIGH_TO_LOW, TEST_FOUR){
-  auto test_data(case4);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.9, 9},
-    pair<double, size_t>{0.8, 8},
-    pair<double, size_t>{0.7, 7},
-    pair<double, size_t>{0.6, 6},
-    pair<double, size_t>{0.5, 5},
-    pair<double, size_t>{0.4, 4},
-    pair<double, size_t>{0.3, 3},
-    pair<double, size_t>{0.2, 2},
-    pair<double, size_t>{0.1, 1},
-    pair<double, size_t>{0.0, 0}
-  };
-
-  ASSERT_EQ(case4.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case4, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.9, 9}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -725,46 +292,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_FIVE){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{9, 0}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(GROOM_HIGH_TO_LOW, TEST_SIX){
-  auto test_data(case6);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.9, 0},
-    pair<double, size_t>{0.8, 1},
-    pair<double, size_t>{0.7, 2},
-    pair<double, size_t>{0.6, 3},
-    pair<double, size_t>{0.5, 4},
-    pair<double, size_t>{0.4, 5},
-    pair<double, size_t>{0.3, 6},
-    pair<double, size_t>{0.2, 7},
-    pair<double, size_t>{0.1, 8},
-    pair<double, size_t>{0.0, 9}
-  };
-
-  ASSERT_EQ(case6.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case6, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.9, 0}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -816,47 +343,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_SEVEN){
 }
 
 
-TEST(GROOM_HIGH_TO_LOW, TEST_EIGHT){
-  auto test_data(case8);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.1, 0},
-    pair<double, size_t>{0.9, 8},
-    pair<double, size_t>{0.8, 9},
-    pair<double, size_t>{0.7, 6},
-    pair<double, size_t>{0.6, 7},
-    pair<double, size_t>{0.5, 4},
-    pair<double, size_t>{0.4, 5},
-    pair<double, size_t>{0.3, 2},
-    pair<double, size_t>{0.2, 3},
-    pair<double, size_t>{0, 1}
-  };
-
-  ASSERT_EQ(case8.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case8, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.1, 0},
-    pair<double, size_t>{0.9, 8}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
 TEST(GROOM_HIGH_TO_LOW, TEST_NINE){
   auto test_data(case9);
 
@@ -897,46 +383,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_NINE){
 }
 
 
-TEST(GROOM_HIGH_TO_LOW, TEST_TEN){
-  auto test_data(case10);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.9, 9},
-    pair<double, size_t>{0.8, 7},
-    pair<double, size_t>{0.7, 8},
-    pair<double, size_t>{0.6, 5},
-    pair<double, size_t>{0.5, 6},
-    pair<double, size_t>{0.4, 3},
-    pair<double, size_t>{0.3, 4},
-    pair<double, size_t>{0.2, 1},
-    pair<double, size_t>{0.1, 2},
-    pair<double, size_t>{0.0, 0},
-  };
-
-  ASSERT_EQ(case10.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case10, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.9, 9}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
 TEST(GROOM_HIGH_TO_LOW, TEST_ELEVEN){
   auto test_data(case11);
 
@@ -967,46 +413,6 @@ TEST(GROOM_HIGH_TO_LOW, TEST_ELEVEN){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{9, 4}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(GROOM_HIGH_TO_LOW, TEST_TWELVE){
-  auto test_data(case12);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::greater_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.9, 4},
-    pair<double, size_t>{0.8, 3},
-    pair<double, size_t>{0.7, 2},
-    pair<double, size_t>{0.6, 1},
-    pair<double, size_t>{0.5, 0},
-    pair<double, size_t>{0.4, 9},
-    pair<double, size_t>{0.3, 8},
-    pair<double, size_t>{0.2, 7},
-    pair<double, size_t>{0.1, 6},
-    pair<double, size_t>{0.0, 5}
-  };
-
-  ASSERT_EQ(case12.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case12, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.9, 4}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1091,46 +497,6 @@ TEST(GROOM_LOW_TO_HIGH, TEST_ONE){
 }
 
 
-TEST(GROOM_LOW_TO_HIGH, TEST_TWO){
-  auto test_data(case2);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::less_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{1, 0},
-    pair<double, size_t>{1, 1},
-    pair<double, size_t>{1, 2},
-    pair<double, size_t>{1, 3},
-    pair<double, size_t>{1, 4},
-    pair<double, size_t>{1, 5},
-    pair<double, size_t>{1, 6},
-    pair<double, size_t>{1, 7},
-    pair<double, size_t>{1, 8},
-    pair<double, size_t>{1, 9}
-  };
-
-  ASSERT_EQ(case2.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case2, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{1, 0}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
 TEST(GROOM_LOW_TO_HIGH, TEST_THREE){
   auto test_data(case3);
 
@@ -1161,46 +527,6 @@ TEST(GROOM_LOW_TO_HIGH, TEST_THREE){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{0, 0}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(GROOM_LOW_TO_HIGH, TEST_FOUR){
-  auto test_data(case4);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::less_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.0, 0},
-    pair<double, size_t>{0.1, 1},
-    pair<double, size_t>{0.2, 2},
-    pair<double, size_t>{0.3, 3},
-    pair<double, size_t>{0.4, 4},
-    pair<double, size_t>{0.5, 5},
-    pair<double, size_t>{0.6, 6},
-    pair<double, size_t>{0.7, 7},
-    pair<double, size_t>{0.8, 8},
-    pair<double, size_t>{0.9, 9}
-  };
-
-  ASSERT_EQ(case4.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case4, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.0, 0}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1251,46 +577,6 @@ TEST(GROOM_LOW_TO_HIGH, TEST_FIVE){
 }
 
 
-TEST(GROOM_LOW_TO_HIGH, TEST_SIX){
-  auto test_data(case6);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::less_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.0, 9},
-    pair<double, size_t>{0.1, 8},
-    pair<double, size_t>{0.2, 7},
-    pair<double, size_t>{0.3, 6},
-    pair<double, size_t>{0.4, 5},
-    pair<double, size_t>{0.5, 4},
-    pair<double, size_t>{0.6, 3},
-    pair<double, size_t>{0.7, 2},
-    pair<double, size_t>{0.8, 1},
-    pair<double, size_t>{0.9, 0}
-  };
-
-  ASSERT_EQ(case6.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case6, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.0, 9}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
 TEST(GROOM_LOW_TO_HIGH, TEST_SEVEN){
   auto test_data(case7);
 
@@ -1321,46 +607,6 @@ TEST(GROOM_LOW_TO_HIGH, TEST_SEVEN){
   //Omit last entry because it is a value not in the data (last).
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{0, 1}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(GROOM_LOW_TO_HIGH, TEST_EIGHT){
-  auto test_data(case8);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::less_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.0, 1},
-    pair<double, size_t>{0.1, 0},
-    pair<double, size_t>{0.2, 3},
-    pair<double, size_t>{0.3, 2},
-    pair<double, size_t>{0.4, 5},
-    pair<double, size_t>{0.5, 4},
-    pair<double, size_t>{0.6, 7},
-    pair<double, size_t>{0.7, 6},
-    pair<double, size_t>{0.8, 9},
-    pair<double, size_t>{0.9, 8}
-  };
-
-  ASSERT_EQ(case8.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case8, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.0, 1}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1412,47 +658,6 @@ TEST(GROOM_LOW_TO_HIGH, TEST_NINE){
 }
 
 
-TEST(GROOM_LOW_TO_HIGH, TEST_TEN){
-  auto test_data(case10);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::less_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.0, 0},
-    pair<double, size_t>{0.1, 2},
-    pair<double, size_t>{0.2, 1},
-    pair<double, size_t>{0.3, 4},
-    pair<double, size_t>{0.4, 3},
-    pair<double, size_t>{0.5, 6},
-    pair<double, size_t>{0.6, 5},
-    pair<double, size_t>{0.7, 8},
-    pair<double, size_t>{0.8, 7},
-    pair<double, size_t>{0.9, 9}
-  };
-
-  ASSERT_EQ(case10.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case10, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.0, 0},
-    pair<double, size_t>{0.1, 2}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
 TEST(GROOM_LOW_TO_HIGH, TEST_ELEVEN){
   auto test_data(case11);
 
@@ -1484,47 +689,6 @@ TEST(GROOM_LOW_TO_HIGH, TEST_ELEVEN){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{5, 0},
     pair<double, size_t>{0, 5}
-  };
-
-  ASSERT_EQ(eIOI.size()+1, IOI.size());
-
-  for(size_t i = 0; i < IOI.size()-1; i++){
-    EXPECT_EQ(*(IOI[i]), eIOI[i]);
-  }
-}
-
-
-TEST(GROOM_LOW_TO_HIGH, TEST_TWELVE){
-  auto test_data(case12);
-
-  auto IOI = madlib::groomInput(test_data.begin(), test_data.end(), std::less_equal<>());
-
-  vector<pair<double, size_t> > expected = {
-    pair<double, size_t>{0.5, 0},
-    pair<double, size_t>{0.6, 1},
-    pair<double, size_t>{0.7, 2},
-    pair<double, size_t>{0.8, 3},
-    pair<double, size_t>{0.0, 5},
-    pair<double, size_t>{0.1, 6},
-    pair<double, size_t>{0.2, 7},
-    pair<double, size_t>{0.3, 8},
-    pair<double, size_t>{0.4, 9},
-    pair<double, size_t>{0.9, 4}
-  };
-
-  ASSERT_EQ(case12.size(), test_data.size());
-  ASSERT_EQ(expected.size(), test_data.size());
-
-  printExpectedAndActual(case12, expected, test_data);
-
-  for(size_t i = 0; i < test_data.size(); i++){
-    EXPECT_EQ(expected[i], test_data[i]);
-  }
-
-  //Omit last entry because it is a value not in the data (last).
-  vector<pair<double, size_t> > eIOI = {
-    pair<double, size_t>{0.5, 0},
-    pair<double, size_t>{0.0, 5}
   };
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
@@ -1584,38 +748,12 @@ TEST(SORT_HIGH_TO_LOW, TEST_ONE) {
 }
 
 
-TEST(SORT_HIGH_TO_LOW, TEST_TWO){
-  auto test_data(case2);
-
-  madlib::timsortHighToLow(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case2, test_data);
-
-  for(int i = 0; i < 10-1; i++){
-    EXPECT_GE(test_data[i].first, test_data[i+1].first);
-  }
-}
-
-
 TEST(SORT_HIGH_TO_LOW, TEST_THREE){
   auto test_data(case3);
 
   madlib::timsortHighToLow(test_data.begin(), test_data.end());
 
   printOriginalAndActual(case3, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_GE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
-TEST(SORT_HIGH_TO_LOW, TEST_FOUR){
-  auto test_data(case4);
-
-  madlib::timsortHighToLow(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case4, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1636,38 +774,12 @@ TEST(SORT_HIGH_TO_LOW, TEST_FIVE){
 }
 
 
-TEST(SORT_HIGH_TO_LOW, TEST_SIX){
-  auto test_data(case6);
-
-  madlib::timsortHighToLow(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case6, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_GE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
 TEST(SORT_HIGH_TO_LOW, TEST_SEVEN){
   auto test_data(case7);
 
   madlib::timsortHighToLow(test_data.begin(), test_data.end());
 
   printOriginalAndActual(case7, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_GE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
-TEST(SORT_HIGH_TO_LOW, TEST_EIGHT){
-  auto test_data(case8);
-
-  madlib::timsortHighToLow(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case8, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1688,38 +800,12 @@ TEST(SORT_HIGH_TO_LOW, TEST_NINE){
 }
 
 
-TEST(SORT_HIGH_TO_LOW, TEST_TEN){
-  auto test_data(case10);
-
-  madlib::timsortHighToLow(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case10, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_GE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
 TEST(SORT_HIGH_TO_LOW, TEST_ELEVEN){
   auto test_data(case11);
 
   madlib::timsortHighToLow(test_data.begin(), test_data.end());
 
   printOriginalAndActual(case11, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_GE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
-TEST(SORT_HIGH_TO_LOW, TEST_TWELVE){
-  auto test_data(case12);
-
-  madlib::timsortHighToLow(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case12, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_GE((*i).first, (*std::next(i)).first);
@@ -1755,38 +841,12 @@ TEST(SORT_LOW_TO_HIGH, TEST_ONE){
 }
 
 
-TEST(SORT_LOW_TO_HIGH, TEST_TWO){
-  auto test_data(case2);
-
-  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case2, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_LE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
 TEST(SORT_LOW_TO_HIGH, TEST_THREE){
   auto test_data(case3);
 
   madlib::timsortLowToHigh(test_data.begin(), test_data.end());
 
   printOriginalAndActual(case3, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_LE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
-TEST(SORT_LOW_TO_HIGH, TEST_FOUR){
-  auto test_data(case4);
-
-  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case4, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1807,38 +867,12 @@ TEST(SORT_LOW_TO_HIGH, TEST_FIVE){
 }
 
 
-TEST(SORT_LOW_TO_HIGH, TEST_SIX){
-  auto test_data(case6);
-
-  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case6, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_LE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
 TEST(SORT_LOW_TO_HIGH, TEST_SEVEN){
   auto test_data(case7);
 
   madlib::timsortLowToHigh(test_data.begin(), test_data.end());
 
   printOriginalAndActual(case7, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_LE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
-TEST(SORT_LOW_TO_HIGH, TEST_EIGHT){
-  auto test_data(case8);
-
-  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case8, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
@@ -1859,38 +893,12 @@ TEST(SORT_LOW_TO_HIGH, TEST_NINE){
 }
 
 
-TEST(SORT_LOW_TO_HIGH, TEST_TEN){
-  auto test_data(case10);
-
-  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case10, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_LE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
 TEST(SORT_LOW_TO_HIGH, TEST_ELEVEN){
   auto test_data(case11);
 
   madlib::timsortLowToHigh(test_data.begin(), test_data.end());
 
   printOriginalAndActual(case11, test_data);
-
-  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
-    EXPECT_LE((*i).first, (*std::next(i)).first);
-  }
-}
-
-
-TEST(SORT_LOW_TO_HIGH, TEST_TWELVE){
-  auto test_data(case12);
-
-  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
-
-  printOriginalAndActual(case12, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
