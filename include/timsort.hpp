@@ -261,8 +261,9 @@ void timsort(
   if(first == last ||
      std::next(first) == last) return;
 
-  typename std::iterator_traits<_ForwardIterator>::value_type T;
-  std::vector< decltype(T) > workspaceIn;
+  //typename std::iterator_traits<_ForwardIterator>::value_type T;
+  typedef typename std::iterator_traits<_ForwardIterator>::value_type T;
+  std::vector< T > workspaceIn;
   std::move(first, last, std::back_inserter(workspaceIn));
   auto _first = workspaceIn.begin();
   auto _last = workspaceIn.end();
@@ -278,7 +279,7 @@ void timsort(
   decltype(indicesOfInterest) newIndicesOfInterest;
   newIndicesOfInterest.reserve((indicesOfInterest.size()/2) + 1);
 
-  std::vector< decltype(T) > workspaceOut;
+  std::vector< T > workspaceOut;
   workspaceOut.reserve(workspaceIn.size());
   workspaceOut.clear();
 
