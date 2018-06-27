@@ -24,6 +24,7 @@
 #include <timsort.hpp>
 
 #include <array>
+#include <boost/container_hash/hash.hpp>
 #include <deque>
 #include <iostream>
 #include <list>
@@ -213,6 +214,8 @@ TEST(GROOM_HIGH_TO_LOW, TEST_ONE) {
     pair<double, size_t>{0, 9}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -254,6 +257,8 @@ TEST(GROOM_HIGH_TO_LOW, TEST_THREE){
     pair<double, size_t>{9, 9}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -293,6 +298,8 @@ TEST(GROOM_HIGH_TO_LOW, TEST_FIVE){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{9, 0}
   };
+
+  printIteratorsOfIterest(IOI);
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
@@ -335,6 +342,8 @@ TEST(GROOM_HIGH_TO_LOW, TEST_SEVEN){
     pair<double, size_t>{9, 8}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -374,6 +383,8 @@ TEST(GROOM_HIGH_TO_LOW, TEST_NINE){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{9, 9}
   };
+
+  printIteratorsOfIterest(IOI);
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
@@ -415,6 +426,8 @@ TEST(GROOM_HIGH_TO_LOW, TEST_ELEVEN){
     pair<double, size_t>{9, 4}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -446,6 +459,8 @@ TEST(GROOM_HIGH_TO_LOW, TEST_THIRTEEN){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{0, 0}
   };
+
+  printIteratorsOfIterest(IOI);
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
@@ -489,6 +504,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_ONE){
     pair<double, size_t>{0, 0}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -528,6 +545,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_THREE){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{0, 0}
   };
+
+  printIteratorsOfIterest(IOI);
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
@@ -569,6 +588,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_FIVE){
     pair<double, size_t>{0, 9}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -608,6 +629,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_SEVEN){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{0, 1}
   };
+
+  printIteratorsOfIterest(IOI);
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
@@ -650,6 +673,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_NINE){
     pair<double, size_t>{1, 2}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -691,6 +716,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_ELEVEN){
     pair<double, size_t>{0, 5}
   };
 
+  printIteratorsOfIterest(IOI);
+
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
   for(size_t i = 0; i < IOI.size()-1; i++){
@@ -722,6 +749,8 @@ TEST(GROOM_LOW_TO_HIGH, TEST_THIRTEEN){
   vector<pair<double, size_t> > eIOI = {
     pair<double, size_t>{-1, 1}
   };
+
+  printIteratorsOfIterest(IOI);
 
   ASSERT_EQ(eIOI.size()+1, IOI.size());
 
@@ -825,6 +854,19 @@ TEST(SORT_HIGH_TO_LOW, TEST_THIRTEEN){
   }
 }
 
+
+TEST(SORT_HIGH_TO_LOW, TEST_FIFTEEN){
+  auto test_data(case15);
+
+  madlib::timsortHighToLow(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case15, test_data);
+
+  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
+    EXPECT_GE((*i).first, (*std::next(i)).first);
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 
@@ -912,6 +954,19 @@ TEST(SORT_LOW_TO_HIGH, TEST_THIRTEEN){
   madlib::timsortLowToHigh(test_data.begin(), test_data.end());
 
   printOriginalAndActual(case13, test_data);
+
+  for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
+    EXPECT_LE((*i).first, (*std::next(i)).first);
+  }
+}
+
+
+TEST(SORT_LOW_TO_HIGH, TEST_FIFTEEN){
+  auto test_data(case15);
+
+  madlib::timsortLowToHigh(test_data.begin(), test_data.end());
+
+  printOriginalAndActual(case15, test_data);
 
   for(auto i = test_data.begin(); i != test_data.end() && std::next(i) != test_data.end(); std::advance(i, 1)){
     EXPECT_LE((*i).first, (*std::next(i)).first);
