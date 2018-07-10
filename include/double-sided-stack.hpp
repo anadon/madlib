@@ -32,57 +32,57 @@
 
 using std::exception;
 
-class DoubleSidedStack_stackCollision: public exception{
+class double_sided_stack_stackCollision: public exception{
   virtual const char* what() const throw(){
     return "A stack attempted to write over the other";
   }
-} DoubleSidedStack_stackCollision;
+} double_sided_stack_stackCollision;
 
-class DoubleSidedStack_popUnderflow: public exception{
+class double_sided_stack_popUnderflow: public exception{
   virtual const char* what() const throw(){
     return "Tried to pop an empty front stack";
   }
-} DoubleSidedStack_popUnderflow;
+} double_sided_stack_popUnderflow;
 
-class DoubleSidedStack_popOverflow: public exception{
+class double_sided_stack_popOverflow: public exception{
   virtual const char* what() const throw(){
     return "Tried to pop an empty end stack";
   }
-} DoubleSidedStack_popOverflow;
+} double_sided_stack_popOverflow;
 
-class DoubleSidedStack_peekUnderflow: public exception{
+class double_sided_stack_peekUnderflow: public exception{
   virtual const char* what() const throw(){
     return "Tried to peek at an empty front stack";
   }
-} DoubleSidedStack_peekUnderflow;
+} double_sided_stack_peekUnderflow;
 
-class DoubleSidedStack_peekOverflow: public exception{
+class double_sided_stack_peekOverflow: public exception{
   virtual const char* what() const throw(){
     return "Tried to peek at an empty end stack";
   }
-} DoubleSidedStack_peekOverflow;
+} double_sided_stack_peekOverflow;
 
 
 template<typename T>
-class DoubleSidedStack;
+class double_sided_stack;
 
 template<typename T>
-class DoubleSidedStack{
+class double_sided_stack{
   T *data;
   size_t maxNumElements, frontNextIndex, backNextIndex;
 
 public:
 
 /*******************************************************************//**
- * \brief Create a DoubleSidedStack with space for 'maxSize' number of elements.
+ * \brief Create a double_sided_stack with space for 'maxSize' number of elements.
  *
  * @param[in] maxSize The number of elements to allocate for.
  *
  **********************************************************************/
-  DoubleSidedStack(size_t maxSize);
+  double_sided_stack(size_t maxSize);
 
 
-  ~DoubleSidedStack();
+  ~double_sided_stack();
 
 
 /*******************************************************************//**
@@ -195,80 +195,111 @@ public:
 
 
 /*******************************************************************//**
-* \brief String representation of DoubleSidedStack.
+* \brief String representation of double_sided_stack.
 **********************************************************************/
-  friend std::ostream& operator<<(std::ostream &os, const DoubleSidedStack &obj);
+  friend std::ostream& operator<<(std::ostream &os, const double_sided_stack &obj);
 };
 
 
-template<typename T>
-DoubleSidedStack<T>::DoubleSidedStack(size_t maxSize): maxNumElements(maxSize){
+template<
+  typename T>
+double_sided_stack<T>::double_sided_stack(
+  size_t maxSize
+):
+  maxNumElements(maxSize)
+{
   data = new T[maxNumElements];
   frontNextIndex = 0;
   backNextIndex = maxNumElements - 1;
 }
 
-template<typename T>
-DoubleSidedStack<T>::~DoubleSidedStack(){
+template<
+  typename T>
+double_sided_stack<T>::~double_sided_stack(
+){
   delete[] data;
 }
 
-template<typename T>
-void DoubleSidedStack<T>::push_front(T element){
+template<
+  typename T>
+void
+double_sided_stack<T>::push_front(
+  T element
+){
   if(frontNextIndex > backNextIndex){
-    throw DoubleSidedStack_stackCollision;
+    throw double_sided_stack_stackCollision;
   }
 
   data[frontNextIndex++] = element;
 }
 
-template<typename T>
-void DoubleSidedStack<T>::push_back(T element){
+template<
+  typename T>
+void
+double_sided_stack<T>::push_back(
+  T element
+){
   if(frontNextIndex > backNextIndex || backNextIndex + 1 == 0){
-    throw DoubleSidedStack_stackCollision;
+    throw double_sided_stack_stackCollision;
   }
 
   data[backNextIndex--] = element;
 }
 
-template<typename T>
-T DoubleSidedStack<T>::pop_front(){
+template<
+  typename T>
+T
+double_sided_stack<T>::pop_front(
+){
   if(frontNextIndex == 0){
-    throw DoubleSidedStack_popUnderflow;
+    throw double_sided_stack_popUnderflow;
   }
 
   return data[--frontNextIndex];
 }
 
-template<typename T>
-T DoubleSidedStack<T>::pop_back(){
+template<
+  typename T>
+T
+double_sided_stack<T>::pop_back(
+){
   if(backNextIndex+1 == maxNumElements){
-    throw DoubleSidedStack_popOverflow;
+    throw double_sided_stack_popOverflow;
   }
 
   return data[++backNextIndex];
 }
 
-template<typename T>
-T DoubleSidedStack<T>::peek_front(){
+template<
+  typename T>
+T
+double_sided_stack<T>::peek_front(
+){
   if(frontNextIndex == 0){
-    throw DoubleSidedStack_peekUnderflow;
+    throw double_sided_stack_peekUnderflow;
   }
 
   return data[frontNextIndex - 1];
 }
 
-template<typename T>
-T DoubleSidedStack<T>::peek_back(){
+template<
+  typename T>
+T
+double_sided_stack<T>::peek_back(
+){
   if(backNextIndex+1 == maxNumElements){
-    throw DoubleSidedStack_peekOverflow;
+    throw double_sided_stack_peekOverflow;
   }
 
   return data[backNextIndex + 1];
 }
 
-template<typename T>
-T DoubleSidedStack<T>::at(size_t index){
+template<
+  typename T>
+T
+double_sided_stack<T>::at(
+  size_t index
+){
   if(index >= maxNumElements){
     throw std::out_of_range("Index over bounds");
   }else if(frontNextIndex <= index && index < backNextIndex+1){
@@ -278,38 +309,54 @@ T DoubleSidedStack<T>::at(size_t index){
   return data[index];
 }
 
-template<typename T>
-size_t DoubleSidedStack<T>::size(){
+template<
+  typename T>
+size_t
+double_sided_stack<T>::size(
+){
   return frontNextIndex + (maxNumElements - backNextIndex) - 1;
 }
 
-template<typename T>
-size_t DoubleSidedStack<T>::numElementsBack(){
+template<
+  typename T>
+size_t
+double_sided_stack<T>::numElementsBack(
+){
   return frontNextIndex;
 }
 
-template<typename T>
-void DoubleSidedStack<T>::empty_front(){
+template<
+  typename T>
+void
+double_sided_stack<T>::empty_front(
+){
   frontNextIndex = 0;
 }
 
-template<typename T>
-void DoubleSidedStack<T>::empty_back(){
+template<
+  typename T>
+void
+double_sided_stack<T>::empty_back(
+){
   backNextIndex = maxNumElements - 1;
 }
 
-template<typename T>
-void DoubleSidedStack<T>::empty(){
+template<
+  typename T>
+void
+double_sided_stack<T>::empty(
+){
   empty_front();
   empty_back();
 }
 
-template<typename T>
-std::ostream& operator<<(
+template<
+  typename T>
+std::ostream&
+operator<<(
   std::ostream &os,
-  const DoubleSidedStack<T> &obj)
-{
-
+  const double_sided_stack<T> &obj
+){
   os << std::string("[ ");
   if(obj.numElementsFront() > 0){
     os << obj.at(0);
@@ -337,7 +384,6 @@ std::ostream& operator<<(
     os << obj.at(obj.maxNumElements - 1);
   }
   os << std::string(" ]");
-
 
   return os;
 }

@@ -21,7 +21,7 @@ GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
 
 
 COMMON_FLAGS=-I../include -Igoogletest/googletest/include/ -pipe -Wall \
-             -Wextra -Wconversion -march=native
+             -Wextra -Wconversion -march=native -DMADLIB_DEBUG
 CPP_LIBS=-Llib -Lgoogletest/build/googlemock/gtest/
 CPPFLAGS+=-ggdb -O0 $(COMMON_FLAGS) -isystem -I$(GTEST_DIR)/include
 

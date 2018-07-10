@@ -22,7 +22,7 @@
 @brief Specialized, highly performant sorting algorithms with very low memory
 overhead.
 
-TODO: Add benchmarking, reformat, update documentation
+TODO: Add benchmarking, reformat, update documentation, changes to Affero GPL
 ***********************************************************************/
 
 #pragma once
@@ -32,15 +32,19 @@ TODO: Add benchmarking, reformat, update documentation
 ////////////////////////////////////////////////////////////////////////
 
 #include <algorithm>
-#include <deque>
+#include <cstddef>
+//#include <deque>
 #include <iterator>
+#include <memory>
+#include <thread>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #ifdef MADLIB_DEBUG
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 using std::cout;
 using std::endl;
@@ -72,7 +76,8 @@ void
 timsort(
   ForwardIterator first,
   ForwardIterator last,
-  Compare comp = std::less_equal<>() );
+  Compare comp = std::less_equal<>(),
+  const bool stable = true);
 
 
 template<
@@ -123,37 +128,163 @@ timsortLowToHigh(
 }
 
 
+#ifdef MADLIB_DEBUG
+
+template<
+  typename BaseIters,
+  template < typename, typename ...> class IterOfIters,
+  typename Comparator>
+void
+validate_iterators(
+  const IterOfIters<BaseIters> &tracked_iterators,
+  const BaseIters &start_range,
+  const BaseIters &end_range,
+  Comparator comp,
+  bool skip_end = false
+){
+  assert(std::distance(start_range, end_range) > 0);
+  auto max_dist = std::distance(start_range, end_range);
+
+  if(0 == tracked_iterators.size()) return;
+
+  assert(*tracked_iterators.begin() == start_range);
+  assert(*std::prev(tracked_iterators.end()) == end_range || skip_end);
+
+  for(auto j : tracked_iterators){
+    auto dist = std::distance(*tracked_iterators.begin(), j);
+    assert(dist >= 0);
+    assert(dist <= max_dist);
+    bool found = false;
+    for(auto i = start_range; i != end_range; ++i){
+      if(i == j){
+        found = true;
+        break;
+      }
+    }
+    assert(found || j == end_range);
+  }
+
+  for(auto j = tracked_iterators.begin()+1; j != tracked_iterators.end(); ++j){
+    auto dist = std::distance(*tracked_iterators.begin(), *j);
+    auto ordering = std::distance(*tracked_iterators.begin(), *(j-1));
+    assert(ordering < dist);
+  }
+
+  for(auto j = tracked_iterators.begin(); j+1 != tracked_iterators.end(); ++j){
+    if((*j)+1 == *(j+1)) continue;
+    for(auto itr = *j; itr+1 != (*(j+1))-1; ++itr){
+      assert(comp(*itr, *(itr+1)));
+    }
+  }
+}
+
+#endif
+
+
+//TODO: gallop optimized inplace_merge, also post this as a patchto replace
+//std::inplace_merge.
+//Optimizations: forward through the small elements in the left segment
+//keep a maximim comparison of one per element
+//exponential index offset, then binary search in the gap for finding ranges of
+//elements to merge
+//smaller needed additional merge space
+
+
+template<
+  typename IterOfForwardIterator,
+  typename Comparator>
+void
+ballanced_merge(
+  IterOfForwardIterator first,
+  IterOfForwardIterator last,
+  Comparator comp,
+  const bool parallel = false
+);
+
+
+template<
+  typename IterOfForwardIterator,
+  typename Comparator>
+void
+ballanced_merge(
+  IterOfForwardIterator first,
+  IterOfForwardIterator last,
+  Comparator comp,
+  const bool parallel
+){
+  if(std::distance(first, last) < 2) return;
+  if(std::distance(first, last) == 2){
+    std::inplace_merge(*first, *(first+1), *last, comp);
+    return;
+  }
+
+  auto left  = first;
+  auto split = first;
+  auto right = last;
+
+  while(std::distance(left, right) > 0){
+    split = left + (std::distance(left, right) / 2);
+    auto left_size = std::distance(*left, *split);
+    auto right_size = std::distance(*split, *right);
+    if(left_size < right_size){
+      left = split+1;
+    }else if(left_size > right_size){
+      right = split-1;
+    }else{
+      break;
+    }
+  }
+
+  if(parallel && std::distance(left, split) >= 2 && std::distance(split, right) >= 2){
+    auto left_merge  = std::thread(ballanced_merge<IterOfForwardIterator, Comparator>, first, split, comp, true);
+    auto right_merge = std::thread(ballanced_merge<IterOfForwardIterator, Comparator>, split, last,  comp, true);
+
+    left_merge.join();
+    right_merge.join();
+  }else{
+    ballanced_merge(first, split, comp);
+    ballanced_merge(split, last, comp);
+  }
+
+  if(!comp(*std::prev(*split), **split)){
+    std::inplace_merge(*first, *split, *last, comp);
+  }
+
+}
+
+
 /*******************************************************************************
 assumes first != last
 *******************************************************************************/
 template<
-  typename ForwardIterator>
+  typename ForwardIterator,
+  typename Comparator>
 auto
 identifyMismatches(
   ForwardIterator first,
-  ForwardIterator last
+  ForwardIterator last,
+  Comparator comp
 ){
+  std::vector<ForwardIterator> indicesOfInterest;
+  indicesOfInterest.reserve(std::distance(first, last));
+  indicesOfInterest.clear();
 
-  std::deque<ForwardIterator> indicesOfInterest;
-  //indicesOfInterest.reserve(std::distance(first, last));
-  //indicesOfInterest.clear();
-
-  auto i = first;
-  while(std::distance(i, last) > 1){//NOTE may need to be 0, not 1
-    indicesOfInterest.push_back(i);
-    ++i;
-    if(*std::prev(i) < *i){
-      for(++i; i != last && *std::prev(i) < *i; ++i);
-    }else if(*std::prev(i) > *i){
-      for(++i; i != last && *std::prev(i) > *i; ++i);
+  for(auto i = std::next(first); i != last;){
+    indicesOfInterest.push_back(std::prev(i));
+    if(comp(*std::prev(i), *i)){
+      ++i;
+      while(i != last && comp(*std::prev(i), *i) ){
+        ++i;
+      }
     }else{
-      for(++i; i != last && *std::prev(i) == *i; ++i);
+      ++i;
+      while(i != last && !comp(*std::prev(i), *i) ){
+        ++i;
+      }
+      std::reverse(indicesOfInterest.back(), i);
     }
-    i--;
   }
   indicesOfInterest.push_back(last);
-
-  indicesOfInterest.shrink_to_fit();
 
   return indicesOfInterest;
 }
@@ -169,10 +300,12 @@ groomInput(
   Compare comp
 ){
   if(std::distance(first, last) <= 1){
-    std::deque<ForwardIterator> early_escape = {first, last};
+    std::vector<ForwardIterator> early_escape = {first, last};
     exit(-1);
   }
-  std::deque<ForwardIterator> indicesOfInterest = identifyMismatches(first, last);
+
+  std::vector<ForwardIterator> indicesOfInterest = identifyMismatches(first, last, comp);
+
   if(indicesOfInterest.size() == 2){
     if(!comp(*first, *std::prev(last))){
       std::reverse(first, last);
@@ -180,233 +313,55 @@ groomInput(
     return indicesOfInterest;
   }
 
-  std::deque<ForwardIterator> nIOI;
-  //nIOI.reserve(indicesOfInterest.size()/2 + 1);
-  //nIOI.clear();
 
+  std::vector<ForwardIterator> nIOI;
+  nIOI.reserve(indicesOfInterest.size()/2 + 1);
+  nIOI.clear();
 
-  //Added to track what should be done for small portions of unsorted data.
-  //If a small portion is sorted, ignore.  If a small portion is highly ordered
-  //then reverse as needed and merge.  If a small portion is hgihly unordered
-  //then call quick sort, insertion sort, or introsort.
 
   //A section is considered highly unordered if there are many indicies of
   //interest in a short iterator distance, with the particular values for this
   //decision being made as compile time and dependant on the targeted
   //architecture.  This is to take advantage of cache locality.
-  constexpr const ssize_t BLOCK_SIZE = 1;//4096 / sizeof(*first);//NOTE: tunable
-  //const int HIGHLY_UNORDERED_CUTOFF = 2;
+  //NOTE: tunable
+  constexpr const ssize_t BLOCK_SIZE = 4096 / sizeof(*first);
 
-  //nIOI.push_back(*(indicesOfInterest.begin()));
   for(auto i = indicesOfInterest.begin(); *i != last;){
     nIOI.push_back(*i);
-    if(std::next(*i) == last || *i == last) break;
-    //NOTE: identifyRuns can return an instance when two or more successive
-    //groups are in order when an ascending/descending group is followed by a
-    //equal group or vica versa and this repeats.  Staircase like input can only
-    //be identified as in order robustly this way until identifyRuns is
-    //reintegrated into this function.
-    if(comp(**i, *std::next(*i))){
-      //just skip everything already in order
-      //while(*i != last && comp(**i, *std::next(*i))){ // std::next(*i) != last &&
-      while(*i != last && std::next(*i) != last && comp(**i, *std::next(*i))){ // std::next(*i) != last &&
-        ++i;
-      }
+    auto seg_start = i;
+    ++i;
+    while(i != indicesOfInterest.end() && std::distance(*seg_start, *i) < BLOCK_SIZE) ++i;
+    --i;
+
+    if(seg_start != i){
+      std::stable_sort(*seg_start, *i, comp);
     }else{
-      auto misorderedStart = i;
-      while(*i != last && std::distance(*misorderedStart, *i) < BLOCK_SIZE){
-        ++i;
-      }
-    //   auto misorderedEnd = std::prev(i);
-    //   if(misorderedStart != misorderedEnd){
-    //   //   std::reverse(*misorderedStart, *i);
-    //   // }else{
-    //   //   if(*i == last){
-    //   //     std::stable_sort(*misorderedStart, last, comp);//NOTE: tunable
-    //   //   }else{
-    //   //     std::stable_sort(*misorderedStart, *misorderedEnd, comp);//NOTE: tunable
-    //   //     //--i;
-    //   //   }
-    //   // }
-     }
+      ++i;
+    }
   }
   nIOI.push_back(last);
-
-  nIOI.shrink_to_fit();
 
   return nIOI;
 }
 
 
-//This handles the cases where a given range might be in order or in reverse
-//order.
 template<
-  typename Iter,
-  typename Output_Iter,
-  typename Compare >
-void easy_merge_wrapper(
-  Iter leftStart_early,
-  Iter rightStart_early,
-  Iter endRange_early,
-  Output_Iter &output,
-  const Compare &comp
-){
-  bool is_left_in_order = comp(*leftStart_early,  *std::prev(rightStart_early));
-  bool is_right_in_order = comp(*rightStart_early, *std::prev(endRange_early));
-
-  //Now, check for the 4 possible cases, and each must be handled differently.
-  if( is_left_in_order && is_right_in_order){
-    auto left_start  = leftStart_early;
-    auto left_end    = rightStart_early;
-    auto right_start = rightStart_early;
-    auto right_end   = endRange_early;
-    std::merge(left_start, left_end, right_start, right_end, output, comp);
-  }else if( !is_left_in_order && is_right_in_order){
-    auto left_start  = std::make_reverse_iterator(rightStart_early);
-    auto left_end    = std::make_reverse_iterator(leftStart_early);
-    auto right_start = rightStart_early;
-    auto right_end   = endRange_early;
-    std::merge(left_start, left_end, right_start, right_end, output, comp);
-  }else if( is_left_in_order && !is_right_in_order){
-    auto left_start  = leftStart_early;
-    auto left_end    = rightStart_early;
-    auto right_start = std::make_reverse_iterator(endRange_early);
-    auto right_end   = std::make_reverse_iterator(rightStart_early);
-    std::merge(left_start, left_end, right_start, right_end, output, comp);
-  }else if( !is_left_in_order && !is_right_in_order){
-    auto left_start  = std::make_reverse_iterator(rightStart_early);
-    auto left_end    = std::make_reverse_iterator(leftStart_early);
-    auto right_start = std::make_reverse_iterator(endRange_early);
-    auto right_end   = std::make_reverse_iterator(rightStart_early);
-    std::merge(left_start, left_end, right_start, right_end, output, comp);
-  }
-}
-
-
-template<
-  typename ForwardIterator,
-  typename Compare>
+  typename _ForwardIterator,
+  typename _Compare>
 void timsort(
-  ForwardIterator first,
-  ForwardIterator last,
-  Compare comp
+  _ForwardIterator first,
+  _ForwardIterator last,
+  _Compare comp,
+  const bool stable
 ){
-  typedef typename std::iterator_traits<ForwardIterator>::value_type T;
+  if(first == last || std::next(first) == last) return;
 
-  if(first == last ||
-     std::next(first) == last) return;
+  typename std::iterator_traits<_ForwardIterator>::value_type T;
 
+  auto indicesOfInterest = groomInput(first, last, comp);
 
-  auto tmpIndicesOfInterest = groomInput(first, last, comp);
-  //TODO: Here, we can know all of the merge groups and they should be
-  //calculated out in advance.  It will require the start, middle, and end
-  //indexes as a tuple.  The multithreaded variant will need to tweak this.
-
-  std::vector<T> workspaceIn(std::distance(first, last));
-
-
-  //First merge out from input data structure///////////////////////////////////
-  //Perform first, initial split out loop.  Some of the logic here is every so
-  //slightly from the main loop, which is why it needs to be broken out.  This
-  //is for the reason that the input data needs to be moved (merged) into a
-  //a local work vector, and because this is the only step where it will be
-  //possible to have reverse ordered sequences.
-
-  workspaceIn.clear();
-  auto end_iter = std::back_inserter(workspaceIn);
-  //Tracking actual iterators has been stopped because they care too much about
-  //contents and not relative positions.
-  std::deque< typename std::vector<T>::difference_type > inIndicesOfInterest;
-
-  while(tmpIndicesOfInterest.size() >= 3){//Remember that the last entry is before end()
-    auto one = tmpIndicesOfInterest.front(); tmpIndicesOfInterest.pop_front();
-    auto two = tmpIndicesOfInterest.front(); tmpIndicesOfInterest.pop_front();
-    auto three = tmpIndicesOfInterest.front();
-
-    easy_merge_wrapper(one, two, three, end_iter, comp);
-    inIndicesOfInterest.push_back(std::distance(first, one));
-  }
-  //handle the trailing elements; make sure they are also in order
-  if(tmpIndicesOfInterest.front() != last){
-    if(comp(*tmpIndicesOfInterest.front(), *std::prev(last))){
-      std::copy(tmpIndicesOfInterest.front(), last, end_iter);
-    }else{
-      std::copy(std::make_reverse_iterator(last), std::make_reverse_iterator(tmpIndicesOfInterest.front()), end_iter);
-    }
-  }
-
-  while(tmpIndicesOfInterest.size()){
-    inIndicesOfInterest.push_back(std::distance(first, tmpIndicesOfInterest.front()));
-    tmpIndicesOfInterest.pop_front();
-  }
-
-
-  //Allocation and reallocation/////////////////////////////////////////////////
-  tmpIndicesOfInterest.clear();
-  tmpIndicesOfInterest.shrink_to_fit();
-
-  decltype(inIndicesOfInterest) outIndicesOfInterest;
-
-  //In the case we only do two merges, the main merge loop will not run and the
-  //second workspace is not needed.  In this case, skip its allocation.  This
-  //particularly helps with almost exactly sorted data.
-  std::vector< T > workspaceOut;
-  if(inIndicesOfInterest.size() > 3){
-     workspaceOut.reserve(workspaceIn.size());
-  }
-
-
-  //Primary merging/////////////////////////////////////////////////////////////
-  while(inIndicesOfInterest.size() >= 4){//Remember that the last entry is before end()
-    outIndicesOfInterest.clear();
-    workspaceOut.clear();
-
-    auto inserter = std::back_inserter(workspaceOut);
-    while(inIndicesOfInterest.size() >= 3){//Remember that the last entry is before end()
-      outIndicesOfInterest.push_back(inIndicesOfInterest.front());
-      auto start_iter  = workspaceIn.begin() + inIndicesOfInterest.front(); inIndicesOfInterest.pop_front();
-      auto middle_iter = workspaceIn.begin() + inIndicesOfInterest.front(); inIndicesOfInterest.pop_front();
-      auto finish_iter = workspaceIn.begin() + inIndicesOfInterest.front();
-      //easy_merge_wrapper(start_iter, middle_iter, finish_iter, inserter, comp);
-      //We know that in this portion if the number of segments to merge is odd,
-      //we will always skip the last one, and every other segment has been
-      //handled by easy_merge_handler() which makes sure each of these goupings
-      //is already in order and so the overhead of easy_merge_handler is not
-      //nessicary.  However, this waiting for a odd merge case is actually
-      //harmful for performance, ensuring this case always has an additional
-      //loop to merge rather than a copy.
-      //TODO: convert odd merge case to evenmerge case.
-      //TODO: prioritize small merges first.
-      std::merge(start_iter, middle_iter, middle_iter, finish_iter, inserter, comp);
-    }
-
-    std::copy(workspaceIn.begin() + inIndicesOfInterest.front(), workspaceIn.end(), inserter);
-    std::move(inIndicesOfInterest.begin(), inIndicesOfInterest.end(), std::back_inserter(outIndicesOfInterest));
-
-    workspaceIn.swap(workspaceOut);
-    inIndicesOfInterest.swap(outIndicesOfInterest);
-  }
-
-
-  //Here, the merge operation is outputted to a singe work vector, and in order
-  //to be efficient, a second work vector is eschewed since the output can be
-  //the final array.  This is different from above because this is still more
-  //complex and time consuming than a move.
-
-  workspaceOut.clear();
-  workspaceOut.shrink_to_fit();
-
-  if(inIndicesOfInterest.size() == 2){
-    std::copy(workspaceIn.begin(), workspaceIn.end(), first);
-  }else if(inIndicesOfInterest.size() == 3){
-    auto start_iter = workspaceIn.begin();
-    auto middle_iter = workspaceIn.begin() + inIndicesOfInterest[1];
-    auto finish_iter = workspaceIn.end();
-
-    std::merge(start_iter, middle_iter, middle_iter, finish_iter, first, comp);
-  }
+  ballanced_merge(indicesOfInterest.begin(), std::prev(indicesOfInterest.end()), comp);
 }
-
 
 
 };//end namespace

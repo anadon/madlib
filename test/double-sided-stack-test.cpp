@@ -33,25 +33,25 @@
 
 
 
-TEST(DoubleSidedStack, StackInitialization){
+TEST(double_sided_stack, StackInitialization){
 
-  DoubleSidedStack<int> tester(10);
+  double_sided_stack<int> tester(10);
 
 }
 
-TEST(DoubleSidedStack, HeapInitialization){
+TEST(double_sided_stack, HeapInitialization){
 
-  DoubleSidedStack<int> *tester;
+  double_sided_stack<int> *tester;
 
-  tester = new DoubleSidedStack<int>(10);
+  tester = new double_sided_stack<int>(10);
 
   delete tester;
 }
 
 
-TEST(DoubleSidedStack, DataIntegrityFront){
+TEST(double_sided_stack, DataIntegrityFront){
 
-  DoubleSidedStack<int> tester(10);
+  double_sided_stack<int> tester(10);
   //To prevent accidentally being right, repeat the tests twice with different
   //input values so that memory much be changed in the expected way.
   int testVal = 0;
@@ -85,9 +85,9 @@ TEST(DoubleSidedStack, DataIntegrityFront){
 }
 
 
-TEST(DoubleSidedStack, DataIntegrityEnd){
+TEST(double_sided_stack, DataIntegrityEnd){
 
-  DoubleSidedStack<int> tester(10);
+  double_sided_stack<int> tester(10);
   //To prevent accidentally being right, repeat the tests twice with different
   //input values so that memory much be changed in the expected way.
   int testVal = 0;
@@ -121,9 +121,9 @@ TEST(DoubleSidedStack, DataIntegrityEnd){
 }
 
 
-TEST(DoubleSidedStack, BoundsProtectionOne){
+TEST(double_sided_stack, BoundsProtectionOne){
 
-  DoubleSidedStack<int> tester(10);
+  double_sided_stack<int> tester(10);
 
   tester.push_front(0);
   tester.push_front(1);
@@ -146,7 +146,7 @@ TEST(DoubleSidedStack, BoundsProtectionOne){
   }catch(std::exception const &e){
     EXPECT_EQ(e.what(), std::string("A stack attempted to write over the other"));
   }catch(...){
-    FAIL() << "Expected DoubleSidedStack_stackCollision";
+    FAIL() << "Expected double_sided_stack_stackCollision";
   }
 
   for(int i = 0; i < 10; i++){
@@ -155,9 +155,9 @@ TEST(DoubleSidedStack, BoundsProtectionOne){
 }
 
 
-TEST(DoubleSidedStack, BoundsProtectionTwo){
+TEST(double_sided_stack, BoundsProtectionTwo){
 
-  DoubleSidedStack<int> tester(10);
+  double_sided_stack<int> tester(10);
   //To prevent accidentally being right, repeat the tests twice with different
   //input values so that memory much be changed in the expected way.
 
@@ -182,7 +182,7 @@ TEST(DoubleSidedStack, BoundsProtectionTwo){
   }catch(std::exception const &e){
     EXPECT_EQ(e.what(), std::string("A stack attempted to write over the other"));
   }catch(...){
-    FAIL() << "Expected DoubleSidedStack_stackCollision";
+    FAIL() << "Expected double_sided_stack_stackCollision";
   }
 
   for(int i = 0; i < 10; i++){
@@ -191,9 +191,9 @@ TEST(DoubleSidedStack, BoundsProtectionTwo){
 }
 
 
-TEST(DoubleSidedStack, BoundsProtectionThree){
+TEST(double_sided_stack, BoundsProtectionThree){
 
-  DoubleSidedStack<int> tester(10);
+  double_sided_stack<int> tester(10);
   //To prevent accidentally being right, repeat the tests twice with different
   //input values so that memory much be changed in the expected way.
 
@@ -218,7 +218,7 @@ TEST(DoubleSidedStack, BoundsProtectionThree){
   }catch(std::exception const &e){
     EXPECT_EQ(e.what(), std::string("A stack attempted to write over the other"));
   }catch(...){
-    FAIL() << "Expected DoubleSidedStack_stackCollision from push_front";
+    FAIL() << "Expected double_sided_stack_stackCollision from push_front";
   }
 
   try{
@@ -227,7 +227,7 @@ TEST(DoubleSidedStack, BoundsProtectionThree){
   }catch(std::exception const &e){
     EXPECT_EQ(e.what(), std::string("A stack attempted to write over the other"));
   }catch(...){
-    FAIL() << "Expected DoubleSidedStack_stackCollision from push_back";
+    FAIL() << "Expected double_sided_stack_stackCollision from push_back";
   }
 
   for(int i = 0; i < 10; i++){
