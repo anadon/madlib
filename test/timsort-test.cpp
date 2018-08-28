@@ -34,6 +34,30 @@
 #include "sort-test-resources.hpp"
 
 
+
+
+template<
+  typename ForwardIterator>
+void
+timsortHighToLow(
+  ForwardIterator first,
+  ForwardIterator last
+){
+  timsort(first, last, std::greater_equal<>() );
+}
+
+
+template<
+  typename ForwardIterator>
+void
+timsortLowToHigh(
+  ForwardIterator first,
+  ForwardIterator last
+){
+  timsort(first, last);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //INPUT RUNS DETECTION TESTS////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
