@@ -32,160 +32,177 @@
 
 using std::exception;
 
-class double_sided_stack_stackCollision: public exception{
+class heap_and_stack_heap_overwrite: public exception{
   virtual const char* what() const throw(){
-    return "A stack attempted to write over the other";
+    return "The stack attempted to write over the heap";
   }
-} double_sided_stack_stackCollision;
+} heap_and_stack_heap_overwrite;
 
-class double_sided_stack_popUnderflow: public exception{
+class heap_and_stack_pop_empty_stack: public exception{
   virtual const char* what() const throw(){
-    return "Tried to pop an empty front stack";
+    return "Tried to pop an empty stack";
   }
-} double_sided_stack_popUnderflow;
+} heap_and_stack_pop_empty_stack;
 
-class double_sided_stack_popOverflow: public exception{
+class heap_and_stack_peek_empty_stack: public exception{
   virtual const char* what() const throw(){
-    return "Tried to pop an empty end stack";
+    return "Tried to peek at an empty stack";
   }
-} double_sided_stack_popOverflow;
+} heap_and_stack_peek_empty_stack;
 
-class double_sided_stack_peekUnderflow: public exception{
+class heap_and_stack_stack_overwrite: public exception{
   virtual const char* what() const throw(){
-    return "Tried to peek at an empty front stack";
+    return "The heap attempted to write over the stack";
   }
-} double_sided_stack_peekUnderflow;
+} heap_and_stack_stack_overwrite;
 
-class double_sided_stack_peekOverflow: public exception{
+class heap_and_stack_pop_empty_heap: public exception{
   virtual const char* what() const throw(){
-    return "Tried to peek at an empty end stack";
+    return "Tried to pop an empty heap";
   }
-} double_sided_stack_peekOverflow;
+} heap_and_stack_pop_empty_heap;
+
+class heap_and_stack_peek_empty_heap: public exception{
+  virtual const char* what() const throw(){
+    return "Tried to peek at an empty heap";
+  }
+} heap_and_stack_peek_empty_heap;
 
 
 template<typename T>
-class double_sided_stack;
+class heap_and_stack;
 
 template<typename T>
-class double_sided_stack{
+class heap_and_stack{
   T *data;
   size_t maxNumElements, frontNextIndex, backNextIndex;
 
 public:
 
-/*******************************************************************//**
- * \brief Create a double_sided_stack with space for 'maxSize' number of elements.
+/***************************************************************************//**
+ * \brief Create a heap_and_stack with space for 'maxSize' number of elements.
  *
  * @param[in] maxSize The number of elements to allocate for.
  *
- **********************************************************************/
-  double_sided_stack(size_t maxSize);
+ ******************************************************************************/
+  heap_and_stack(size_t maxSize);
 
 
-  ~double_sided_stack();
+  ~heap_and_stack();
 
 
-/*******************************************************************//**
- * \brief Add a copy of the passed element to the front stack.
+/***************************************************************************//**
+ * \brief Add a copy of the passed element to the stack.
  *
- * @param[in] element The element to add to the front stack.
+ * @param[in] element The element to add to the stack.
  *
- **********************************************************************/
-  void push_front(T element);
+ ******************************************************************************/
+  void push_heap(T element);
 
 
-/*******************************************************************//**
- * \brief Add a copy of the passed element to the back stack.
+/***************************************************************************//**
+ * \brief Add a copy of the passed element to the heap.
  *
- * @param[in] element The element to add to the back stack.
+ * @param[in] element The element to add to the heap.
  *
- **********************************************************************/
-  void push_back(T elements);
+ ******************************************************************************/
+  void push_stack(T elements);
 
 
-/*******************************************************************//**
- * \brief Remove an element from the top of the front stack, and return a copy
- * of the removed element.
- *
- * @return Element popped.
- **********************************************************************/
-  T pop_front();
-
-
-/*******************************************************************//**
- * \brief Remove an element from the top of the back stack, and return a copy
- * of the removed element.
+/***************************************************************************//**
+ * \brief Remove an element from the front of the heap, and return a copy of the
+ * removed element.
  *
  * @return Element popped.
- **********************************************************************/
-  T pop_back();
+ ******************************************************************************/
+  T pop_heap();
 
 
-/*******************************************************************//**
- * \brief Return a copy of the element on the top of the front stack.
+/***************************************************************************//**
+ * \brief Remove an element from the front of the stack, and return a copy of
+ * the removed element.
  *
- * @return Element on top of front stack.
- **********************************************************************/
-  T peek_front();
+ * @return Element popped.
+ ******************************************************************************/
+  T pop_stack();
 
 
-/*******************************************************************//**
- * \brief Return a copy of the element on the top of the back stack.
+/***************************************************************************//**
+ * \brief Return a copy of the element on the front of the heap.
+ *
+ * @return Element on the front of the heap.
+ ******************************************************************************/
+  T peek_heap();
+
+
+/***************************************************************************//**
+ * \brief Return a copy of the element on the front of the stack.
  *
  * @return Element on top of back stack.
- **********************************************************************/
-  T peek_back();
+ ******************************************************************************/
+  T peek_stack();
 
 
-/*******************************************************************//**
- * \brief Return a copy of the element at the [index] element, without respect
- * to stacks, but the underlying array.
+/***************************************************************************//**
+ * \brief Return a copy of the element at the [index] element, with respect
+ * to the heap and stack bounds.
  *
  * @param[in] index The index in the underlying array.
  *
  * @return a copy of the [index] element.
- **********************************************************************/
+ ******************************************************************************/
   T at(size_t index);
 
 
-/*******************************************************************//**
+/***************************************************************************//**
+ * \brief Return a copy of the element at the [index] element, without respect
+ * to the stack or heap, but the underlying array.
+ *
+ * @param[in] index The index in the underlying array.
+ *
+ * @return a copy of the [index] element.
+ ******************************************************************************/
+  T operator[](size_t index);
+
+
+/***************************************************************************//**
  * \brief Return the count of the number of elements currently stored.
  *
  * @return The count of the number of elements currently stored.
- **********************************************************************/
+ ******************************************************************************/
   size_t size();
 
 
 /*******************************************************************//**
  * \brief Return the count of the number of elements currently stored in the
- * front stack.
+ * heap.
  *
  * @return The count of the number of elements currently stored in the front
  * stack.
  **********************************************************************/
-  size_t numElementsFront();
+  size_t num_elements_in_heap();
 
 
 /*******************************************************************//**
  * \brief Return the count of the number of elements currently stored in the
- * back stack.
+ * stack.
  *
  * @return The count of the number of elements currently stored in the back
  * stack.
  **********************************************************************/
-  size_t numElementsBack();
+  size_t num_elements_in_stack();
 
 
 /*******************************************************************//**
-* \brief Remove all elements in the front stack.
+* \brief Remove all elements in the heap.
 **********************************************************************/
-  void empty_front();
+  void empty_heap();
 
 
 /*******************************************************************//**
-* \brief Remove all elements in the back stack.
+* \brief Remove all elements in the stack.
 **********************************************************************/
-  void empty_back();
+  void empty_stack();
 
 
 /*******************************************************************//**
@@ -195,15 +212,15 @@ public:
 
 
 /*******************************************************************//**
-* \brief String representation of double_sided_stack.
+* \brief String representation of heap_and_stack.
 **********************************************************************/
-  friend std::ostream& operator<<(std::ostream &os, const double_sided_stack &obj);
+  friend std::ostream& operator<<(std::ostream &os, const heap_and_stack &obj);
 };
 
 
 template<
   typename T>
-double_sided_stack<T>::double_sided_stack(
+heap_and_stack<T>::heap_and_stack(
   size_t maxSize
 ):
   maxNumElements(maxSize)
@@ -215,7 +232,7 @@ double_sided_stack<T>::double_sided_stack(
 
 template<
   typename T>
-double_sided_stack<T>::~double_sided_stack(
+heap_and_stack<T>::~heap_and_stack(
 ){
   delete[] data;
 }
@@ -223,11 +240,11 @@ double_sided_stack<T>::~double_sided_stack(
 template<
   typename T>
 void
-double_sided_stack<T>::push_front(
+heap_and_stack<T>::push_heap(
   T element
 ){
   if(frontNextIndex > backNextIndex){
-    throw double_sided_stack_stackCollision;
+    throw heap_and_stack_stack_overwrite;
   }
 
   data[frontNextIndex++] = element;
@@ -236,11 +253,11 @@ double_sided_stack<T>::push_front(
 template<
   typename T>
 void
-double_sided_stack<T>::push_back(
+heap_and_stack<T>::push_stack(
   T element
 ){
   if(frontNextIndex > backNextIndex || backNextIndex + 1 == 0){
-    throw double_sided_stack_stackCollision;
+    throw heap_and_stack_heap_overwrite;
   }
 
   data[backNextIndex--] = element;
@@ -249,10 +266,10 @@ double_sided_stack<T>::push_back(
 template<
   typename T>
 T
-double_sided_stack<T>::pop_front(
+heap_and_stack<T>::pop_heap(
 ){
   if(frontNextIndex == 0){
-    throw double_sided_stack_popUnderflow;
+    throw heap_and_stack_heap_pop_underflow;
   }
 
   return data[--frontNextIndex];
@@ -261,10 +278,10 @@ double_sided_stack<T>::pop_front(
 template<
   typename T>
 T
-double_sided_stack<T>::pop_back(
+heap_and_stack<T>::pop_stack(
 ){
   if(backNextIndex+1 == maxNumElements){
-    throw double_sided_stack_popOverflow;
+    throw heap_and_stack_stack_pop_underflow;
   }
 
   return data[++backNextIndex];
@@ -273,10 +290,10 @@ double_sided_stack<T>::pop_back(
 template<
   typename T>
 T
-double_sided_stack<T>::peek_front(
+heap_and_stack<T>::peek_heap(
 ){
   if(frontNextIndex == 0){
-    throw double_sided_stack_peekUnderflow;
+    throw heap_and_stack_heap_peek_underflow;
   }
 
   return data[frontNextIndex - 1];
@@ -285,10 +302,10 @@ double_sided_stack<T>::peek_front(
 template<
   typename T>
 T
-double_sided_stack<T>::peek_back(
+heap_and_stack<T>::peek_stack(
 ){
   if(backNextIndex+1 == maxNumElements){
-    throw double_sided_stack_peekOverflow;
+    throw heap_and_stack_stack_peek_underflow;
   }
 
   return data[backNextIndex + 1];
@@ -297,13 +314,13 @@ double_sided_stack<T>::peek_back(
 template<
   typename T>
 T
-double_sided_stack<T>::at(
+heap_and_stack<T>::at(
   size_t index
 ){
   if(index >= maxNumElements){
     throw std::out_of_range("Index over bounds");
   }else if(frontNextIndex <= index && index < backNextIndex+1){
-    throw std::out_of_range("Index between stacks");
+    throw std::out_of_range("Index between heap and stack");
   }
 
   return data[index];
@@ -311,8 +328,17 @@ double_sided_stack<T>::at(
 
 template<
   typename T>
+T
+heap_and_stack<T>::operator[](
+  size_t index
+){
+  return data[index];
+}
+
+template<
+  typename T>
 size_t
-double_sided_stack<T>::size(
+heap_and_stack<T>::size(
 ){
   return frontNextIndex + (maxNumElements - backNextIndex) - 1;
 }
@@ -320,7 +346,7 @@ double_sided_stack<T>::size(
 template<
   typename T>
 size_t
-double_sided_stack<T>::numElementsBack(
+heap_and_stack<T>::numElementsBack(
 ){
   return frontNextIndex;
 }
@@ -328,7 +354,7 @@ double_sided_stack<T>::numElementsBack(
 template<
   typename T>
 void
-double_sided_stack<T>::empty_front(
+heap_and_stack<T>::empty_heap(
 ){
   frontNextIndex = 0;
 }
@@ -336,7 +362,7 @@ double_sided_stack<T>::empty_front(
 template<
   typename T>
 void
-double_sided_stack<T>::empty_back(
+heap_and_stack<T>::empty_stack(
 ){
   backNextIndex = maxNumElements - 1;
 }
@@ -344,7 +370,7 @@ double_sided_stack<T>::empty_back(
 template<
   typename T>
 void
-double_sided_stack<T>::empty(
+heap_and_stack<T>::empty(
 ){
   empty_front();
   empty_back();
@@ -355,7 +381,7 @@ template<
 std::ostream&
 operator<<(
   std::ostream &os,
-  const double_sided_stack<T> &obj
+  const heap_and_stack<T> &obj
 ){
   os << std::string("[ ");
   if(obj.numElementsFront() > 0){
@@ -387,3 +413,91 @@ operator<<(
 
   return os;
 }
+
+
+template<
+  typename T>
+class HeapAndStackRandomAccessIterator :
+  std::iterator<
+    std::random_access_iterator_tag,
+    heap_and_stack<
+      T>*>{
+
+  heap_and_stack *container;
+  //TODO: type into underlying data structure
+
+public:
+  HeapAndStackRandomAccessIterator(heap_and_stack *into_container);
+
+  HeapAndStackHeapInsertionIterator (int)operator;
+
+  HeapAndStackHeapInsertionIterator operator(int);
+
+  T& operator[](std::pdiff_t index);
+
+  bool operator>(const HeapAndStackHeapInsertionIterator &other);
+
+  bool operator>=(const HeapAndStackHeapInsertionIterator &other);
+
+  bool operator==(const HeapAndStackHeapInsertionIterator &other);
+
+  bool operator<=(const HeapAndStackHeapInsertionIterator &other);
+
+  bool operator<(const HeapAndStackHeapInsertionIterator &other);
+
+  bool operator!=(const HeapAndStackHeapInsertionIterator &other);
+
+  T operator*();
+
+  T operator+(std::pdiff_t change_idx);
+  T +operator(std::pdiff_t change_idx);
+
+};
+
+
+
+HeapAndStackRandomAccessIterator::(int)operator{
+
+}
+
+
+template<
+  typename T>
+class HeapAndStackHeap_HeapInsertionIterator :
+  std::iterator<
+    std::outut_iterator_tag,
+    heap_and_stack<
+      T>*>{
+
+  heap_and_stack *container;
+
+  HeapAndStackHeapInsertionIterator(heap_and_stack *into_container);
+
+  HeapAndStackHeapInsertionIterator (int)operator;
+
+  HeapAndStackHeapInsertionIterator operator(int);
+
+  T operator*();
+
+};
+
+
+template<
+  typename T>
+class HeapAndStackStack_StackInsertionIterator :
+  std::iterator<
+    std::outut_iterator_tag,
+    heap_and_stack<
+      T>*>{
+
+  heap_and_stack *container;
+
+  HeapAndStackStackInsertionIterator(heap_and_stack *into_container);
+
+  HeapAndStackHeapInsertionIterator (int)operator;
+
+  HeapAndStackHeapInsertionIterator operator(int);
+
+  T operator*();
+
+};
