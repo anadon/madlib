@@ -102,6 +102,10 @@ TODO: Add new tests to the test suite using RapidCheck.
 TODO: Check for memory leaks.
 
 TODO: File save/open support
+
+TODO: Make sure all the vertual specifiers are correct
+
+TODO: peer review on IRC and standards forum
 *******************************************************************************/
 
 #pragma once
@@ -199,10 +203,13 @@ class edge_prototype{
   * @brief Return the vertexes connected by this edge.  If they are directed,
   * the first vertex in the returned pair is the source vertex, while the second
   * is the destination vertex.
+  *
+  * @return a part of references to vertexes which are connected by the calling
+  * edge.
   *****************************************************************************/
   virtual
   std::pair<
-    vertex_prototype<T, U, T_A, U_A>&,
+    vertex_prototype<T, U, T_A, U_A>& ,
     vertex_prototype<T, U, T_A, U_A>& >
   get_vertexes() = 0;
 }
@@ -222,11 +229,11 @@ class vertex_prototype{
   public:
 
 
-  /*******************************************************************//**
+  /*************************************************************************//**
   * @brief Check if this vertex contains the specified undirected edge on called
   * vertex.
   *
-  * @param[in,out] exists
+  * @param[in] exists
   * Edge to check if is connected the the vertex.
   *
   * @return bool true if the the edge is connected to the vertex, false
@@ -234,18 +241,18 @@ class vertex_prototype{
   *
   * @note: edge must be in the graph.  The behavior is undefined if this is not
   * the case.
-  **********************************************************************/
+  *****************************************************************************/
   virtual
   bool
   has_undirected_edge(
     const edge_prototype<T, U, T_A, U_A> &to_check) = 0;
 
 
-  /*******************************************************************//**
+  /*************************************************************************//**
   * @brief Check if this vertex contains the specified incomming edge on called
   * vertex.
   *
-  * @param[in,out] exists
+  * @param[in] exists
   * Edge to check if is connected the the vertex.
   *
   * @return bool true if the the edge is connected to the vertex, false
@@ -253,18 +260,18 @@ class vertex_prototype{
   *
   * @note: edge must be in the graph.  The behavior is undefined if this is not
   * the case.
-  **********************************************************************/
+  *****************************************************************************/
   virtual
   bool
   has_in_edge(
     const edge_prototype<T, U, T_A, U_A> &to_check) = 0;
 
 
-  /*******************************************************************//**
+  /*************************************************************************//**
   * @brief Check if this vertex contains the specified outgoing edge on called
   * vertex.
   *
-  * @param[in,out] exists
+  * @param[in] exists
   * Edge to check if is connected the the vertex.
   *
   * @return bool true if the the edge is connected to the vertex, false
@@ -272,7 +279,7 @@ class vertex_prototype{
   *
   * @note: edge must be in the graph.  The behavior is undefined if this is not
   * the case.
-  **********************************************************************/
+  *****************************************************************************/
   virtual
   bool
   has_out_edge(
@@ -285,6 +292,9 @@ class vertex_prototype{
   *
   * @param[in] vertex
   * Other vertex to check if it if connected to the called vertex.
+  *
+  * @return True if the calling and passed vertexes are connected by the same
+  * undirected edge, else false.
   *
   * @note Behavior is undefined if the two vertexes are not in the same graph.
   *
@@ -303,6 +313,9 @@ class vertex_prototype{
   * @param[in] source_vertex
   * Other vertex to check if it if connected to the called vertex.
   *
+  * @return True if the calling and passed vertexes are connected by the same
+  * directed edge from the passed edge to the calling edge.
+  *
   * @note Behavior is undefined if the two vertexes are not in the same graph.
   *
   * NOTE: This functionality may later be moved to the graph prototype.
@@ -320,6 +333,9 @@ class vertex_prototype{
   * @param[in] destination_vertex
   * Other vertex to check if it if connected to the called vertex.
   *
+  * @return True if the calling and passed vertexes are connected by the same
+  * directed edge to the passed edge from the calling edge.
+  *
   * @note Behavior is undefined if the two vertexes are not in the same graph.
   *
   * NOTE: This functionality may later be moved to the graph prototype.
@@ -332,6 +348,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to first undirected edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the first
+  * iterator/edge stored in the undirected edges.
   *****************************************************************************/
   virtual
   auto
@@ -340,6 +359,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to after last undirected edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the one
+  * past the last iterator/edge stored in the undirected edges.
   *****************************************************************************/
   virtual
   auto
@@ -348,6 +370,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to first incomming edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the first
+  * iterator/edge stored in the incomming edges.
   *****************************************************************************/
   virtual
   auto
@@ -356,6 +381,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to after last incomming edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the one
+  * past the last iterator/edge stored in the incomming edges.
   *****************************************************************************/
   virtual
   auto
@@ -364,6 +392,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to first outgoing edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the first
+  * iterator/edge stored in the outgoing edges.
   *****************************************************************************/
   virtual
   auto
@@ -372,6 +403,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to after last outgoing edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the one
+  * past the last iterator/edge stored in the outgoing edges.
   *****************************************************************************/
   virtual
   auto
@@ -380,6 +414,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to first undirected edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the first
+  * iterator/edge stored in the undirected edges.
   *****************************************************************************/
   virtual
   auto
@@ -389,6 +426,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to after last undirected edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the one
+  * past the last iterator/edge stored in the undirected edges.
   *****************************************************************************/
   virtual
   auto
@@ -398,6 +438,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to first incomming edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the first
+  * iterator/edge stored in the incomming edges.
   *****************************************************************************/
   virtual
   auto
@@ -407,6 +450,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to after last incomming edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the one
+  * past the last iterator/edge stored in the incomming edges.
   *****************************************************************************/
   virtual
   auto
@@ -416,6 +462,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to first outgoing edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the first
+  * iterator/edge stored in the outgoing edges.
   *****************************************************************************/
   virtual
   auto
@@ -425,6 +474,9 @@ class vertex_prototype{
 
   /*************************************************************************//**
   * @brief Get iterator to after last outgoing edge.
+  *
+  * @return Inferred value from the implementation for an iterator to the one
+  * past the last iterator/edge stored in the outgoing edges.
   *****************************************************************************/
   virtual
   auto
@@ -459,15 +511,16 @@ class vertex_prototype{
   const = 0;
 
 
-  /***********************************************************************//**
-  * @brief Tell if contents of vertexes in the same graph are the same.
+  /*************************************************************************//**
+  * @brief Tell if two vertexes in the same graph are actually the same one
+  * vertex.
   *
   * @param[in] lhs
   * Left Hand Side vertex to compare.
   *
   * @param[in] rhs
   * Right Hand Side vertex to compare.
-  ***************************************************************************/
+  *****************************************************************************/
   friend
   bool
   operator==(
@@ -476,7 +529,27 @@ class vertex_prototype{
   ) const;
 
 
-  /***********************************************************************//**
+  /*************************************************************************//**
+  * @brief Tell if two vertexes in the same graph are actually not the same one
+  * vertex.
+  *
+  * @param[in] lhs
+  * Left Hand Side vertex to compare.
+  *
+  * @param[in] rhs
+  * Right Hand Side vertex to compare.
+  *
+  * TODO: implement this
+  *****************************************************************************/
+  friend
+  bool
+  operator!=(
+    const vertex_prototype<T, U, T_A, U_A> &lhs,
+    const vertex_prototype<T, U, T_A, U_A> &rhs
+  ) const;
+
+
+  /*************************************************************************//**
   * @brief Tell if there is an undirected edge connecting this vertex to the
   * other vertex.
   *
@@ -485,14 +558,14 @@ class vertex_prototype{
   * are connected by an undirected edge.
   *
   * TODO: accept vertex iterator
-  ***************************************************************************/
+  *****************************************************************************/
   bool
   is_connected_by_undirected_edge(
     const vertex_prototype<T, U> &other
   ) const;
 
 
-  /***********************************************************************//**
+  /*************************************************************************//**
   * @brief Tell if there is an edge connecting this vertex to the
   * other vertex where the passed vertex value is has an outgoing edge into the
   * calling vertex.
@@ -502,14 +575,14 @@ class vertex_prototype{
   * are connected by the same outgoing and incomming edge respectively.
   *
   * TODO: accept vertex iterator
-  ***************************************************************************/
+  *****************************************************************************/
   bool
   is_connected_by_in_edge(
     const vertex_prototype<T, U> &other
   ) const;
 
 
-  /***********************************************************************//**
+  /*************************************************************************//**
   * @brief Tell if there is an edge connecting this vertex to the
   * other vertex where the passed vertex value is has an incomming edge from the
   * calling vertex.
@@ -519,7 +592,7 @@ class vertex_prototype{
   * are connected by the same incomming and outgoing edge respectively.
   *
   * TODO: accept vertex iterator
-  ***************************************************************************/
+  *****************************************************************************/
   bool
   is_connected_by_out_edge(
     const vertex_prototype<T, U> &other
@@ -537,7 +610,7 @@ class graph_prototype{
   public:
 
   /*************************************************************************//**
-  * @brief Constructor override
+  * @brief Constructor
   *
   * TODO: add argument or other functions to dynamically expand vertexes
   *****************************************************************************/
@@ -548,7 +621,9 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Copy constructor
+  *
+  * TODO: Move constructor
   *****************************************************************************/
   virtual
   graph_prototype(
@@ -556,29 +631,25 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Deconstructor
   *****************************************************************************/
   virtual
   ~graph_prototype() = 0;
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Basic call to add a new vertex to a graph.
+  *
+  * @param[in] value
+  * New value to be help by the vertex.  If this is unimportant, T may be set to
+  * void and it should be optimized out.
+  *
+  * @return A reference to the created vertex.
   *****************************************************************************/
   virtual
   vertex_prototype<T, U, T_A, U_A>&
   add_vertex(
     T value
-  ) = 0;
-
-
-  /*************************************************************************//**
-  * @brief
-  *****************************************************************************/
-  virtual
-  vertex_prototype<T, U>&
-  get_vertex(
-    const T &value
   ) = 0;
 
 
