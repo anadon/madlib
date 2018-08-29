@@ -163,30 +163,14 @@ class edge_prototype{
   public:
 
   /*************************************************************************//**
-  * @brief Get the weight of the edge.
+  * @brief Access the weight of the edge.
   *
-  * @return A copy of the weight value of the edge.
-  *
-  * TODO: this should be done as a operator*()
+  * @return A reference to the weight value of the edge.
   *****************************************************************************/
   virtual
-  U
-  get_weight() = 0;
+  U_A::reference
+  operator*() = 0;
 
-  /*************************************************************************//**
-  * @brief Set the weight of the edge after construction.
-  *
-  * @param [in] new_weight
-  * The new weight the edge should be set to.
-  *
-  * @return none
-  *
-  * TODO: this should be done as a operator*()
-  *****************************************************************************/
-  virtual
-  void
-  set_weight(
-    U new_weight) = 0;
 
   /*************************************************************************//**
   * @brief Given a connected vertex, tell what the other connected vertex is.
@@ -582,7 +566,7 @@ class vertex_prototype{
   bool
   is_connected_by_undirected_edge(
     const vertex_prototype<T, U> &other
-  ) const;
+  ) const = 0;
 
 
   /*************************************************************************//**
@@ -604,7 +588,7 @@ class vertex_prototype{
   bool
   is_connected_by_in_edge(
     const vertex_prototype<T, U> &source_vertex
-  ) const;
+  ) const = 0;
 
 
   /*************************************************************************//**
@@ -626,7 +610,7 @@ class vertex_prototype{
   bool
   is_connected_by_out_edge(
     const vertex_prototype<T, U> &other
-  ) const;
+  ) const = 0;
 
 
   /*************************************************************************//**
@@ -651,9 +635,10 @@ class vertex_prototype{
   * Suggested number of incomming edges to accomidate.  Can be used to
   * increase allocated size.
   *****************************************************************************/
+  virtual
   void
   reserve_in_edges(
-    const size_t n);
+    const size_t n) = 0;
 
 
   /*************************************************************************//**
@@ -664,58 +649,52 @@ class vertex_prototype{
   * Suggested number of outgoing edges to accomidate.  Can be used to increase
   * allocated size.
   *****************************************************************************/
+  virtual
   void
   reserve_out_edges(
-    const size_t n);
+    const size_t n) = 0;
 
 
   /*************************************************************************//**
   * @brief Minimize allocated space to fit current number of undirected edges.
   *****************************************************************************/
+  virtual
   void
-  shrink_to_fit_undirected_edges();
+  shrink_to_fit_undirected_edges() = 0;
 
 
   /*************************************************************************//**
   * @brief Minimize allocated space to fit current number of incomming edges.
   *****************************************************************************/
+  virtual
   void
-  shrink_to_fit_in_edges();
+  shrink_to_fit_in_edges() = 0;
 
 
   /*************************************************************************//**
   * @brief Minimize allocated space to fit current number of outgoing edges.
   *****************************************************************************/
+  virtual
   void
-  shrink_to_fit_out_edges();
+  shrink_to_fit_out_edges() = 0;
 
 
   /*************************************************************************//**
   * @brief Minimize allocated space for all internal structures.
   *****************************************************************************/
+  virtual
   void
-  shrink_to_fit();
+  shrink_to_fit() = 0;
 
 
-  /***********************************************************************//**
-  * @brief Get the value stured in a vertex
+  /*************************************************************************//**
+  * @brief Get the reference stored in a vertex
   *
-  * @return a copy of the value stored in the vertex.
-  ***************************************************************************/
-  T
-  get_value(
-  )const;
-
-
-  /***********************************************************************//**
-  * @brief Set the value stored in the vertex.
-  *
-  * @param[in] new_value
-  * A value to set the vertex to.
-  ***************************************************************************/
-  void
-  set_value(
-    T new_value);
+  * @return A reference to the value stored in the vertex.
+  *****************************************************************************/
+  virtual
+  T_A::reference
+  operator*() = 0;
 
 };
 
@@ -732,6 +711,9 @@ class graph_prototype{
   * @brief Constructor
   *
   * TODO: add argument or other functions to dynamically expand vertexes
+  * The function must have the form of returning a vertex_prototype, and take as
+  * arguments the originating vertex and edge.  This may change in future, but
+  * changes musr be based on need and usage.
   *****************************************************************************/
   virtual
   graph_prototype(
@@ -1162,20 +1144,11 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
   * @note This is internal and in the provate section because the user should
   * never use or see functionality beyond what is exposed via the
   * vertex_prototype interface.
-  *
-  * TODO: find out if this template is even nessicary, it likely isn't.
   *****************************************************************************/
-  template <
-    typename T,
-    typename U,
-    typename T_A,
-    typename U_A>
   class
   general_vertex
   : vertex_prototype<T, U, T_A, U_A>{
     private:
-
-    //TODO: reimplement unordered_map to remove redundancy
 
     // Useful for iterating over individual edges.
     // NOTE: this is nessicary because dynamic vertex expansion will be
@@ -1598,31 +1571,15 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     /***********************************************************************//**
     * Documented elsewhere.
     ***************************************************************************/
-    T
-    get_value(
-    )const;
-
-
-    /***********************************************************************//**
-    * Documented elsewhere.
-    ***************************************************************************/
-    void
-    set_value(
-      T new_value);
+    T_A::reference
+    operator*();
 
   };
 
 
   /*************************************************************************//**
   * @brief Moderately complete edge implementation.
-  *
-  * TODO: doc
   *****************************************************************************/
-  template <
-    typename T,
-    typename U,
-    typename T_A,
-    typename U_A>
   class
   general_edge
   : edge_prototype<T, U, T_A, U_A>{
@@ -1643,8 +1600,6 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     * @param[in,out] newRight Right vertex to connect.
     * @param[in] newWeight Weight value.
     * @param[in] edgeIndex Index of this edge in the containing graph.
-    *
-    * TODO: doc
     ***************************************************************************/
     general_edge(
       const vertex_index in_vertex,
@@ -1655,8 +1610,6 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
     /***********************************************************************//**
     * @brief Basic deconstructor.
-    *
-    * TODO: doc
     ***************************************************************************/
     ~general_edge();
 
@@ -1666,15 +1619,8 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     /***********************************************************************//**
     * Documented elsewhere.
     ***************************************************************************/
-    U
-    get_weight();
-
-    /***********************************************************************//**
-    * Documented elsewhere.
-    ***************************************************************************/
-    void
-    set_weight(
-      U new_weight);
+    U_A::reference
+    operator*();
 
 
     /***********************************************************************//**
@@ -2613,7 +2559,8 @@ template <
 bool
 general_graph<T, U, T_A, U_A>::general_vertex::
 operator!=(
-  const vertex_prototype<T, U, T_A, U_A> &other
+  const vertex_prototype<T, U, T_A, U_A> &lhs,
+  const vertex_prototype<T, U, T_A, U_A> &rhs
 ) const {
   //TODO
 }
@@ -2666,24 +2613,10 @@ template <
   typename U,
   typename T_A,
   typename U_A>
-T
+T_A::reference
 general_graph<T, U, T_A, U_A>::general_vertex::
-get_value(
-) const {
-  return value;
-}
-
-
-template <
-  typename T,
-  typename U,
-  typename T_A,
-  typename U_A>
-void
-general_graph<T, U, T_A, U_A>::general_vertex::
-set_value(
-  T new_value
-) const {
+  operator*(
+){
   return value;
 }
 
@@ -2721,25 +2654,11 @@ template <
   typename U,
   typename T_A,
   typename U_A>
-U
+U_A::reference
 general_graph<T, U, T_A, U_A>::general_edge::
-get_weight(
+operator*(
 ){
-  //TODO
-}
-
-
-template <
-  typename T,
-  typename U,
-  typename T_A,
-  typename U_A>
-void
-general_graph<T, U, T_A, U_A>::general_edge::
-set_weight(
-  U new_weight
-){
-  //TODO
+  return weight;
 }
 
 
@@ -2836,17 +2755,17 @@ operator=(
 
   for( auto vert = other.begin_vertexes();
       vert != other.end_vertexes(); ++vert )
-    add_vertex(vert.get_value());//TODO: operator* should yield this
+    add_vertex(*vert);
 
   for( auto d_edge = other.begin_directed_edges() ;
        d_edge != other.end_directed_edges() ; ++d_edge)
     add_directed_edge(d_edge.get_vertexes().first, d_edge.get_vertexes().second,
-      d_edge.get_weight());
+      *d_edge);
 
   for( auto u_edge = other.begin_undirected_edges() ;
        u_edge != other.begin_undirected_edges() ; ++u_edge)
     add_undirected_edge(u_edge.get_vertexes().first,
-        u_edge.get_vertexes().second, u_edge.get_weight());
+        u_edge.get_vertexes().second, *u_edge);
 }
 
 
@@ -3393,7 +3312,7 @@ general_graph<T, U, T_A, U_A>::edge_iterator::
 operator-(
   const general_graph<T, U, T_A, U_A>::edge_iterator &other
 ){
-
+  //TODO
 }
 
 
@@ -3699,8 +3618,6 @@ class graph : graph_prototype<T, U>{
   graph_prototype(
     const graph_prototype<T, U> &other);
 
-  ~graph_prototype();
-
   void add_vertex(
     T value);
 
@@ -3804,28 +3721,13 @@ template<
   typename T,
   typename U,
   template <typename, typename> class GraphImplementation,
-  typename T_A1,
-  typename U_A1,
-  typename T_A2,
-  typename U_A2 >
-graph<T, U, GraphImplementation, T_A1, U_A1>::
+  typename T_A,
+  typename U_A>
+graph<T, U, GraphImplementation, T_A, U_A>::
 graph_prototype(
-  const graph_prototype<T, U, T_A2, U_A2> &other
+  const graph_prototype<T, U, T_A, U_A> &other
 ){
   graph_implementation(other);
-}
-
-
-template<
-  typename T,
-  typename U,
-  template <typename, typename> class GraphImplementation,
-  typename T_A,
-  typename U_A >
-graph<T, U, GraphImplementation, T_A, U_A>::
-~graph_prototype(
-){
-  //TODO
 }
 
 
