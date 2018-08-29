@@ -18,9 +18,9 @@ Madlib.  If not, see <http://www.gnu.org/licenses/>.
 
 /***************************************************************************//**
 @file
-@brief A graph iplementation with the goal to be general enough and high quality
-enough to propose for inclusion to the C++ Standard Template Library.  The
-structure to allow for such general usage of the most flexible and dynamic
+@brief A graph implementation with the goal to be general enough and high
+quality enough to propose for inclusion to the C++ Standard Template Library.
+The structure to allow for such general usage of the most flexible and dynamic
 data structure incur some overhead, both in performance penalty in many
 applications and code complexity in how a graph is implemented.  However, in the
 general case this should be preferable over trying to create a new graph for
@@ -166,6 +166,8 @@ class edge_prototype{
   * @brief Get the weight of the edge.
   *
   * @return A copy of the weight value of the edge.
+  *
+  * TODO: this should be done as a operator*()
   *****************************************************************************/
   virtual
   U
@@ -178,6 +180,8 @@ class edge_prototype{
   * The new weight the edge should be set to.
   *
   * @return none
+  *
+  * TODO: this should be done as a operator*()
   *****************************************************************************/
   virtual
   void
@@ -485,7 +489,9 @@ class vertex_prototype{
 
 
   /*************************************************************************//**
-  * @brief Get number of stored undirected edges.
+  * @brief Get number of connected undirected edges.
+  *
+  * @return Number of undirected edges connected to calling vertex.
   *****************************************************************************/
   virtual
   size_t
@@ -494,7 +500,9 @@ class vertex_prototype{
 
 
   /*************************************************************************//**
-  * @brief Get number of stored incomming edges.
+  * @brief Get number of connected incomming edges.
+  *
+  * @return Number of incomming edges connected to calling vertex.
   *****************************************************************************/
   virtual
   size_t
@@ -503,7 +511,9 @@ class vertex_prototype{
 
 
   /*************************************************************************//**
-  * @brief Get number of stored outgoing edges.
+  * @brief Get number of connected outgoing edges.
+  *
+  * @return Number of outgoing edges connected to calling vertex.
   *****************************************************************************/
   virtual
   ssize_t
@@ -520,6 +530,8 @@ class vertex_prototype{
   *
   * @param[in] rhs
   * Right Hand Side vertex to compare.
+  *
+  * @return True if the vertexes are the same vertex, else false.
   *****************************************************************************/
   friend
   bool
@@ -539,6 +551,8 @@ class vertex_prototype{
   * @param[in] rhs
   * Right Hand Side vertex to compare.
   *
+  * @return True if the vertexes are not the same vertex, else false.
+  *
   * TODO: implement this
   *****************************************************************************/
   friend
@@ -550,15 +564,21 @@ class vertex_prototype{
 
 
   /*************************************************************************//**
-  * @brief Tell if there is an undirected edge connecting this vertex to the
-  * other vertex.
+  * @brief Check if a passed verted is connected to the calling vertex by an
+  * undirected edge.
   *
-  * @param[in] other
-  * Another vertex, which will be checked to see if it and the calling vertex
-  * are connected by an undirected edge.
+  * @param[in] vertex
+  * a vertex which may or may not be connected to the calling vertex by the
+  * an undirected edge in the calling vertex.
   *
+  * @return True if the passed vertex is connected to the calling vertex by
+  * an undirected edge in the calling vertex, else false.
+  *
+  * TODO: The cast here may discard some information, forcing a change in
+  * arguments.
   * TODO: accept vertex iterator
   *****************************************************************************/
+  virtual
   bool
   is_connected_by_undirected_edge(
     const vertex_prototype<T, U> &other
@@ -566,37 +586,136 @@ class vertex_prototype{
 
 
   /*************************************************************************//**
-  * @brief Tell if there is an edge connecting this vertex to the
-  * other vertex where the passed vertex value is has an outgoing edge into the
-  * calling vertex.
+  * @brief Check if a passed verted is connected to the calling vertex by an
+  * incomming edge.
   *
-  * @param[in] other
-  * Another vertex, which will be checked to see if it and the calling vertex
-  * are connected by the same outgoing and incomming edge respectively.
+  * @param[in] source_vertex
+  * a vertex which may or may not be connected to the calling vertex by the
+  * an incomming edge in the calling vertex.
   *
+  * @return True if the passed vertex is connected to the calling vertex by
+  * an incomming edge in the calling vertex, else false.
+  *
+  * TODO: The cast here may discard some information, forcing a change in
+  * arguments.
   * TODO: accept vertex iterator
   *****************************************************************************/
+  virtual
   bool
   is_connected_by_in_edge(
+    const vertex_prototype<T, U> &source_vertex
+  ) const;
+
+
+  /*************************************************************************//**
+  * @brief Check if a passed verted is connected to the calling vertex by an
+  * outgoing edge.
+  *
+  * @param[in] vertex
+  * a vertex which may or may not be connected to the calling vertex by the
+  * an outgoing edge in the calling vertex.
+  *
+  * @return True if the passed vertex is connected to the calling vertex by
+  * an outgoing edge in the calling vertex, else false.
+  *
+  * TODO: The cast here may discard some information, forcing a change in
+  * arguments.
+  * TODO: accept vertex iterator
+  *****************************************************************************/
+  virtual
+  bool
+  is_connected_by_out_edge(
     const vertex_prototype<T, U> &other
   ) const;
 
 
   /*************************************************************************//**
-  * @brief Tell if there is an edge connecting this vertex to the
-  * other vertex where the passed vertex value is has an incomming edge from the
-  * calling vertex.
+  * @brief Suggest number of undirected edges to be able to store.  Use this
+  * to optimize memory management.
   *
-  * @param[in] other
-  * Another vertex, which will be checked to see if it and the calling vertex
-  * are connected by the same incomming and outgoing edge respectively.
-  *
-  * TODO: accept vertex iterator
+  * @param[in] n
+  * Suggested number of undirected edges to accomidate.  Can be used to
+  * increase allocated size.
   *****************************************************************************/
-  bool
-  is_connected_by_out_edge(
-    const vertex_prototype<T, U> &other
-  ) const;
+  virtual
+  void
+  reserve_undirected_edges(
+    const size_t n) = 0;
+
+
+  /*************************************************************************//**
+  * @brief Suggest number of incomming edges to be able to store.  Use this
+  * to optimize memory management.
+  *
+  * @param[in] n
+  * Suggested number of incomming edges to accomidate.  Can be used to
+  * increase allocated size.
+  *****************************************************************************/
+  void
+  reserve_in_edges(
+    const size_t n);
+
+
+  /*************************************************************************//**
+  * @brief Suggest number of outgoing edges to be able to store.  Use this
+  * to optimize memory management.
+  *
+  * @param[in] n
+  * Suggested number of outgoing edges to accomidate.  Can be used to increase
+  * allocated size.
+  *****************************************************************************/
+  void
+  reserve_out_edges(
+    const size_t n);
+
+
+  /*************************************************************************//**
+  * @brief Minimize allocated space to fit current number of undirected edges.
+  *****************************************************************************/
+  void
+  shrink_to_fit_undirected_edges();
+
+
+  /*************************************************************************//**
+  * @brief Minimize allocated space to fit current number of incomming edges.
+  *****************************************************************************/
+  void
+  shrink_to_fit_in_edges();
+
+
+  /*************************************************************************//**
+  * @brief Minimize allocated space to fit current number of outgoing edges.
+  *****************************************************************************/
+  void
+  shrink_to_fit_out_edges();
+
+
+  /*************************************************************************//**
+  * @brief Minimize allocated space for all internal structures.
+  *****************************************************************************/
+  void
+  shrink_to_fit();
+
+
+  /***********************************************************************//**
+  * @brief Get the value stured in a vertex
+  *
+  * @return a copy of the value stored in the vertex.
+  ***************************************************************************/
+  T
+  get_value(
+  )const;
+
+
+  /***********************************************************************//**
+  * @brief Set the value stored in the vertex.
+  *
+  * @param[in] new_value
+  * A value to set the vertex to.
+  ***************************************************************************/
+  void
+  set_value(
+    T new_value);
 
 };
 
@@ -638,6 +757,18 @@ class graph_prototype{
 
 
   /*************************************************************************//**
+  * @ Set the contents of one graph to another.
+  *
+  * NOTE: this needs to have implementation specific copy functionality AND
+  * general copy functionality.
+  *****************************************************************************/
+  virtual
+  graph_prototype<T, U, T_A, U_A>
+  operator=(
+    const graph_prototype<T, U, T_A, U_A> &other);
+
+
+  /*************************************************************************//**
   * @brief Basic call to add a new vertex to a graph.
   *
   * @param[in] value
@@ -654,7 +785,10 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Get the first iterator over all vertexes in the graph.
+  *
+  * @return An inferred iterator to the first vertex in the store of all
+  * vertexes in this graph.
   *****************************************************************************/
   virtual
   auto
@@ -663,7 +797,10 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Get one past the last iterator over all vertexes in the graph.
+  *
+  * @return An inferred iterator to one after the last vertex in the store of
+  * all vertexes in this graph.
   *****************************************************************************/
   virtual
   auto
@@ -672,7 +809,10 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Get the first iterator over all vertexes in the graph.
+  *
+  * @return An inferred iterator to the first vertex in the store of all
+  * vertexes in this graph.
   *****************************************************************************/
   virtual
   auto
@@ -681,7 +821,10 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Get one past the last iterator over all vertexes in the graph.
+  *
+  * @return An inferred iterator to one after the last vertex in the store of
+  * all vertexes in this graph.
   *****************************************************************************/
   virtual
   auto
@@ -690,7 +833,10 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Get the total count of all vertexes in the graph.
+  *
+  * @return A count of all vertexes in the graph with an upper limit dependant
+  * on architectural memory limit.
   *****************************************************************************/
   virtual
   size_t
@@ -699,7 +845,12 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Remove the passed vertex from the graph.
+  *
+  * @param[in,out] to_remove
+  * The vertex to remove from the graph
+  *
+  * @return The value held by the removed edge.
   *****************************************************************************/
   virtual
   T
@@ -708,7 +859,12 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Tell the graph to make sure there is room for at least n number of
+  * vertexes.  This is not nessicary, but serves as a significant optimization
+  * when applicable.
+  *
+  * @param[in] n
+  * The number of vertexes to make sure there are room for.
   *****************************************************************************/
   virtual
   void
@@ -717,7 +873,7 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Reduce the storage used for vertexes to the minimum nessicary.
   *****************************************************************************/
   virtual
   void
@@ -725,7 +881,21 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Add an undirected edge between the passed vertexes.
+  *
+  * @param[in,out] vertex1
+  * A vertex in the graph which will be connected by an edge
+  *
+  * @param[in,out] vertex2
+  * A vertex in the graph which will be connected by an edge
+  *
+  * @param[in] weight
+  * The weight to assign to the newly added edge.
+  *
+  * @note An error will be thrown if an edge already exists between the two
+  * vertexes.
+  *
+  * TODO: custom throw
   *****************************************************************************/
   virtual
   void
@@ -736,7 +906,23 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Add a directed edge fron vector1 to vector2.
+  *
+  * @param[in,out] vertex1
+  * A vertex in the graph which will be connected to vertex2 by an outgoing
+  * edge.
+  *
+  * @param[in,out] vertex2
+  * A vertex in the graph which will be connected to vertex1 by an incomming
+  * edge.
+  *
+  * @param[in] weight
+  * The weight to assign to the newly added edge.
+  *
+  * @note An error will be thrown if an edge already exists between the two
+  * vertexes.
+  *
+  * TODO: custom throw
   *****************************************************************************/
   virtual
   void
@@ -747,7 +933,20 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Get a reference to the undirected edge connecting two vertexes.
+  *
+  * @param[in] vertex1
+  * A vertex in the graph.
+  *
+  * @param[in] vertex2
+  * A vertex in the graph
+  *
+  * @return The undirected edge connecting vertex1 and vertex2.
+  *
+  * @note If no undirected edge connects vertex1 and vertex2, then an error is
+  * thrown.
+  *
+  * TODO: custom throw
   *****************************************************************************/
   virtual
   edge_prototype<T, U>&
@@ -757,7 +956,21 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Get a reference to the directed edge from from_vertex to to_vertex.
+  *
+  * @param[in] from_vertex
+  * The vertex where there is a directed outgoing edge to to_vertex.
+  *
+  * @param[in] to_vertex
+  * The vertex where there is a directed incomming edge from from_vertex.
+  *
+  * @return The directed edge connecting from_vertex and to_vertex, where it
+  * is an outgoing edge in from_vertex and an incomming edge in to_vertex.
+  *
+  * @note If no directed edge connects from_vertex to to_vertex in a
+  * outgoing/incoming manner, then an error is thrown.
+  *
+  * TODO: custom throw
   *****************************************************************************/
   virtual
   edge_prototype<T, U, T_A, U_A>&
@@ -767,7 +980,19 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Remove the undirected edge connecting vertex1 and vertex2.
+  *
+  * @param[in,out] vertex1
+  * A vertex in the graph.
+  *
+  * @param[in,out] vertex2
+  * A vertex in the graph.
+  *
+  * @return The weight which was held in the now removed edge.
+  *
+  * @note If there is no edge to remove, an error is thrown.
+  *
+  * TODO: custom throw
   *****************************************************************************/
   virtual
   U
@@ -777,7 +1002,19 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Remove the directed edge connecting from_vertex to to_vertex.
+  *
+  * @param[in,out] from_vertex
+  * A vertex in the graph connected to to_vertex by an outgoing edge.
+  *
+  * @param[in,out] to_vertex
+  * A vertex in the graph connected to from_vertex by an incomming edge.
+  *
+  * @return The weight which was held in the now removed edge.
+  *
+  * @note If there is no edge to remove, an error is thrown.
+  *
+  * TODO: custom throw
   *****************************************************************************/
   virtual
   U
@@ -787,7 +1024,11 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief Allocate capacity for n number of edges in the graph.  This is an
+  * optimization and is not required for use.
+  *
+  * @param[in] n
+  * The number of edges to allocate space for.
   *****************************************************************************/
   virtual
   void
@@ -796,7 +1037,9 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief An iterator to the first edge in the graph.
+  *
+  * @return The first iterator in the store of edges in a graph.
   *****************************************************************************/
   virtual
   auto
@@ -804,7 +1047,10 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief An iterator to one past the last edge in the graph.
+  *
+  * @return The iterator representing one past the end of stored edges in the
+  * graph.
   *****************************************************************************/
   virtual
   auto
@@ -812,7 +1058,30 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
+  * @brief An iterator to the first edge in the graph.
+  *
+  * @return The first iterator in the store of edges in a graph.
+  *****************************************************************************/
+  virtual
+  auto
+  begin_edges() const = 0;
+
+
+  /*************************************************************************//**
+  * @brief An iterator to one past the last edge in the graph.
+  *
+  * @return The iterator representing one past the end of stored edges in the
+  * graph.
+  *****************************************************************************/
+  virtual
+  auto
+  end_edges() const = 0;
+
+
+  /*************************************************************************//**
+  * @brief Tell the number of edges present in the graph.
+  *
+  * @return A count of all edges in the calling graph.
   *****************************************************************************/
   virtual
   size_t
@@ -821,16 +1090,8 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
-  *****************************************************************************/
-  virtual
-  void
-  reserve_edges(
-    size_t n) = 0;
-
-
-  /*************************************************************************//**
-  * @brief
+  * @brief Reduce the memory used to the minimum required to store all edges in
+  * the graph.
   *****************************************************************************/
   virtual
   void
@@ -838,47 +1099,7 @@ class graph_prototype{
 
 
   /*************************************************************************//**
-  * @brief
-  *****************************************************************************/
-  virtual
-  auto
-  begin_edges() = 0;
-
-
-  /*************************************************************************//**
-  * @brief
-  *****************************************************************************/
-  virtual
-  auto
-  end_edges() = 0;
-
-
-  /*************************************************************************//**
-  * @brief
-  *****************************************************************************/
-  virtual
-  auto
-  begin_edges() const = 0;
-
-
-  /*************************************************************************//**
-  * @brief
-  *****************************************************************************/
-  virtual
-  auto
-  end_edges() const = 0;
-
-
-  /*************************************************************************//**
-  * @brief
-  *****************************************************************************/
-  virtual
-  size_t
-  edge_count() const = 0;
-
-
-  /*************************************************************************//**
-  * @brief
+  * @brief Reduce all memory to the minimum nessicary in the graph.
   *****************************************************************************/
   virtual
   void
@@ -916,11 +1137,11 @@ class general_graph : graph_prototype<T, U, T_A, U_A>;
 
 
 /***************************************************************************//**
- * @brief A simple unidirectional graph implementation
- *
- * This implementation internally uses a hash structure containing indexes into
- * a common continuous pool of vertex and edge data.
- ******************************************************************************/
+* @brief A simple unidirectional graph implementation
+*
+* This implementation internally uses a hash structure containing indexes into
+* a common continuous pool of vertex and edge data.
+*******************************************************************************/
 template <
   typename T,
   typename U,
@@ -936,14 +1157,14 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
   /*PRIVATE VERTEX AND EDGE CLASS DECLARATIONS*********************************/
 
   /*************************************************************************//**
-   * @brief A moderately complete and well formed vertex implementation.
-   *
-   * @note This is internal and in the provate section because the user should
-   * never use or see functionality beyond what is exposed via the
-   * vertex_prototype interface.
-   *
-   * TODO: find out if this template is even nessicary, it likely isn't.
-   ****************************************************************************/
+  * @brief A moderately complete and well formed vertex implementation.
+  *
+  * @note This is internal and in the provate section because the user should
+  * never use or see functionality beyond what is exposed via the
+  * vertex_prototype interface.
+  *
+  * TODO: find out if this template is even nessicary, it likely isn't.
+  *****************************************************************************/
   template <
     typename T,
     typename U,
@@ -985,11 +1206,11 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     public:
 
     /***********************************************************************//**
-     *  Make a vertex with basic data about itself
-     *
-     * @param[in] index Index the vertex will be located at in graph
-     * @param[in] data Data the vertex is meant to represent
-     **************************************************************************/
+    * @brief Make a vertex with basic data about itself
+    *
+    * @param[in] index Index the vertex will be located at in graph
+    * @param[in] data Data the vertex is meant to represent
+    ***************************************************************************/
     general_vertex(
       T data,
       vertex_index index_in_graph_store,
@@ -998,21 +1219,22 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-     *  Basic destructor.  All edges must have been removed by graph prior
-     * to deletion.
-     *
-     * \pre All edges must have been removed already.
-     **************************************************************************/
+    * @brief Basic destructor.
+    ***************************************************************************/
     ~general_vertex();
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
+    * @brief Register an edge and connecting vertex on called vertex.  They are
+    * stored as an undirected connection.
     *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                           returning to it what index it is in the
-    *                           called vertex.
-    * TODO: documentation
+    * @param[in] edge_to_register
+    * An edge index into the graph to register.  It is stored as undirected.
+    *
+    * @param[in] vertex_to_connect
+    * A vertex index into the graph to register.  It is stored as undirected.
+    *
+    * @note This is private to the implementation.
     ***************************************************************************/
     void
     add_undirected_edge(
@@ -1021,12 +1243,16 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
+    * @brief Register an edge and connecting vertex on called vertex.  They are
+    * stored as an incomming connection.
     *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                          returning to it what index it is in the
-    *                          called vertex.
-    * TODO: doc
+    * @param[in] edge_to_register
+    * An edge index into the graph to register.  It is stored as incomming.
+    *
+    * @param[in] vertex_to_connect
+    * A vertex index into the graph to register.  It is stored as incomming.
+    *
+    * @note This is private to the implementation.
     ***************************************************************************/
     void
     add_in_edge(
@@ -1035,12 +1261,16 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
+    * @brief Register an edge and connecting vertex on called vertex.  They are
+    * stored as an outgoing connection.
     *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                          returning to it what index it is in the
-    *                          called vertex.
-    * TODO: doc
+    * @param[in] edge_to_register
+    * An edge index into the graph to register.  It is stored as outgoing.
+    *
+    * @param[in] vertex_to_connect
+    * A vertex index into the graph to register.  It is stored as outgoing.
+    *
+    * @note This is private to the implementation.
     ***************************************************************************/
     void
     add_out_edge(
@@ -1049,25 +1279,36 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
+    * @brief Remove the entries for an undirected connection.
     *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                           returning to it what index it is in the
-    *                           called vertex.
-    * TODO: documentation
+    * @param[in] edge_to_remove
+    * The edge index which needs to be removed from the undirected edges.
+    *
+    * @param[in] vertex_to_remove
+    * The vertex index which needs to be removed from the undirected vertexes.
+    *
+    * @note This is private to the implementation.  The edge and vertex must be
+    * to the same connection.  Throw an error is the entries are missing or
+    * mismatched.
     ***************************************************************************/
     void
     remove_undirected_edge(
-      edge_index edge_to_register);
+      edge_index edge_to_remove,
+      vertex_index vertex_to_remove);
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
+    * @brief Remove the entries for an incomming directed connection.
     *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                          returning to it what index it is in the
-    *                          called vertex.
-    * TODO: doc
+    * @param[in] edge_to_remove
+    * The edge index which needs to be removed from the incomming edges.
+    *
+    * @param[in] vertex_to_remove
+    * The vertex index which needs to be removed from the incomming vertexes.
+    *
+    * @note This is private to the implementation.  The edge and vertex must be
+    * to the same connection.  Throw an error is the entries are missing or
+    * mismatched.
     ***************************************************************************/
     void
     remove_in_edge(
@@ -1075,12 +1316,17 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
+    * @brief Remove the entries for an outgoing directed connection.
     *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                          returning to it what index it is in the
-    *                          called vertex.
-    * TODO: doc
+    * @param[in] edge_to_remove
+    * The edge index which needs to be removed from the outgoing edges.
+    *
+    * @param[in] vertex_to_remove
+    * The vertex index which needs to be removed from the outgoing vertexes.
+    *
+    * @note This is private to the implementation.  The edge and vertex must be
+    * to the same connection.  Throw an error is the entries are missing or
+    * mismatched.
     ***************************************************************************/
     void
     remove_out_edge(
@@ -1090,13 +1336,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     //START vertex_prototype OVERRIDES//////////////////////////////////////////
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
-    *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                          returning to it what index it is in the
-    *                          called vertex.
-    * TODO: doc
-    * TODO: accept edge iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     has_undirected_edge(
@@ -1104,13 +1344,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
-    *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                          returning to it what index it is in the
-    *                          called vertex.
-    * TODO: doc
-    * TODO: accept edge iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     has_in_edge(
@@ -1118,13 +1352,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Register an edge on called vertex.
-    *
-    * @param[in,out] toRegister Edge to register and register with by
-    *                          returning to it what index it is in the
-    *                          called vertex.
-    * TODO: doc
-    * TODO: accept edge iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     has_out_edge(
@@ -1132,12 +1360,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief
-    *
-    * @param[in]
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     is_connected_by_undirected_edge(
@@ -1145,12 +1368,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief
-    *
-    * @param[in]
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     is_connected_by_in_edge(
@@ -1158,12 +1376,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief
-    *
-    * @param[in]
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     is_connected_by_out_edge(
@@ -1171,104 +1384,95 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     begin_undirected_edges();
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     end_undirected_edges();
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     begin_in_edges();
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     end_in_edges();
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     begin_out_edges();
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     end_out_edges();
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
-    begin_undirected_edges() const;
+    begin_undirected_edges(
+    ) const;
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
-    end_undirected_edges() const;
+    end_undirected_edges(
+    ) const;
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
-    begin_in_edges() const;
+    begin_in_edges(
+    ) const;
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
-    end_in_edges() const;
+    end_in_edges(
+    ) const;
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     begin_out_edges() const;
 
 
     /***********************************************************************//**
-    * @brief Get array of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     auto
     end_out_edges() const;
 
 
     /***********************************************************************//**
-    *  Get number of stored edges.
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     size_t
     get_num_undirected_edges(
@@ -1276,7 +1480,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Get number of stored edges.
+    * Documented elsewhere.
     ***************************************************************************/
     size_t
     get_num_in_edges(
@@ -1284,23 +1488,15 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    *  Get number of stored edges.
+    * Documented elsewhere.
     ***************************************************************************/
     size_t
     get_num_out_edges(
     ) const;
 
 
-
-
     /***********************************************************************//**
-    *  @briefSuggest number of edges to be able to store.  Use this to optimize
-    * memory management.
-    *
-    * @param[in] suggestSize Suggested number of edges to accomidate.  Can be
-    * used to increase allocated size.
-    *
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     void
     reserve_undirected_edges(
@@ -1308,13 +1504,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Suggest number of edges to be able to store.  Use this to optimize
-    * memory management.
-    *
-    * @param[in] suggestSize Suggested number of edges to accomidate.  Can be
-    * used to increase allocated size.
-    *
-    * TODO: doc
+    * Documented elsewhere
     ***************************************************************************/
     void
     reserve_in_edges(
@@ -1322,13 +1512,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Suggest number of edges to be able to store.  Use this to optimize
-    * memory management.
-    *
-    * @param[in] suggestSize Suggested number of edges to accomidate.  Can be
-    * used to increase allocated size.
-    *
-    * TODO: doc
+    * Documented elsewhere
     ***************************************************************************/
     void
     reserve_out_edges(
@@ -1336,46 +1520,35 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Minimize allocated space to fit current number of edges.
-    *
-    * TODO: doc
+    * @brief Minimize allocated space to fit current number of undirected edges.
     ***************************************************************************/
     void
     shrink_to_fit_undirected_edges();
 
 
     /***********************************************************************//**
-    * @brief Minimize allocated space to fit current number of edges.
-    *
-    * TODO: doc
+    * @brief Minimize allocated space to fit current number of incomming edges.
     ***************************************************************************/
     void
     shrink_to_fit_in_edges();
 
 
     /***********************************************************************//**
-    * @brief Minimize allocated space to fit current number of edges.
-    *
-    * TODO: doc
+    * @brief Minimize allocated space to fit current number of outgoing edges.
     ***************************************************************************/
     void
     shrink_to_fit_out_edges();
 
 
     /***********************************************************************//**
-    * @brief Minimize allocated space to fit current number of edges.
-    *
-    * TODO: doc
+    * @brief Minimize allocated space for all internal structures.
     ***************************************************************************/
     void
     shrink_to_fit();
 
 
     /***********************************************************************//**
-    * @brief Tell if contents of vertexes are the same, but not nessicarily the
-    * same vertex from a single graph.
-    *
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     operator==(
@@ -1385,13 +1558,10 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Tell if contents of vertexes are different, but not nessicarily the
-    * same vertex from a single graph.
-    *
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     bool
-    operator!+(
+    operator!=(
       const vertex_prototype<T, U, T_A, U_A> &lhs,
       const vertex_prototype<T, U, T_A, U_A> &rhs
     ) const;
@@ -1399,10 +1569,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * Tell if there is an edge connecting this vertex to another vertex
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     is_connected_by_undirected_edge(
@@ -1411,10 +1578,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Tell if there is an edge connecting this vertex to another vertex
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     is_connected_by_in_edge(
@@ -1423,10 +1587,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Tell if there is an edge connecting this vertex to another vertex
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     bool
     is_connected_by_out_edge(
@@ -1435,10 +1596,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Tell if there is an edge connecting this vertex to another vertex
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     T
     get_value(
@@ -1446,15 +1604,11 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Tell if there is an edge connecting this vertex to another vertex
-    *
-    * TODO: doc
-    * TODO: accept vertex iterator
+    * Documented elsewhere.
     ***************************************************************************/
     void
     set_value(
-      T new_value
-    )const;
+      T new_value);
 
   };
 
@@ -1510,19 +1664,13 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     //BEGIN edge_prototype OVERRIDES////////////////////////////////////////////
 
     /***********************************************************************//**
-    * @brief
-    *
-    * TODO: doc
-    * TODO: this should be done as a operator*()
+    * Documented elsewhere.
     ***************************************************************************/
     U
     get_weight();
 
     /***********************************************************************//**
-    * @brief
-    *
-    * TODO: doc
-    * TODO: this should be done as a operator*()
+    * Documented elsewhere.
     ***************************************************************************/
     void
     set_weight(
@@ -1530,9 +1678,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief Given a connected vertex, tell what the other connected vertex is.
-    *
-    * TODO: doc
+    * Documented elsewhere.
     ***************************************************************************/
     vertex_prototype<T, U, T_A, U_A>&
     opposite_vertex(
@@ -1540,10 +1686,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
     /***********************************************************************//**
-    * @brief
-    *
-    * TODO: doc
-    * NOTE: the reference, r-value, l-value, ll-value stuff may be wrong.
+    * Documented elsewhere.
     ***************************************************************************/
     std::pair<
       vertex_prototype<T, U, T_A, U_A>&,
@@ -1554,16 +1697,14 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * TODO: doc
+  * @brief an iterator implementation to go over edges connected to a vertex.
   *****************************************************************************/
   template<
     typename T,
     typename U,
     typename T_A,
     typename U_A>
-  class edge_iterator{
+  class edge_iterator : /*Inherit RandomIterator*/{
     public:
     typedef typename U_A::differene_type difference_type;
     typedef typename U value_type;
@@ -1581,15 +1722,10 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
     public:
 
-    /***********************************************************************//**
-    * @brief
-    ***************************************************************************/
     edge_iterator(
       std::vector<general_edge<T, U, T_A, U_A> *edges,
       general_vertex<T U, T_A, U_A> *vertex,
     );
-
-    //TODO: implement the operator wrappers
 
     edge_iterator& (int)operator++;
 
@@ -1634,9 +1770,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * TODO: doc
+  * @brief an iterator implementation to go over vertexes connected to a vertex.
   *****************************************************************************/
   template<
     typename T,
@@ -1666,8 +1800,6 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
       general_vertex<T, U, T_A, U_A> *originating_vertex,
       std::vertex<general_vertex<T, U, T_A, U_A> > *master_vertex_store,
       difference_type index);
-
-    //TODO: implement the operator wrappers
 
     vertex_iterator& (int)operator++;
 
@@ -1728,40 +1860,27 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
   public:
 
   /*************************************************************************//**
-  * @brief Basic constructor.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   graph_prototype(
     size_t reserve_n_vertexes,
     size_t reserve_n_edges);
 
   /*************************************************************************//**
-  * @brief Copy constructor.
-  *
-  * TODO: doc
-  * NOTE: this needs to have implementation specific copy functionality AND
-  * general copy functionality.
+  * Documented elsewhere.
   *****************************************************************************/
   graph_prototype(
     const graph_prototype<T, U, T_A, U_A> &other);
 
 
   /*************************************************************************//**
-  * @brief Handles the deallocation of edges and vertexes (but not nesicarily
-  * the user defined values they hold) before self deletion.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   ~graph_prototype();
 
 
   /*************************************************************************//**
-  * @ Set the contents of one graph to another.
-  *
-  * TODO: doc
-  * NOTE: this needs to have implementation specific copy functionality AND
-  * general copy functionality.
+  * Documented elsewhere.
   *****************************************************************************/
   graph_prototype<T, U, T_A, U_A>
   operator=(
@@ -1770,13 +1889,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
   /*EDGE OPERATIONS************************************************************/
 
   /*************************************************************************//**
-  *  Create and register a new edge.
-  *
-  * @param[in,out] left A vertex to connect with an edge.
-  * @param[in,out] right A vertex to connect with an edge.
-  * @param[in] newWeight Value new edge will hold.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   void
   add_undirected_edge(
@@ -1787,13 +1900,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  *  Create and register a new edge.
-  *
-  * @param[in,out] left A vertex to connect with an edge.
-  * @param[in,out] right A vertex to connect with an edge.
-  * @param[in] newWeight Value new edge will hold.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   void
   add_directed_edge(
@@ -1803,11 +1910,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * @param[in,out]
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   edge_prototype<T, U, T_A, U_A>&
   get_undirected_edge(
@@ -1816,11 +1919,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * @param[in,out]
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   edge_prototype<T, U, T_A, U_A>&
   get_directed_edge(
@@ -1829,11 +1928,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * @param[in,out]
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   U
   remove_undirected_edge(
@@ -1842,11 +1937,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * @param[in,out]
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   U
   remove_directed_edge(
@@ -1855,27 +1946,21 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   begin_edges();
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   end_edges();
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   begin_edges(
@@ -1883,9 +1968,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   end_edges(
@@ -1893,9 +1976,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Get number of edges in graph.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   size_t
   edge_count(
@@ -1903,13 +1984,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Suggest number of edges gaph should be able to hold.  Used to help
-  * memory allocation and management.
-  *
-  * @param[in,out] suggestSize Suggested number of edges graph should have
-  * capacity for.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   **********************************************************************/
   void
   reserve_edges(
@@ -1917,18 +1992,14 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Minimize the memory used to hold vertexes and edges.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   void
   shrink_to_fit();
 
 
   /*************************************************************************//**
-  * @brief Minimize the memory used to hold edges.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   void
   shrink_to_fit_edges();
@@ -1938,11 +2009,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
   public:
 
   /*************************************************************************//**
-  * @brief Construct and register vertex in graph.
-  *
-  * @param[in] newValue Value the new vertex will hold.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   vertex_prototype<T, U, T_A, U_A>&
   add_vertex(
@@ -1950,27 +2017,21 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Get array of vertexes in graph.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   begin_vertexes();
 
 
   /*************************************************************************//**
-  * @brief Get array of vertexes in graph.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   end_vertexes();
 
 
   /*************************************************************************//**
-  * @brief Get array of vertexes in graph.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   begin_vertexes(
@@ -1978,9 +2039,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Get array of vertexes in graph.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   auto
   end_vertexes(
@@ -1988,7 +2047,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Get number of vertexes in graph;
+  * Documented elsewhere.
   *****************************************************************************/
   size_t
   vertex_count(
@@ -1996,12 +2055,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Remove the registered vertex from graph after removing all of its
-  * edges, and return the data to held.
-  *
-  * @param[in,out] toRemove Vertex in called graph which should be removed.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   T
   remove_vertex(
@@ -2009,12 +2063,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Suggest number of vertexes graph should have capacity to hold.
-  *
-  * @param[in] suggestSize Number of vertexes graph should have capacity to
-  * hold.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   void
   reserve_vertexes(
@@ -2022,9 +2071,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
 
 
   /*************************************************************************//**
-  * @brief Minimize the memory used to hold vertexes in called graph.
-  *
-  * TODO: doc
+  * Documented elsewhere.
   *****************************************************************************/
   void
   shrink_to_fit_vertexes();
@@ -2787,7 +2834,8 @@ operator=(
   //edges.max_load_factor(0.5);
   //edges.reserve(reserve_n_edges.vertexes.size());
 
-  for( auto vert = other.begin_vertexes(); vert != other.end_vertexes(); ++vert )
+  for( auto vert = other.begin_vertexes();
+      vert != other.end_vertexes(); ++vert )
     add_vertex(vert.get_value());//TODO: operator* should yield this
 
   for( auto d_edge = other.begin_directed_edges() ;
@@ -2797,8 +2845,8 @@ operator=(
 
   for( auto u_edge = other.begin_undirected_edges() ;
        u_edge != other.begin_undirected_edges() ; ++u_edge)
-    add_undirected_edge(u_edge.get_vertexes().first, u_edge.get_vertexes().second,
-      u_edge.get_weight());
+    add_undirected_edge(u_edge.get_vertexes().first,
+        u_edge.get_vertexes().second, u_edge.get_weight());
 }
 
 
@@ -3015,12 +3063,12 @@ template <
 vertex_prototype<T, U, T_A, U_A>&
 general_graph<T, U, T_A, U_A>::
 add_vertex(
-  T value
+  T val
 ){
-  std::pair<T, general_vertex<T, U, T_A, U_A> tmp_pair;
-  general_vertex<T, U, T_A, U_A> tmp_vertex(value);
-  tmp_pair = std::make_pair<T, general_vertex<T, U, T_A, U_A> >(value, tmp_vertex);
-  vertexes.insert(tmp_pair);
+  std::pair<T, general_vertex<T, U, T_A, U_A> tmp_pr;
+  general_vertex<T, U, T_A, U_A> tmp_vertex(val);
+  tmp_pr = std::make_pair<T, general_vertex<T, U, T_A, U_A> >(val, tmp_vertex);
+  vertexes.insert(tmp_pr);
   return get_vertex(value);
 }
 
@@ -3384,8 +3432,8 @@ template <
   typename U_A>
 general_graph<T, U, T_A, U_A>::vertex_iterator::
 vertex_iterator(
-  general_graph<T, U, T_A, U_A>::general_vertex<T, U, T_A, U_A> &originating_vertex,
-  std::vertex<general_graph<T, U, T_A, U_A>::general_vertex<T, U, T_A, U_A> > *master_vertex_store,
+  general_graph<T, U, T_A, U_A>::general_vertex &originating_vertex,
+  std::vector<general_graph<T, U, T_A, U_A>::general_vertex> *vertex_store,
   general_graph<T, U, T_A, U_A>::vertex_iterator::difference_type index
 ){
   //TODO
