@@ -29,7 +29,7 @@ allow for multiple simultaneous back end graph implementations with all their
 individual trade offs and complexities while still remaining fully interoperable
 and with a stable API.
 
-This graph consists of three primary layers.  Most broadly are the graph
+This graph file consists of three primary layers.  Most broadly are the graph
 prototype classes, graph_prototype, vertex_prototype, and edge_prototype.  The
 interface users see and use is the "graph" class, and the implemented vertexes
 and edges whose interface is defined by the prototypes.  The middle layer is the
@@ -78,10 +78,6 @@ TODO: allow for a function to auto generate/expand vertexes -- referenced
 vertexes are null until expanded.  This is to allow exploration over an infinite
 space over a truely general way.
 
-TODO: Consider changing template paramaterization to mask and only infer the
-allocator values from std::allocator rather than having a default
-paramaterization.
-
 TODO: Tweak paramaterization to allow for transparent distributed computation
 and use of this data structure.  That should help large scale operations,
 scalability, and hopefully compliance and features past the 2020 standard.
@@ -89,11 +85,10 @@ scalability, and hopefully compliance and features past the 2020 standard.
 TODO: The iterator structuring and implementation is a little tricky and needs
 work.
 
-TODO: Add a matrix backed implementation.
+TODO: Add a matrix backed implementation using sparse and dense upper diagonal
+matrixes.
 
 TODO: graph and concurrency safety; likely Java styled.
-
-TODO: Complete documentation.
 
 TODO: Complete implementation.
 
@@ -101,11 +96,13 @@ TODO: Add new tests to the test suite using RapidCheck.
 
 TODO: Check for memory leaks.
 
-TODO: File save/open support
+TODO: File save/open support.
 
-TODO: Make sure all the vertual specifiers are correct
+TODO: Make sure all the virtual specifiers are correct.
 
-TODO: peer review on IRC and standards forum
+TODO: Peer review on IRC and standards forum.
+
+TODO: Add void edge value specialization.
 *******************************************************************************/
 
 #pragma once
@@ -128,6 +125,8 @@ TODO: peer review on IRC and standards forum
 template <
   typename T,
   typename U,
+  typename EDGE_UID,
+  typename VERTEX_UID,
   typename T_A = std::allocator<T>,
   typename U_A = std::allocator<U> >
 class edge_prototype;
@@ -135,6 +134,8 @@ class edge_prototype;
 template <
   typename T,
   typename U,
+  typename EDGE_UID,
+  typename VERTEX_UID,
   typename T_A = std::allocator<T>,
   typename U_A = std::allocator<U> >
 class vertex_prototype;
@@ -157,9 +158,15 @@ class graph_prototype;
 template <
   typename T,
   typename U,
+  typename EDGE_UID,
+  typename VERTEX_UID,
   typename T_A,
   typename U_A>
 class edge_prototype{
+  protected:
+
+  EDGE_UID id;
+
   public:
 
   /*************************************************************************//**
@@ -211,9 +218,14 @@ class edge_prototype{
 template <
   typename T,
   typename U,
+  typename UID,
   typename T_A,
   typename U_A>
 class vertex_prototype{
+  protected:
+
+  UID id;
+
   public:
 
 
@@ -536,8 +548,6 @@ class vertex_prototype{
   * Right Hand Side vertex to compare.
   *
   * @return True if the vertexes are not the same vertex, else false.
-  *
-  * TODO: implement this
   *****************************************************************************/
   friend
   bool
@@ -558,9 +568,8 @@ class vertex_prototype{
   * @return True if the passed vertex is connected to the calling vertex by
   * an undirected edge in the calling vertex, else false.
   *
-  * TODO: The cast here may discard some information, forcing a change in
+  * NOTE: The cast here may discard some information, forcing a change in
   * arguments.
-  * TODO: accept vertex iterator
   *****************************************************************************/
   virtual
   bool
@@ -580,9 +589,8 @@ class vertex_prototype{
   * @return True if the passed vertex is connected to the calling vertex by
   * an incomming edge in the calling vertex, else false.
   *
-  * TODO: The cast here may discard some information, forcing a change in
+  * NOTE: The cast here may discard some information, forcing a change in
   * arguments.
-  * TODO: accept vertex iterator
   *****************************************************************************/
   virtual
   bool
@@ -602,9 +610,8 @@ class vertex_prototype{
   * @return True if the passed vertex is connected to the calling vertex by
   * an outgoing edge in the calling vertex, else false.
   *
-  * TODO: The cast here may discard some information, forcing a change in
+  * NOTE: The cast here may discard some information, forcing a change in
   * arguments.
-  * TODO: accept vertex iterator
   *****************************************************************************/
   virtual
   bool
@@ -702,40 +709,61 @@ class vertex_prototype{
 template <
   typename T,
   typename U,
+  typename EDGE_UID,
+  typename VERTEX_UID,
   typename T_A,
   typename U_A>
 class graph_prototype{
   public:
 
+  typedef edge_index EDGE_UID;
+  typedef vertex_index VERTEX_UID;
+
+  static
+  const
+  vertex_prototype<T, U, EDGE_UID, VERTEX_UID, T_A, U_A> DANGLING_VERTEX;
+
   /*************************************************************************//**
   * @brief Constructor
-  *
-  * TODO: add argument or other functions to dynamically expand vertexes
-  * The function must have the form of returning a vertex_prototype, and take as
-  * arguments the originating vertex and edge.  This may change in future, but
-  * changes musr be based on need and usage.
   *****************************************************************************/
   virtual
   graph_prototype(
     size_t reserve_n_vertexes = 0,
-    size_t reserve_n_edges = 0) = 0;
+    size_t reserve_n_edges = 0,
+    vertex_prototype<T, U, vertex_index, T_A, U_A>
+    (*expand_from_vertex)
+    (
+      vertex_prototype<T, U, vertex_index, T_A, U_A> &from,
+      edge_prototype<T, U, edge_index, T_A, U_A> &connection
+    ) = nullptr
+  )= 0;
 
 
   /*************************************************************************//**
   * @brief Copy constructor
-  *
-  * TODO: Move constructor
   *****************************************************************************/
   virtual
   graph_prototype(
-    const graph_prototype<T, U, T_A, U_A> &other) = 0;
+    const graph_prototype<T, U, edge_index, vertex_index, T_A, U_A> &other
+  ) = nullptr;
+
+
+  /*************************************************************************//**
+  * @brief Move constructor
+  *
+  * TODO: implement
+  *****************************************************************************/
+  virtual
+  graph_prototype(
+    graph_prototype<T, U, edge_index, vertex_index, T_A, U_A> &&other
+  ) noexcept = nullptr;
 
 
   /*************************************************************************//**
   * @brief Deconstructor
   *****************************************************************************/
   virtual
-  ~graph_prototype() = 0;
+  ~graph_prototype() = nullptr;
 
 
   /*************************************************************************//**
@@ -745,9 +773,9 @@ class graph_prototype{
   * general copy functionality.
   *****************************************************************************/
   virtual
-  graph_prototype<T, U, T_A, U_A>
+  graph_prototype<T, U, edge_index, vertex_index, T_A, U_A>
   operator=(
-    const graph_prototype<T, U, T_A, U_A> &other);
+    const graph_prototype<T, U, edge_index, vertex_index, T_A, U_A> &other) = 0;
 
 
   /*************************************************************************//**
@@ -760,7 +788,7 @@ class graph_prototype{
   * @return A reference to the created vertex.
   *****************************************************************************/
   virtual
-  vertex_prototype<T, U, T_A, U_A>&
+  vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A>&
   add_vertex(
     T value
   ) = 0;
@@ -837,7 +865,7 @@ class graph_prototype{
   virtual
   T
   remove_vertex(
-    vertex_prototype<T, U, T_A, U_A> &to_remove) = 0;
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &to_remove) = 0;
 
 
   /*************************************************************************//**
@@ -882,8 +910,8 @@ class graph_prototype{
   virtual
   void
   add_undirected_edge(
-    vertex_prototype<T, U, T_A, U_A> &vertex1,
-    vertex_prototype<T, U, T_A, U_A> &vertex2,
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &vertex1,
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &vertex2,
     U weight) = 0;
 
 
@@ -909,8 +937,8 @@ class graph_prototype{
   virtual
   void
   add_directed_edge(
-    vertex_prototype<T, U, T_A, U_A> &from_vertex,
-    vertex_prototype<T, U, T_A, U_A> &to_vertex,
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &from_vertex,
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &to_vertex,
     U weight) = 0;
 
 
@@ -933,8 +961,8 @@ class graph_prototype{
   virtual
   edge_prototype<T, U>&
   get_undirected_edge(
-    const vertex_prototype<T, U, T_A, U_A> &vertex1,
-    const vertex_prototype<T, U, T_A, U_A> &vertex2) = 0;
+    const vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &vertex1,
+    const vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &vertex2) = 0;
 
 
   /*************************************************************************//**
@@ -957,8 +985,8 @@ class graph_prototype{
   virtual
   edge_prototype<T, U, T_A, U_A>&
   get_directed_edge(
-    const vertex_prototype<T, U, T_A, U_A> &from_vertex,
-    const vertex_prototype<T, U, T_A, U_A> &to_vertex) = 0;
+    const vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &from_vertex,
+    const vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &to_vertex) = 0;
 
 
   /*************************************************************************//**
@@ -979,8 +1007,8 @@ class graph_prototype{
   virtual
   U
   remove_undirected_edge(
-    vertex_prototype<T, U, T_A, U_A> &vertex1,
-    vertex_prototype<T, U, T_A, U_A> &vertex2) = 0;
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &vertex1,
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &vertex2) = 0;
 
 
   /*************************************************************************//**
@@ -1001,8 +1029,8 @@ class graph_prototype{
   virtual
   U
   remove_directed_edge(
-    vertex_prototype<T, U, T_A, U_A> &from_vertex,
-    vertex_prototype<T, U, T_A, U_A> &to_vertex) = 0;
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &from_vertex,
+    vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &to_vertex) = 0;
 
 
   /*************************************************************************//**
@@ -1092,26 +1120,31 @@ class graph_prototype{
 //GENERAL IMPLEMENTATION CLASS DECLARATIONS/////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-template <
-  typename T,
-  typename U,
-  typename T_A = std::allocator<T>
-  typename U_A = std::allocator<U> >
-class general_edge : edge_prototype<T, U, T_A, U_A>;
+
 
 template <
   typename T,
   typename U,
   typename T_A = std::allocator<T>
   typename U_A = std::allocator<U> >
-class general_vertex : vertex_prototype<T, U, T_A, U_A>;
+class general_graph
+: graph_prototype<T, U, size_t, size_t, T_A, U_A>;
 
 template <
   typename T,
   typename U,
   typename T_A = std::allocator<T>
   typename U_A = std::allocator<U> >
-class general_graph : graph_prototype<T, U, T_A, U_A>;
+class general_edge
+: edge_prototype<T, U, T_A, U_A, general_graph<T, U, T_A, U_A>::edge_index >;
+
+template <
+  typename T,
+  typename U,
+  typename T_A = std::allocator<T>
+  typename U_A = std::allocator<U> >
+class general_vertex
+: vertex_prototype<T, U, T_A, U_A, general_graph<T, U, T_A, U_A>::vertex_index>;
 
 ////////////////////////////////////////////////////////////////////////////////
 //CLASS DEFINITIONS/////////////////////////////////////////////////////////////
@@ -1129,13 +1162,9 @@ template <
   typename U,
   typename T_A = std::allocator<T>,
   typename U_A = std::allocator<U> >
-class general_graph : graph_prototype<T, U, T_A, U_A>{
+class general_graph : graph_prototype<T, U, size_t, size_t, T_A, U_A>{
   private:
 
-  //To help keep track of what kind of index we're working with.  This is
-  //implementation specific and so will not be exposed.
-  typedef size_t vertex_index;
-  typedef size_t edge_index;
   /*PRIVATE VERTEX AND EDGE CLASS DECLARATIONS*********************************/
 
   /*************************************************************************//**
@@ -1147,7 +1176,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
   *****************************************************************************/
   class
   general_vertex
-  : vertex_prototype<T, U, T_A, U_A>{
+  : vertex_prototype<T, U, vertex_index, T_A, U_A>{
     private:
 
     // Useful for iterating over individual edges.
@@ -1173,8 +1202,8 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     //NOTE: The following two lines could be replaced by an iterator at the
     //expense to validation ability.
     //NOTE: Tracking a redundant value like this is error prone.
-    vertex_index id; //The index of the vertex itself in the general_graph store
-    general_graph<T, U> *container = nullptr;
+    //vertex_index id; //The index of the vertex itself in the general_graph store
+    general_graph<T, U, T_A, U_A> *container = nullptr;
 
     public:
 
@@ -1313,7 +1342,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     has_undirected_edge(
-      const edge_prototype<T, U, T_A, U_A> &to_check);
+      const edge_prototype<T, U, edge_index, T_A, U_A> &to_check);
 
 
     /***********************************************************************//**
@@ -1321,7 +1350,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     has_in_edge(
-      const edge_prototype<T, U, T_A, U_A> &to_check);
+      const edge_prototype<T, U, edge_index, T_A, U_A> &to_check);
 
 
     /***********************************************************************//**
@@ -1329,7 +1358,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     has_out_edge(
-      const edge_prototype<T, U, T_A, U_A> &to_check);
+      const edge_prototype<T, U, edge_index, T_A, U_A> &to_check);
 
 
     /***********************************************************************//**
@@ -1337,7 +1366,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     is_connected_by_undirected_edge(
-      const vertex_prototype<T, U, T_A, U_A> &vertex);
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &vertex);
 
 
     /***********************************************************************//**
@@ -1345,7 +1374,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     is_connected_by_in_edge(
-      const vertex_prototype<T, U, T_A, U_A> &source_vertex);
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &source_vertex);
 
 
     /***********************************************************************//**
@@ -1353,7 +1382,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     is_connected_by_out_edge(
-      const vertex_prototype<T, U, T_A, U_A> &destination_vertex);
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &destination_vertex);
 
 
     /***********************************************************************//**
@@ -1525,8 +1554,8 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     operator==(
-      const vertex_prototype<T, U, T_A, U_A> &lhs,
-      const vertex_prototype<T, U, T_A, U_A> &rhs
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &lhs,
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &rhs
     ) const;
 
 
@@ -1535,8 +1564,8 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     operator!=(
-      const vertex_prototype<T, U, T_A, U_A> &lhs,
-      const vertex_prototype<T, U, T_A, U_A> &rhs
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &lhs,
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &rhs
     ) const;
 
 
@@ -1546,7 +1575,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     is_connected_by_undirected_edge(
-      const vertex_prototype<T, U, T_A, U_A> &other
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &other
     ) const;
 
 
@@ -1555,7 +1584,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     is_connected_by_in_edge(
-      const vertex_prototype<T, U, T_A, U_A> &other
+      const vertex_prototype<T, U, vertex_index, T_A, U_A> &other
     ) const;
 
 
@@ -1564,7 +1593,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     ***************************************************************************/
     bool
     is_connected_by_out_edge(
-      const vertex_prototype<T, U, T_A, U_A> &other
+      const vertex_prototype<T, U, edge_index, vertex_index, T_A, U_A> &other
     ) const;
 
 
@@ -1582,7 +1611,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
   *****************************************************************************/
   class
   general_edge
-  : edge_prototype<T, U, T_A, U_A>{
+  : edge_prototype<T, U, edge_index, vertex_index, T_A, U_A>{
     private:
 
     U weight;
@@ -1650,7 +1679,7 @@ class general_graph : graph_prototype<T, U, T_A, U_A>{
     typename U,
     typename T_A,
     typename U_A>
-  class edge_iterator : /*Inherit RandomIterator*/{
+  class edge_iterator {
     public:
     typedef typename U_A::differene_type difference_type;
     typedef typename U value_type;
@@ -2038,13 +2067,20 @@ template <
 general_graph<T, U, T_A, U_A>::general_vertex::
 general_vertex(
   T data,
-  vertex_index index_in_graph_store
+  vertex_index index_in_graph_store,
   general_graph<Y, U, T_A, U_A> *containing
 ){
   //NOTE: we're going for a dumb vertex implementation, so the calling graph
   //must add this to itself.  Later, this should help for concurrency safety.
   value = data;
-
+  id = index_in_graph_store;
+  container = containing;
+  in_edges.max_load_factor(0.5);
+  out_edges.max_load_factor(0.5);
+  undirected_edges.max_load_factor(0.5);
+  connected_from_vertexes.max_load_factor(0.5);
+  connected_to_vertexes.max_load_factor(0.5);
+  connected_undirected_vertexes.max_load_factor(0.5);
 }
 
 
@@ -2056,6 +2092,7 @@ template <
 general_graph<T, U, T_A, U_A>::general_vertex::
 ~general_vertex(
 ){
+  //TODO: add empty() to the internal functions for rapid deconstruction.
   for(auto other_vertex_value : connected_from_vertexes_store)
     disconnect_from_vertex(other_vertex_value);
   assert(connected_from_vertexes.size() == 0);
@@ -2095,10 +2132,17 @@ template <
 void
 general_graph<T, U, T_A, U_A>::general_vertex::
 add_undirected_edge(
-  edge_index edge_to_register
-  vertex_prototype<T, U, T_A, U_A> &other_vertex,
+  edge_index edge_to_register,
+  vertex_index vertex_to_connect
 ){
-  //TODO
+  std::pair<edge_index, void> edge_insert;
+  edge_insert = std::make_pair<edge_index, void>(edge_to_register, void);
+  undirected_edges.insert(edge_insert);
+
+  std::pair<vertex_index, edge_index> vert_insert;
+  vert_insert = std::make_pair<vertex_index, edge_index>(vertex_to_connect,
+      edge_to_register);
+  connected_undirected_vertexes.insert(vert_insert);
 }
 
 
@@ -2114,7 +2158,14 @@ add_in_edge(
   edge_index edge_to_register,
   vertex_index vertex_to_connect
 ){
-  //TODO
+    std::pair<edge_index, void> edge_insert;
+    edge_insert = std::make_pair<edge_index, void>(edge_to_register, void);
+    in_edges.insert(edge_insert);
+
+    std::pair<vertex_index, edge_index> vert_insert;
+    vert_insert = std::make_pair<vertex_index, edge_index>(vertex_to_connect,
+        edge_to_register);
+    connected_from_vertexes.insert(vert_insert);
 }
 
 
@@ -2130,7 +2181,14 @@ add_out_edge(
   edge_index edge_to_register,
   vertex_index vertex_to_connect
 ){
-  //TODO
+  std::pair<edge_index, void> edge_insert;
+  edge_insert = std::make_pair<edge_index, void>(edge_to_register, void);
+  out_edges.insert(edge_insert);
+
+  std::pair<vertex_index, edge_index> vert_insert;
+  vert_insert = std::make_pair<vertex_index, edge_index>(vertex_to_connect,
+      edge_to_register);
+  connected_to_vertexes.insert(vert_insert);
 }
 
 
@@ -2144,7 +2202,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 has_undirected_edge(
   edge_prototype<T, U, T_A, U_A> &to_check
 ){
-  //TODO
+  return 0 != undirected_edges.count(to_check.id);
 }
 
 
@@ -2158,7 +2216,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 has_in_edge(
   const edge_prototype<T, U, T_A, U_A> &to_check
 ){
-  //TODO
+  return 0 != in_edges.count(to_check.id);
 }
 
 
@@ -2172,7 +2230,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 has_out_edge(
   const edge_prototype<T, U, T_A, U_A> &to_check
 ){
-  //TODO
+  return 0 != out_edges.count(to_check.id);
 }
 
 
@@ -2186,7 +2244,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 is_connected_by_undirected_edge(
   const vertex_prototype<T, U, T_A, U_A> &vertex
 ){
-  //TODO
+  return 0 != connected_undirected_vertexes.count(to_check.id);
 }
 
 
@@ -2200,7 +2258,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 is_connected_by_in_edge(
   const vertex_prototype<T, U, T_A, U_A> &source_vertex
 ){
-  //TODO
+  return 0 != connected_from_vertexes.count(source_vertex.id);
 }
 
 
@@ -2214,7 +2272,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 is_connected_by_out_edge(
   const vertex_prototype<T, U, T_A, U_A> &destination_vertex
 ){
-  //TODO
+  return 0 != connected_to_vertexes.count(destination_vertex.id);
 }
 
 
@@ -2228,6 +2286,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 begin_undirected_edges(
 ){
   //TODO
+  return edge_iterator(undirected_edges.begin(), container);
 }
 
 
@@ -2241,6 +2300,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 end_undirected_edges(
 ){
   //TODO
+  return edge_iterator(undirected_edges.end(), container);
 }
 
 
@@ -2254,6 +2314,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 begin_in_edges(
 ){
   //TODO
+  return edge_iterator(in_edges.begin(), container);
 }
 
 
@@ -2267,6 +2328,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 end_in_edges(
 ){
   //TODO
+  return edge_iterator(in_edges.end(), container);
 }
 
 
@@ -2280,6 +2342,21 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 begin_out_edges(
 ){
   //TODO
+  return edge_iterator(out_edges.begin(), container);
+}
+
+
+template <
+  typename T,
+  typename U,
+  typename T_A,
+  typename U_A>
+auto
+general_graph<T, U, T_A, U_A>::general_vertex::
+end_out_edges(
+){
+  //TODO
+  return edge_iterator(out_edges.end(), container);
 }
 
 
@@ -2293,6 +2370,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 begin_undirected_edges(
 ) const {
   //TODO
+  return edge_iterator(undirected_edges.begin(), container);
 }
 
 
@@ -2306,6 +2384,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 end_undirected_edges(
 ) const {
   //TODO
+  return edge_iterator(undirected_edges.end(), container);
 }
 
 
@@ -2319,6 +2398,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 begin_in_edges(
 ) const {
   //TODO
+  return edge_iterator(in_edges.begin(), container);
 }
 
 
@@ -2332,6 +2412,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 end_in_edges(
 ) const {
   //TODO
+  return edge_iterator(in_edges.end(), container);
 }
 
 
@@ -2345,6 +2426,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 begin_out_edges(
 ) const {
   //TODO
+  return edge_iterator(in_edges.begin(), container);
 }
 
 
@@ -2358,6 +2440,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 end_out_edges(
 ) const {
   //TODO
+  return edge_iterator(in_edges.end(), container);
 }
 
 
@@ -2370,7 +2453,7 @@ size_t
 general_graph<T, U, T_A, U_A>::general_vertex::
 get_num_undirected_edges(
 ) const {
-  //TODO
+  return undirected_edges.size();
 }
 
 
@@ -2383,7 +2466,7 @@ size_t
 general_graph<T, U, T_A, U_A>::general_vertex::
 get_num_in_edges(
 ) const {
-  //TODO
+  return in_edges.size();
 }
 
 
@@ -2396,7 +2479,7 @@ size_t
 general_graph<T, U, T_A, U_A>::general_vertex::
 get_num_out_edges(
 ) const {
-  //TODO
+  return out_edges.size();
 }
 
 
@@ -2410,7 +2493,10 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 remove_undirected_edge(
   edge_index edge_to_remove
 ){
-  //TODO
+  general_edge<T, U, T_A, U_A> target_edge &= container->edges[edge_to_remove];
+  vertex_id connected_vertex = target_edge.other_vertex(*this).id;
+  connected_undirected_vertexes.erase(other_vertex);
+  undirected_edges.erase(edge_to_remove);
 }
 
 
@@ -2424,7 +2510,10 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 remove_in_edge(
   edge_index edge_to_remove
 ){
-  //TODO
+  general_edge<T, U, T_A, U_A> target_edge &= container->edges[edge_to_remove];
+  connected_from_vertexes.erase(target_edge.other_vertex(*this).id);
+  //TODO: we know which entry it is in edge, so just use that
+  in_edges.erase(edge_to_remove);
 }
 
 
@@ -2438,7 +2527,10 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 remove_out_edge(
   edge_index edge_to_remove
 ){
-  //TODO
+  general_edge<T, U, T_A, U_A> target_edge &= container->edges[edge_to_remove];
+  connected_to_vertexes.erase(target_edge.other_vertex(*this).id);
+  //TODO: we know which entry it is in edge, so just use that
+  out_edges.erase(edge_to_remove);
 }
 
 
@@ -2452,7 +2544,8 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 reserve_undirected_edges(
   const size_t n
 ){
-  //TODO
+  undirected_edges.reserve(n);
+  connected_undirected_vertexes.reserve(n);
 }
 
 
@@ -2466,7 +2559,8 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 reserve_in_edges(
   const size_t n
 ){
-  //TODO
+  in_edges.reserve(n);
+  connected_from_vertexes.reserve(n);
 }
 
 
@@ -2480,7 +2574,8 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 reserve_out_edges(
   const size_t n
 ){
-  //TODO
+  out_edges.reserve(n);
+  connected_to_vertexes.reserve(n);
 }
 
 
@@ -2493,7 +2588,12 @@ void
 general_graph<T, U, T_A, U_A>::general_vertex::
 shrink_to_fit(
 ){
-  //TODO
+  in_edges.shrink_to_fit();
+  out_edges.shrink_to_fit();
+  undirected_edges.shrink_to_fit();
+  connected_from_vertexes.shrink_to_fit();
+  connected_to_vertexes.shrink_to_fit();
+  connected_undirected_vertexes.shrink_to_fit();
 }
 
 
@@ -2506,7 +2606,8 @@ void
 general_graph<T, U, T_A, U_A>::general_vertex::
 shrink_to_fit_undirected_edges(
 ){
-  //TODO
+  undirected_edges.shrink_to_fit();
+  connected_undirected_vertexes.shrink_to_fit();
 }
 
 
@@ -2519,7 +2620,8 @@ void
 general_graph<T, U, T_A, U_A>::general_vertex::
 shrink_to_fit_in_edges(
 ){
-  //TODO
+  in_edges.shrink_to_fit();
+  connected_from_vertexes.shrink_to_fit();
 }
 
 
@@ -2532,7 +2634,8 @@ void
 general_graph<T, U, T_A, U_A>::general_vertex::
 shrink_to_fit_out_edges(
 ){
-  //TODO
+  out_edges.shrink_to_fit();
+  connected_to_vertexes.shrink_to_fit();
 }
 
 
@@ -2547,7 +2650,10 @@ operator==(
   const vertex_prototype<T, U, T_A, U_A> &lhs,
   const vertex_prototype<T, U, T_A, U_A> &rhs
 ) const {
-  //TODO
+  //TODO: I don't like how this works
+  vertex_id lhs_id = ((general_graph<T, U, T_A, U_A>::general_vertex&) lhs).id;
+  vertex_id rhs_id = ((general_graph<T, U, T_A, U_A>::general_vertex&) rhs).id;
+  return lhs_id == rhs_id;
 }
 
 
@@ -2562,7 +2668,10 @@ operator!=(
   const vertex_prototype<T, U, T_A, U_A> &lhs,
   const vertex_prototype<T, U, T_A, U_A> &rhs
 ) const {
-  //TODO
+  //TODO: I don't like how this works
+  vertex_id lhs_id = ((general_graph<T, U, T_A, U_A>::general_vertex&) lhs).id;
+  vertex_id rhs_id = ((general_graph<T, U, T_A, U_A>::general_vertex&) rhs).id;
+  return lhs_id != rhs_id;
 }
 
 
@@ -2574,9 +2683,9 @@ template <
 bool
 general_graph<T, U, T_A, U_A>::general_vertex::
 is_connected_by_undirected_edge(
-  const vertex_prototype<T, U, T_A, U_A> &other
+  const vertex_prototype<T, U, vertex_index, edge_index, T_A, U_A> &other
 ) const {
-  //TODO
+  return 0 != connected_undirected_vertexes.count(other.id);
 }
 
 
@@ -2590,7 +2699,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 is_connected_by_in_edge(
   const vertex_prototype<T, U, T_A, U_A> &other
 ) const {
-  //TODO
+  return 0 != connected_from_vertexes.count(other.id);
 }
 
 
@@ -2604,7 +2713,7 @@ general_graph<T, U, T_A, U_A>::general_vertex::
 is_connected_by_out_edge(
   const vertex_prototype<T, U, T_A, U_A> &other
 ) const {
-  //TODO
+  return 0 != connected_to_vertexes.count(other.id);
 }
 
 
@@ -2745,8 +2854,6 @@ operator=(
   const graph_prototype<T, U, T_A, U_A> &other
 ){
   //TODO: reserve expected space
-  //TODO: check if it is the exact same type as this.  If so, use implementation
-  //specific optimization.
 
   //vertexes.max_load_factor(0.5);
   //vertexes.reserve(other.vertexes.size());
@@ -2755,17 +2862,17 @@ operator=(
 
   for( auto vert = other.begin_vertexes();
       vert != other.end_vertexes(); ++vert )
-    add_vertex(*vert);
+    add_vertex(**vert);
 
   for( auto d_edge = other.begin_directed_edges() ;
        d_edge != other.end_directed_edges() ; ++d_edge)
-    add_directed_edge(d_edge.get_vertexes().first, d_edge.get_vertexes().second,
-      *d_edge);
+    add_directed_edge(d_edge->get_vertexes().first, d_edge->get_vertexes().second,
+      **d_edge);
 
   for( auto u_edge = other.begin_undirected_edges() ;
        u_edge != other.begin_undirected_edges() ; ++u_edge)
-    add_undirected_edge(u_edge.get_vertexes().first,
-        u_edge.get_vertexes().second, *u_edge);
+    add_undirected_edge(u_edge->get_vertexes().first,
+        u_edge->get_vertexes().second, **u_edge);
 }
 
 
@@ -3335,10 +3442,10 @@ template <
   typename U,
   typename T_A,
   typename U_A>
-general_graph<T, U, T_A, U_A>::edge::iterator::reference
+general_graph<T, U, T_A, U_A>::edge_iterator::reference
 general_graph<T, U, T_A, U_A>::edge_iterator::
 operator[](
-  difference_type i
+  general_graph<T, U, T_A, U_A>::edge_iterator::difference_type i
 ){
   //TODO
 }
