@@ -1,20 +1,19 @@
-/*Copyright 2016-2017 Josh Marshall************************************/
+/*Copyright 2016-2018 Josh Marshall************************************/
 
 /***********************************************************************
-    This file is part of TF-Cluster.
+This file is part of madlib.
 
-    TF-Cluster is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+TF-Cluster is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
 
-    TF-Cluster is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+TF-Cluster is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with TF-Cluster.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License along with
+madlib.  If not, see <http://www.gnu.org/licenses/>.
 ***********************************************************************/
 
 #ifndef STD_GRAPH_HPP
@@ -29,6 +28,8 @@
 #include <unordered_map>
 #include <graph.hpp>
 
+#include "rapidcheck/include/rapidcheck.h"
+#include "rapidcheck/extras/gtest/include/rapidcheck/gtest.h"
 #include "gtest/gtest.h"
 
 
@@ -67,21 +68,35 @@
   T removeVertex(const vertex<T, U> *toRemove);
 */
 
-TEST(GRAPH, CREATION){
-
+TEST(
+  GRAPH,
+  CREATION
+){
   graph<int, int> *tg1;
   tg1 = new graph<int, int>();
   delete tg1;
 }
 
 
-TEST(GRAPH, VERTEX_ADD){
-  graph<int, int> *tg1;
-  tg1 = new graph<int, int>();
+RC_GTEST_PROP(
+  GRAPH,
+  VERTEX_ADD,
+  (unsigned int num_to_add)
+){
+  graph<unsigned int, int> tg1;
 
-  tg1->addVertex(0);
+  for(unsigned int i = 0; i < num_to_add; ++i){
+    tg1->addVertex(i);
+  }
 
-  EXPECT_EQ(1, tg1->getNumVertexes());
+  RC_ASSERT(num_to_add == tg1->getNumVertexes());
+
+  for(unsigned int i = 0; i < num_to_add; ++i){
+    tg1.remove_vertex(tg1.begin_vertexes());
+  }
+
+  RC_ASSERT(0 == tg1->getNumVertexes());
+
 
   delete tg1;
 
