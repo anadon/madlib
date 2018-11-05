@@ -385,7 +385,6 @@ general_graph_types_phase_two
   typedef std::vector<edge_prototype<T, U, T_A, U_A, general_graph_types_phase_two>* > EDGE_STORAGE_IN_GRAPH;
   typedef typename VERTEX_STORAGE_IN_GRAPH::iterator VERTEX_ITERATOR_IN_GRAPH;
   typedef typename EDGE_STORAGE_IN_GRAPH::iterator EDGE_ITERATOR_IN_GRAPH;
-  //typedef general_graph_vert_iter<T, U, T_A, U_A> VERTEX_ITERATOR_IN_VERTEX;
   typedef general_graph_edge_iter<T, U, T_A, U_A> EDGE_ITERATOR_IN_VERTEX;
 };
 
