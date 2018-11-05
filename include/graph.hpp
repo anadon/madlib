@@ -263,6 +263,7 @@ graph<T, U, T_A, U_A, Graph_Implementation>::
 graph(
   const graph_prototype<T, U, T_A, U_A, GRAPH_TYPES> *other
 ){
+  assert(other != nullptr);
   graph_implementation(other);
 }
 
@@ -361,6 +362,7 @@ graph<T, U, T_A, U_A, Graph_Implementation>::
 remove_vertex(
   typename graph<T, U, T_A, U_A, Graph_Implementation>::VERTEX *vertex
 ){
+  assert(vertex != nullptr);
   return wrapping_graph.remove_vertex(vertex);
 }
 
@@ -407,6 +409,8 @@ add_undirected_edge(
   const VERTEX *vertex2,
   U weight
 ){
+  assert(vertex1 != nullptr);
+  assert(vertex2 != nullptr);
   wrapping_graph.add_undirected_edge(vertex1, vertex2, weight);
 }
 
@@ -424,6 +428,8 @@ add_directed_edge(
   const VERTEX *to_vertex,
   U weight
 ){
+  assert(from_vertex != nullptr);
+  assert(to_vertex != nullptr);
   wrapping_graph.add_directed_edge(from_vertex, to_vertex, weight);
 }
 
@@ -441,6 +447,8 @@ get_undirected_edge(
   const VERTEX *vertex2,
   U weight
 ){
+  assert(vertex1 != nullptr);
+  assert(vertex2 != nullptr);
   return wrapping_graph.get_undirected_edge(vertex1, vertex2, weight);
 }
 
@@ -457,6 +465,8 @@ get_directed_edge(
   const VERTEX *from_vertex,
   const VERTEX *to_vertex
 ){
+  assert(from_vertex != nullptr);
+  assert(to_vertex != nullptr);
   return wrapping_graph.get_directed_edge(from_vertex, to_vertex);
 }
 
@@ -473,6 +483,8 @@ remove_undirected_edge(
   const VERTEX *vertex1,
   const VERTEX *vertex2
 ){
+  assert(vertex1 != nullptr);
+  assert(vertex2 != nullptr);
   return wrapping_graph.remove_undirected_edge(vertex1, vertex2);
 }
 
@@ -489,6 +501,8 @@ remove_directed_edge(
   const VERTEX *from_vertex,
   const VERTEX *to_vertex
 ){
+  assert(from_vertex != nullptr);
+  assert(to_vertex != nullptr);
   return wrapping_graph.remove_directed_edge(from_vertex, to_vertex);
 }
 
