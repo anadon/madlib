@@ -16,95 +16,6 @@ You should have received a copy of the GNU General Public License along with
 Madlib.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 
-/***************************************************************************//**
-@file
-@brief A graph implementation with the goal to be general enough and high
-quality enough to propose for inclusion to the C++ Standard Template Library.
-The structure to allow for such general usage of the most flexible and dynamic
-data structure incur some overhead, both in performance penalty in many
-applications and code complexity in how a graph is implemented.  However, in the
-general case this should be preferable over trying to create a new graph for
-each application.  Some pains have been taking in the design of this graph to
-allow for multiple simultaneous back end graph implementations with all their
-individual trade offs and complexities while still remaining fully interoperable
-and with a stable API.
-
-This graph file consists of three primary layers.  Most broadly are the graph
-prototype classes, graph_prototype, vertex_prototype, and edge_prototype.  The
-interface users see and use is the "graph" class, and the implemented vertexes
-and edges whose interface is defined by the prototypes.  The middle layer is the
-implementation.  The implementation included here is called "general_graph" and
-has theoretical best case performance for all operations.
-
-The graph_prototype, vertex_prototype, and edge_prototype define the interface
-which must be implemented by the graph implementation and the "graph" class
-proper as well as their respected edge and vertex implementations.  The
-prototypes define interfaces to expand vertexes with their "other_vertex"
-function call if a expansion function is provided.  Prototypes also define
-standard getters, setters, and iterators.  The graph_prototype defines iterators
-over all edges and vertexes sperately.  Vertexes befine iterators over incomming
-edges, outgoing edges, undirected edges, connected incomming vertexes, connected
-outgoing vertexes, and connected undirected vertexes.  Edges may connect two
-vertexes, but must be attached to at least one; this is to allow for dynamic
-expansion.
-
-The "graph" class forwards inputs to a graph implementation which implements
-graph_prototype which it passed at a template paramater.  It does not wrap edges
-or vertexes as that is effectely handled by these extending edge_prototype and
-vertex_prototpe respectively.
-
-For the structure, great flexability is afforded to the actual graph
-implementation, which is enabled to make calls to the overall graph structure
-and everything in it in a freeform way while also still enforcing interface
-correctness.  The graph implementation must extend graph_prototype, be templated
-with the two template parameters T and U, and implement all functions in
-graph_prototype.  The implementation has no restrictions on additional
-implemented functions, as some will be nessicary for all implementations except
-the incorrect and extremely suboptimal.
-
-The included implementation, general_graph, general_vertex, and general_edge use
-a hashmap based implementation, where single copies of all edges are help in
-general_graph, and edges and vertexes contain indexes into general_graph's
-internal store of vertexes and edges.  Iterators in vertex are custom
-implemented in order to account for this unorthodox structure and still work.
-
-Future versions will include a matrix representation based off of valarray,
-which should come with an interesting set of tradeoffs making some operations
-significantly faster.  Future work will also include support for special
-operations to make common algorithms faster once the logistics of these become
-known
-
-TODO: allow for a function to auto generate/expand vertexes -- referenced
-vertexes are null until expanded.  This is to allow exploration over an infinite
-space over a truely general way.
-
-TODO: Tweak paramaterization to allow for transparent distributed computation
-and use of this data structure.  That should help large scale operations,
-scalability, and hopefully compliance and features past the 2020 standard.
-
-TODO: The iterator structuring and implementation is a little tricky and needs
-work.
-
-TODO: Add a matrix backed implementation using sparse and dense upper diagonal
-matrixes.
-
-TODO: graph and concurrency safety; likely Java styled.
-
-TODO: Complete implementation.
-
-TODO: Add new tests to the test suite using RapidCheck.
-
-TODO: Check for memory leaks.
-
-TODO: File save/open support.
-
-TODO: Make sure all the virtual specifiers are correct.
-
-TODO: Peer review on IRC and standards forum.
-
-TODO: Add void edge value specialization.
-*******************************************************************************/
-
 #pragma once
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -154,11 +65,6 @@ template <
   typename T_A = std::allocator<T>,
   typename U_A = std::allocator<U> >
 class general_graph_types_phase_one;
-// : graph_base_types_prototype<
-//   T,
-//   U,
-//   T_A,
-//   U_A>;
 
 
 template <
@@ -167,12 +73,6 @@ template <
   typename T_A = std::allocator<T>,
   typename U_A = std::allocator<U> >
 class general_graph;
-// : graph_prototype<
-//   T,
-//   U,
-//   T_A,
-//   U_A,
-//   general_graph_types<T, U, T_A, U_A>;
 
 
 template <
@@ -181,12 +81,6 @@ template <
   typename T_A = std::allocator<T>,
   typename U_A = std::allocator<U> >
 class general_edge;
-// : edge_prototype<
-//   T,
-//   U,
-//   T_A,
-//   U_A
-//   general_graph_types<T, U, T_A, U_A> >;
 
 
 template <
@@ -195,12 +89,6 @@ template <
   typename T_A = std::allocator<T>,
   typename U_A = std::allocator<U> >
 class general_vertex;
-// : vertex_prototype<
-//   T,
-//   U,
-//   T_A,
-//   U_A
-//   general_graph_types<T, U, T_A, U_A> >;
 
 ////////////////////////////////////////////////////////////////////////////////
 //CLASS DEFINITIONS/////////////////////////////////////////////////////////////
@@ -235,13 +123,12 @@ class general_graph_edge_iter{
   typedef typename U_A::reference reference;
   typedef typename U_A::pointer pointer;
   typedef std::bidirectional_iterator_tag iterator_category;
-  typedef typename general_graph_types_phase_one<T, U, T_A, U_A>::edge_index edge_index;
+  typedef typename 
+      general_graph_types_phase_one<T, U, T_A, U_A>::edge_index edge_index;
 
   private:
-  //TMP1
-  //TODO: the following two lines should be combined into a single iterator.
-  std::unordered_map<edge_index, void> *edge_store = nullptr;
-  general_graph<T, U, T_A, U_A> *c_graph;
+  std::unordered_map<edge_index, void> *edge_store = nullptr; // in vertex
+  general_graph<T, U, T_A, U_A> *c_graph; // to graph
   difference_type my_edge_index;
 
   public:
@@ -261,7 +148,7 @@ class general_graph_edge_iter{
   general_graph_edge_iter<T, U, T_A, U_A>&
   operator--();
 
-  general_graph_edge_iter<T, U, T_A, U_A>&
+  general_graph_edge_iter<T, U, T_A, U_A>
   operator--(
     int);
 
@@ -291,84 +178,10 @@ class general_graph_edge_iter{
   operator>=(
     const general_graph_edge_iter<T, U, T_A, U_A> &rhs);
 
+  bool
+  is_valid();
+
 };
-
-
-/***********************************************************************//**
-* @brief an iterator implementation to go over vertexes connected to a vertex.
-***************************************************************************/
-// template<
-//   typename T,
-//   typename U,
-//   typename T_A,
-//   typename U_A >
-// class general_graph_vert_iter{
-//   public:
-//   typedef typename T_A::differene_type difference_type;
-//   typedef T value_type;
-//   typedef typename T_A::reference reference;
-//   typedef typename T_A::pointer pointer;
-//   typedef std::bidirectional_iterator_tag iterator_category;
-//   typedef typename general_graph_types_phase_one<T, U, T_A, U_A>::edge_index edge_index;
-//   typedef typename general_graph_types_phase_one<T, U, T_A, U_A>::vertex_index vertex_index;
-
-//   private:
-//   //general_graph<T, U, T_A, U_A> *container;
-//   std::unordered_map<vertex_index, edge_index> *conn_vertexes = nullptr;
-
-//   //TODO: the following two variables should be merged into a iterator
-//   std::vector<general_vertex<T, U, T_A, U_A>* > *vector_store = nullptr;
-//   difference_type idx;
-
-//   public:
-
-//   general_graph_vert_iter(
-//     general_vertex<T, U, T_A, U_A> *conn_vertexes_in,
-//     std::vector<general_vertex<T, U, T_A, U_A> > *master_vertex_store,
-//     difference_type index = 0);
-
-//   general_graph_vert_iter<T, U, T_A, U_A>&
-//   operator++();
-
-//   general_graph_vert_iter<T, U, T_A, U_A>
-//   operator++(
-//     int);
-
-//   general_graph_vert_iter<T, U, T_A, U_A>&
-//   operator--();
-
-//   general_graph_vert_iter<T, U, T_A, U_A>&
-//   operator--(
-//     int);
-
-//   T& operator*();
-
-//   bool
-//   operator==(
-//     const general_graph_vert_iter<T, U, T_A, U_A> &rhs);
-
-//   bool
-//   operator!=(
-//     const general_graph_vert_iter<T, U, T_A, U_A> &rhs);
-
-//   bool
-//   operator<(
-//     const general_graph_vert_iter<T, U, T_A, U_A> &rhs);
-
-//   bool
-//   operator>(
-//     const general_graph_vert_iter<T, U, T_A, U_A> &rhs);
-
-//   bool
-//   operator<=(
-//     const general_graph_vert_iter<T, U, T_A, U_A> &rhs);
-
-//   bool
-//   operator>=(
-//     const general_graph_vert_iter<T, U, T_A, U_A> &rhs);
-
-// };
-
 
 
 
@@ -381,8 +194,10 @@ struct
 general_graph_types_phase_two
 : general_graph_types_phase_one< T, U, T_A, U_A>
 {
-  typedef std::vector<vertex_prototype<T, U, T_A, U_A, general_graph_types_phase_two>* > VERTEX_STORAGE_IN_GRAPH;
-  typedef std::vector<edge_prototype<T, U, T_A, U_A, general_graph_types_phase_two>* > EDGE_STORAGE_IN_GRAPH;
+  typedef std::vector<vertex_prototype<T, U, T_A, U_A, 
+      general_graph_types_phase_two>* > VERTEX_STORAGE_IN_GRAPH;
+  typedef std::vector<edge_prototype<T, U, T_A, U_A, 
+      general_graph_types_phase_two>* > EDGE_STORAGE_IN_GRAPH;
   typedef typename VERTEX_STORAGE_IN_GRAPH::iterator VERTEX_ITERATOR_IN_GRAPH;
   typedef typename EDGE_STORAGE_IN_GRAPH::iterator EDGE_ITERATOR_IN_GRAPH;
   typedef general_graph_edge_iter<T, U, T_A, U_A> EDGE_ITERATOR_IN_VERTEX;
@@ -408,7 +223,11 @@ class general_graph : graph_prototype<
   U_A,
   general_graph_types_phase_two<T, U, T_A, U_A> >{
   public:
-
+  typedef typename graph_prototype<T, U, T_A, U_A, general_graph_types_phase_two<T, U, T_A, U_A> >::GRAPH_TYPES GRAPH_TYPES;
+  typedef typename GRAPH_TYPES::EDGE_ITR_IN_GRAPH EDGE_ITERATOR_IN_GRAPH;
+  typedef typename GRAPH_TYPES::VERTEX_ITR_IN_GRAPH VERTEX_ITERATOR_IN_GRAPH;
+  // typedef typename GRAPH_TYPES::VERTEX VERTEX;
+  // typedef typename GRAPH_TYPES::EDGE EDGE;
 
   private:
 
@@ -437,13 +256,13 @@ class general_graph : graph_prototype<
   //GRAPH_TYPES is general_graph_types<T, U, T_A, U_A> > inherited through
   //graph_prototype
   //TODO: inherit typedef's so the following two lines aren't needed.
-  typedef general_graph_types_phase_two<T, U, T_A, U_A> GRAPH_TYPES;
-  typedef typename GRAPH_TYPES::edge_index edge_index;
-  typedef typename GRAPH_TYPES::vertex_index vertex_index;
-  typedef typename GRAPH_TYPES::VERTEX_ITERATOR_IN_GRAPH VERTEX_ITERATOR_IN_GRAPH;
-  typedef typename GRAPH_TYPES::VERTEX_ITERATOR_IN_GRAPH EDGE_ITERATOR_IN_GRAPH;
-  typedef general_vertex VERTEX;
-  typedef general_edge EDGE;
+  //typedef general_graph_types_phase_two<T, U, T_A, U_A> GRAPH_TYPES;
+  // typedef typename GRAPH_TYPES::edge_index edge_index;
+  // typedef typename GRAPH_TYPES::vertex_index vertex_index;
+  //typedef typename GRAPH_TYPES::VERTEX_ITERATOR_IN_GRAPH VERTEX_ITERATOR_IN_GRAPH;
+  //typedef typename GRAPH_TYPES::VERTEX_ITERATOR_IN_GRAPH EDGE_ITERATOR_IN_GRAPH;
+  //typedef general_vertex VERTEX;
+  //typedef general_edge EDGE;
 
 
   //TODO: ensure general_edge, general_vertex is hashable.
@@ -452,14 +271,15 @@ class general_graph : graph_prototype<
   //NOTE: Might want to replace many of the internal with a unordered_multimap
   //std::unordered_map<general_vertex<T, U>, edge_index >vertex_lookup;
   //NOTE: linear time lookups by the index stored in the vertex itself.
-  std::vector<VERTEX* > vertexes;
+  std::vector<general_vertex*> vertexes;
 
   //std::unordered_map<general_edge<T, U>, edge_index > edge_lookup;
-  std::vector<EDGE* > edges;
+  std::vector<edge_prototype<T, U, T_A, U_A, typename graph_prototype<T, U, T_A, U_A, general_graph_types_phase_two<T, U, T_A, U_A> >::GRAPH_TYPES>* > edges;
 
 
-  //typedef typename general_graph_types_phase_two<T, U, T_A, U_A>::EDGE_ITERATOR_IN_VERTEX EDGE_ITERATOR_IN_VERTEX;
-  //typedef typename general_graph_types_phase_two<T, U, T_A, U_A>::VERTEX_ITERATOR_IN_VERTEX VERTEX_ITERATOR_IN_VERTEX;
+  vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>* (*my_dynamic_vertex_generator_function)(
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, 
+    edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*) ;
 
   /*general_graph IMPLEMENTATION SPECIFIC FUNCTIONS****************************/
 
@@ -471,8 +291,11 @@ class general_graph : graph_prototype<
   * Documented elsewhere.
   *****************************************************************************/
   general_graph(
-    size_t reserve_n_vertexes,
-    size_t reserve_n_edges);
+    size_t reserve_n_vertexes = 0,
+    size_t reserve_n_edges = 0,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>* (*dynamic_vertex_generator_function)(
+      vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, 
+      edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*) = nullptr);
 
   /*************************************************************************//**
   * Documented elsewhere.
@@ -501,8 +324,8 @@ class general_graph : graph_prototype<
   *****************************************************************************/
   void
   add_undirected_edge(
-    VERTEX *vertex1,
-    VERTEX *vertex2,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex1,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex2,
     U weight);
 
 
@@ -511,27 +334,27 @@ class general_graph : graph_prototype<
   *****************************************************************************/
   void
   add_directed_edge(
-    VERTEX *from_vertex,
-    VERTEX *to_vertex,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *from_vertex,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_vertex,
     U weight);
 
 
   /*************************************************************************//**
   * Documented elsewhere.
   *****************************************************************************/
-  EDGE*
+  edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*
   get_undirected_edge(
-    const VERTEX *vertex1,
-    const VERTEX *vertex2);
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex1,
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex2);
 
 
   /*************************************************************************//**
   * Documented elsewhere.
   *****************************************************************************/
-  EDGE*
+  edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*
   get_directed_edge(
-    const VERTEX *from_vertex,
-    const VERTEX *to_vertex);
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *from_vertex,
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_vertex);
 
 
   /*************************************************************************//**
@@ -539,8 +362,8 @@ class general_graph : graph_prototype<
   *****************************************************************************/
   U
   remove_undirected_edge(
-    VERTEX *vertex1,
-    VERTEX *vertex2);
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex1,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex2);
 
 
   /*************************************************************************//**
@@ -548,8 +371,8 @@ class general_graph : graph_prototype<
   *****************************************************************************/
   U
   remove_directed_edge(
-    VERTEX *from_vertex,
-    VERTEX *to_vertex);
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *from_vertex,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_vertex);
 
 
   /*************************************************************************//**
@@ -612,22 +435,13 @@ class general_graph : graph_prototype<
   shrink_to_fit_edges();
 
 
-  private:
-  /*************************************************************************//**
-  * Documented elsewhere.
-  *****************************************************************************/
-  U
-  remove_edge(
-    const edge_index &edge_id);
-
-
   /*VERTEX OPERATIONS**********************************************************/
   public:
 
   /*************************************************************************//**
   * Documented elsewhere.
   *****************************************************************************/
-  VERTEX*
+  vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*
   add_vertex(
     T value);
 
@@ -675,7 +489,7 @@ class general_graph : graph_prototype<
   *****************************************************************************/
   T
   remove_vertex(
-    VERTEX *vertex_to_remove);
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex_to_remove);
 
 
   /*************************************************************************//**
@@ -714,26 +528,26 @@ class general_graph<T, U, T_A, U_A>::general_vertex
   // Useful for iterating over individual edges.
   // NOTE: this is necessary because dynamic vertex expansion will be
   // supported, edges must be decoupled from vertexes.
-  std::unordered_map<edge_index, char> in_edges;
+  std::unordered_map<edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, void> in_edges;
 
-  std::unordered_map<edge_index, char> out_edges;
+  std::unordered_map<edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, void> out_edges;
 
-  std::unordered_map<edge_index, char> undirected_edges;
+  std::unordered_map<edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, void> undirected_edges;
 
   //Useful for finding out if an vertex is connected, and if so the nature
   //of that connection
   //TODO: support for returning edge, connected vertex pairs.
-  std::unordered_map<vertex_index, edge_index> connected_from_vertexes;
+  std::unordered_map<vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*> connected_from_vertexes;
 
-  std::unordered_map<vertex_index, edge_index> connected_to_vertexes;
+  std::unordered_map<vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*> connected_to_vertexes;
 
-  std::unordered_map<vertex_index, edge_index> connected_undirected_vertexes;
+  std::unordered_map<vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*> connected_undirected_vertexes;
 
   T value;
 
-  vertex_index id;
+  size_t id;
 
-  bool has_been_removed = false;
+  bool am_I_valid = true;
 
 
   public:
@@ -746,7 +560,7 @@ class general_graph<T, U, T_A, U_A>::general_vertex
   ***************************************************************************/
   general_vertex(
     T data,
-    vertex_index index_in_graph_store
+    size_t index_in_graph_store
   );
 
 
@@ -756,112 +570,119 @@ class general_graph<T, U, T_A, U_A>::general_vertex
   ~general_vertex();
 
 
-  /***********************************************************************//**
-  * @brief Register an edge and connecting vertex on called vertex.  They are
-  * stored as an undirected connection.
-  *
-  * @param[in] edge_to_register
-  * An edge index into the graph to register.  It is stored as undirected.
-  *
-  * @param[in] vertex_to_connect
-  * A vertex index into the graph to register.  It is stored as undirected.
-  *
-  * @note This is private to the implementation.
-  ***************************************************************************/
-  void
-  add_undirected_edge(
-    general_edge *edge_to_register,
-    general_vertex *vertex_to_connect);
+  // /***********************************************************************//**
+  // * @brief Register an edge and connecting vertex on called vertex.  They are
+  // * stored as an undirected connection.
+  // *
+  // * @param[in] edge_to_register
+  // * An edge index into the graph to register.  It is stored as undirected.
+  // *
+  // * @param[in] vertex_to_connect
+  // * A vertex index into the graph to register.  It is stored as undirected.
+  // *
+  // * @note This is private to the implementation.
+  // ***************************************************************************/
+  // void
+  // add_undirected_edge(
+  //   general_edge *edge_to_register,
+  //   general_vertex *vertex_to_connect);
+
+
+  // /***********************************************************************//**
+  // * @brief Register an edge and connecting vertex on called vertex.  They are
+  // * stored as an incomming connection.
+  // *
+  // * @param[in] edge_to_register
+  // * An edge index into the graph to register.  It is stored as incomming.
+  // *
+  // * @param[in] vertex_to_connect
+  // * A vertex index into the graph to register.  It is stored as incomming.
+  // *
+  // * @note This is private to the implementation.
+  // ***************************************************************************/
+  // void
+  // add_in_edge(
+  //   general_edge *edge_to_register,
+  //   general_vertex *vertex_to_connect);
+
+
+  // /***********************************************************************//**
+  // * @brief Register an edge and connecting vertex on called vertex.  They are
+  // * stored as an outgoing connection.
+  // *
+  // * @param[in] edge_to_register
+  // * An edge index into the graph to register.  It is stored as outgoing.
+  // *
+  // * @param[in] vertex_to_connect
+  // * A vertex index into the graph to register.  It is stored as outgoing.
+  // *
+  // * @note This is private to the implementation.
+  // ***************************************************************************/
+  // void
+  // add_out_edge(
+  //   general_edge *edge_to_register,
+  //   general_vertex *vertex_to_connect);
+
+
+  // **********************************************************************//**
+  // * @brief Remove the entries for an undirected connection.
+  // *
+  // * @param[in] edge_to_remove
+  // * The edge index which needs to be removed from the undirected edges.
+  // *
+  // * @param[in] vertex_to_remove
+  // * The vertex index which needs to be removed from the undirected vertexes.
+  // *
+  // * @note This is private to the implementation.  The edge and vertex must be
+  // * to the same connection.  Throw an error is the entries are missing or
+  // * mismatched.
+  // **************************************************************************
+  // void
+  // remove_undirected_edge(
+  //   general_edge *edge_to_remove);
+
+
+  // /***********************************************************************//**
+  // * @brief Remove the entries for an incomming directed connection.
+  // *
+  // * @param[in] edge_to_remove
+  // * The edge index which needs to be removed from the incomming edges.
+  // *
+  // * @param[in] vertex_to_remove
+  // * The vertex index which needs to be removed from the incomming vertexes.
+  // *
+  // * @note This is private to the implementation.  The edge and vertex must be
+  // * to the same connection.  Throw an error is the entries are missing or
+  // * mismatched.
+  // ***************************************************************************/
+  // void
+  // remove_in_edge(
+  //   general_edge *edge_to_remove);
+
+
+  // /***********************************************************************//**
+  // * @brief Remove the entries for an outgoing directed connection.
+  // *
+  // * @param[in] edge_to_remove
+  // * The edge index which needs to be removed from the outgoing edges.
+  // *
+  // * @param[in] vertex_to_remove
+  // * The vertex index which needs to be removed from the outgoing vertexes.
+  // *
+  // * @note This is private to the implementation.  The edge and vertex must be
+  // * to the same connection.  Throw an error is the entries are missing or
+  // * mismatched.
+  // ***************************************************************************/
+  // void
+  // remove_out_edge(
+  //   general_edge *edge_to_register);
 
 
   /***********************************************************************//**
-  * @brief Register an edge and connecting vertex on called vertex.  They are
-  * stored as an incomming connection.
-  *
-  * @param[in] edge_to_register
-  * An edge index into the graph to register.  It is stored as incomming.
-  *
-  * @param[in] vertex_to_connect
-  * A vertex index into the graph to register.  It is stored as incomming.
-  *
-  * @note This is private to the implementation.
+  * @brief TODO
   ***************************************************************************/
   void
-  add_in_edge(
-    general_edge *edge_to_register,
-    general_vertex *vertex_to_connect);
-
-
-  /***********************************************************************//**
-  * @brief Register an edge and connecting vertex on called vertex.  They are
-  * stored as an outgoing connection.
-  *
-  * @param[in] edge_to_register
-  * An edge index into the graph to register.  It is stored as outgoing.
-  *
-  * @param[in] vertex_to_connect
-  * A vertex index into the graph to register.  It is stored as outgoing.
-  *
-  * @note This is private to the implementation.
-  ***************************************************************************/
-  void
-  add_out_edge(
-    general_edge *edge_to_register,
-    general_vertex *vertex_to_connect);
-
-
-  /***********************************************************************//**
-  * @brief Remove the entries for an undirected connection.
-  *
-  * @param[in] edge_to_remove
-  * The edge index which needs to be removed from the undirected edges.
-  *
-  * @param[in] vertex_to_remove
-  * The vertex index which needs to be removed from the undirected vertexes.
-  *
-  * @note This is private to the implementation.  The edge and vertex must be
-  * to the same connection.  Throw an error is the entries are missing or
-  * mismatched.
-  ***************************************************************************/
-  void
-  remove_undirected_edge(
-    general_edge *edge_to_remove);
-
-
-  /***********************************************************************//**
-  * @brief Remove the entries for an incomming directed connection.
-  *
-  * @param[in] edge_to_remove
-  * The edge index which needs to be removed from the incomming edges.
-  *
-  * @param[in] vertex_to_remove
-  * The vertex index which needs to be removed from the incomming vertexes.
-  *
-  * @note This is private to the implementation.  The edge and vertex must be
-  * to the same connection.  Throw an error is the entries are missing or
-  * mismatched.
-  ***************************************************************************/
-  void
-  remove_in_edge(
-    general_edge *edge_to_remove);
-
-
-  /***********************************************************************//**
-  * @brief Remove the entries for an outgoing directed connection.
-  *
-  * @param[in] edge_to_remove
-  * The edge index which needs to be removed from the outgoing edges.
-  *
-  * @param[in] vertex_to_remove
-  * The vertex index which needs to be removed from the outgoing vertexes.
-  *
-  * @note This is private to the implementation.  The edge and vertex must be
-  * to the same connection.  Throw an error is the entries are missing or
-  * mismatched.
-  ***************************************************************************/
-  void
-  remove_out_edge(
-    general_edge *edge_to_register);
+  is_valid();
 
   //END IMPLEMENTATION SPECIFIC FUNCTIONS/////////////////////////////////////
   //START vertex_prototype OVERRIDES//////////////////////////////////////////
@@ -871,7 +692,7 @@ class general_graph<T, U, T_A, U_A>::general_vertex
   ***************************************************************************/
   bool
   has_undirected_edge(
-    const edge_prototype<T, U, T_A, U_A, GRAPH_TYPES > *to_check);
+    const edge_prototype<T, U, T_A, U_A, typename graph_prototype<T, U, T_A, U_A, general_graph_types_phase_two<T, U, T_A, U_A> >::GRAPH_TYPES> *to_check);
 
 
   /***********************************************************************//**
@@ -879,7 +700,7 @@ class general_graph<T, U, T_A, U_A>::general_vertex
   ***************************************************************************/
   bool
   has_in_edge(
-    const edge_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_check);
+    const edge_prototype<T, U, T_A, U_A, typename graph_prototype<T, U, T_A, U_A, general_graph_types_phase_two<T, U, T_A, U_A> >::GRAPH_TYPES> *to_check);
 
 
   /***********************************************************************//**
@@ -887,7 +708,7 @@ class general_graph<T, U, T_A, U_A>::general_vertex
   ***************************************************************************/
   bool
   has_out_edge(
-    const edge_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_check);
+    const edge_prototype<T, U, T_A, U_A, typename graph_prototype<T, U, T_A, U_A, general_graph_types_phase_two<T, U, T_A, U_A> >::GRAPH_TYPES> *to_check);
 
 
   /***********************************************************************//**
@@ -1124,7 +945,7 @@ class general_graph<T, U, T_A, U_A>::general_vertex
   * Documented elsewhere.
   ***************************************************************************/
   typename T_A::reference&
-  operator*();
+  operator*() const;
 
 };
 
@@ -1142,8 +963,8 @@ class general_graph<T, U, T_A, U_A>::general_edge
   private:
 
   U weight;
-  edge_index self;
-  vertex_index from_vertex, to_vertex;
+  size_t id;
+  general_vertex *from_vertex, *to_vertex;
 
   public:
 
@@ -1157,9 +978,9 @@ class general_graph<T, U, T_A, U_A>::general_edge
   * @param[in] edgeIndex Index of this edge in the containing graph.
   ***************************************************************************/
   general_edge(
-    const vertex_index in_vertex,
-    const vertex_index out_vertex,
-    const edge_index this_edge_id,
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *in_vertex,
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *out_vertex,
+    const size_t this_edge_id,
     U new_weight);
 
 
@@ -1175,7 +996,7 @@ class general_graph<T, U, T_A, U_A>::general_edge
   * Documented elsewhere.
   ***************************************************************************/
   typename U_A::reference&
-  operator*();
+  operator*() const;
 
 
   /***********************************************************************//**

@@ -71,6 +71,8 @@ struct graph_prototype_types{
   typedef void EDGE_ITERATOR_IN_GRAPH;
   typedef void VERTEX_ITERATOR_IN_VERTEX;
   typedef void EDGE_ITERATOR_IN_VERTEX;
+  typedef edge_prototype<T, U, T_A, U_A, graph_prototype_types<T, U, T_A, U_A> > EDGE;
+  typedef vertex_prototype<T, U, T_A, U_A, graph_prototype_types<T, U, T_A, U_A> > VERTEX;
 };
 
 
@@ -597,7 +599,7 @@ class vertex_prototype{
   *****************************************************************************/
   virtual
   typename T_A::reference&
-  operator*() = 0;
+  operator*() const = 0;
 
 };
 
@@ -622,14 +624,8 @@ template <
 class graph_prototype{
   public:
 
-  typedef typename GRAPH_TYPES::EDGE_ITR_IN_GRAPH EDGE_ITR;
-  typedef typename GRAPH_TYPES::VERTEX_ITR_IN_GRAPH VERT_ITR;
-  typedef vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> VERTEX;
-  typedef edge_prototype<T, U, T_A, U_A, GRAPH_TYPES> EDGE;
-
-  static
-  const
-  vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> DANGLING_VERTEX;
+  typedef typename GRAPH_TYPES::EDGE_ITR_IN_GRAPH EDGE_ITERATOR_IN_GRAPH;
+  typedef typename GRAPH_TYPES::VERTEX_ITR_IN_GRAPH VERTEX_ITERATOR_IN_GRAPH;
 
   /*************************************************************************//**
   * @brief Deconstructor
@@ -648,7 +644,7 @@ class graph_prototype{
   * @return A reference to the created vertex.
   *****************************************************************************/
   virtual
-  VERT_ITR
+  VERTEX_ITERATOR_IN_GRAPH
   add_vertex(
     T value
   ) = 0;
@@ -661,7 +657,7 @@ class graph_prototype{
   * vertexes in this graph.
   *****************************************************************************/
   virtual
-  VERT_ITR
+  VERTEX_ITERATOR_IN_GRAPH
   begin_vertexes() = 0;
 
 
@@ -672,7 +668,7 @@ class graph_prototype{
   * all vertexes in this graph.
   *****************************************************************************/
   virtual
-  VERT_ITR
+  VERTEX_ITERATOR_IN_GRAPH
   end_vertexes(
   ) = 0;
 
@@ -684,7 +680,7 @@ class graph_prototype{
   * vertexes in this graph.
   *****************************************************************************/
   virtual
-  VERT_ITR
+  VERTEX_ITERATOR_IN_GRAPH
   begin_vertexes(
   ) const = 0;
 
@@ -696,7 +692,7 @@ class graph_prototype{
   * all vertexes in this graph.
   *****************************************************************************/
   virtual
-  VERT_ITR
+  VERTEX_ITERATOR_IN_GRAPH
   end_vertexes(
   ) const = 0;
 
@@ -724,7 +720,7 @@ class graph_prototype{
   virtual
   T
   remove_vertex(
-    VERTEX *to_remove) = 0;
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_remove) = 0;
 
 
   /*************************************************************************//**
@@ -769,8 +765,8 @@ class graph_prototype{
   virtual
   void
   add_undirected_edge(
-    VERTEX *vertex1,
-    VERTEX *vertex2,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex1,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex2,
     U weight) = 0;
 
 
@@ -796,8 +792,8 @@ class graph_prototype{
   virtual
   void
   add_directed_edge(
-    VERTEX *from_vertex,
-    VERTEX *to_vertex,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *from_vertex,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_vertex,
     U weight) = 0;
 
 
@@ -818,10 +814,10 @@ class graph_prototype{
   * TODO: custom throw
   *****************************************************************************/
   virtual
-  EDGE*
+  edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*
   get_undirected_edge(
-    const VERTEX *vertex1,
-    const VERTEX *vertex2) = 0;
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex1,
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex2) = 0;
 
 
   /*************************************************************************//**
@@ -842,10 +838,10 @@ class graph_prototype{
   * TODO: custom throw
   *****************************************************************************/
   virtual
-  EDGE*
+  edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*
   get_directed_edge(
-    const VERTEX *from_vertex,
-    const VERTEX *to_vertex) = 0;
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *from_vertex,
+    const vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_vertex) = 0;
 
 
   /*************************************************************************//**
@@ -866,8 +862,8 @@ class graph_prototype{
   virtual
   U
   remove_undirected_edge(
-    VERTEX *vertex1,
-    VERTEX *vertex2) = 0;
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex1,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *vertex2) = 0;
 
 
   /*************************************************************************//**
@@ -888,8 +884,8 @@ class graph_prototype{
   virtual
   U
   remove_directed_edge(
-    VERTEX *from_vertex,
-    VERTEX *to_vertex) = 0;
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *from_vertex,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES> *to_vertex) = 0;
 
 
   /*************************************************************************//**
@@ -911,7 +907,7 @@ class graph_prototype{
   * @return The first iterator in the store of edges in a graph.
   *****************************************************************************/
   virtual
-  EDGE_ITR
+  EDGE_ITERATOR_IN_GRAPH
   begin_edges() = 0;
 
 
@@ -922,7 +918,7 @@ class graph_prototype{
   * graph.
   *****************************************************************************/
   virtual
-  EDGE_ITR
+  EDGE_ITERATOR_IN_GRAPH
   end_edges() = 0;
 
 
@@ -932,7 +928,7 @@ class graph_prototype{
   * @return The first iterator in the store of edges in a graph.
   *****************************************************************************/
   virtual
-  EDGE_ITR
+  EDGE_ITERATOR_IN_GRAPH
   begin_edges() const = 0;
 
 
@@ -943,7 +939,7 @@ class graph_prototype{
   * graph.
   *****************************************************************************/
   virtual
-  EDGE_ITR
+  EDGE_ITERATOR_IN_GRAPH
   end_edges() const = 0;
 
 
@@ -973,6 +969,12 @@ class graph_prototype{
   virtual
   void
   shrink_to_fit() = 0;
+
+  /***********************************************************************//**
+  * TODO
+  ***************************************************************************/
+  typename U_A::reference&
+  operator*() const;
 };
 
 

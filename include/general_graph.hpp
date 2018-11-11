@@ -90,8 +90,6 @@ matrixes.
 
 TODO: graph and concurrency safety; likely Java styled.
 
-TODO: Complete implementation.
-
 TODO: Add new tests to the test suite using RapidCheck.
 
 TODO: Check for memory leaks.

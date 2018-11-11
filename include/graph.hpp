@@ -74,31 +74,16 @@ significantly faster.  Future work will also include support for special
 operations to make common algorithms faster once the logistics of these become
 known
 
-TODO: allow for a function to auto generate/expand vertexes -- referenced
-vertexes are null until expanded.  This is to allow exploration over an infinite
-space over a truely general way.
-
 TODO: Tweak paramaterization to allow for transparent distributed computation
 and use of this data structure.  That should help large scale operations,
 scalability, and hopefully compliance and features past the 2020 standard.
 
-TODO: The iterator structuring and implementation is a little tricky and needs
-work.
-
 TODO: Add a matrix backed implementation using sparse and dense upper diagonal
 matrixes.
 
-TODO: graph and concurrency safety; likely Java styled.
-
-TODO: Complete implementation.
-
 TODO: Add new tests to the test suite using RapidCheck.
 
-TODO: Check for memory leaks.
-
 TODO: File save/open support.
-
-TODO: Make sure all the virtual specifiers are correct.
 
 TODO: Peer review on IRC and standards forum.
 
@@ -142,14 +127,16 @@ class graph : graph_prototype<T, U, T_A, U_A, typename Graph_Implementation::GRA
   typedef typename Graph_Implementation::GRAPH_TYPES GRAPH_TYPES;
   typedef typename GRAPH_TYPES::EDGE_ITERATOR_IN_GRAPH EDGE_ITERATOR_IN_GRAPH;
   typedef typename GRAPH_TYPES::VERTEX_ITERATOR_IN_GRAPH VERTEX_ITERATOR_IN_GRAPH;
-  typedef typename GRAPH_TYPES::VERTEX VERTEX;
-  typedef typename GRAPH_TYPES::EDGE EDGE;
-
+  typedef vertex_prototype<T, U, T_A, U_A, typename Graph_Implementation::GRAPH_TYPES> VERTEX;
+  typedef edge_prototype<T, U, T_A, U_A, typename Graph_Implementation::GRAPH_TYPES> EDGE;
 
 
   graph(
     size_t reserve_n_vertexes = 0,
-    size_t reserve_n_edges = 0);
+    size_t reserve_n_edges = 0,
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>* (*dynamic_vertex_generator_function)(
+      vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, 
+      edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*) = nullptr);
 
   graph(
     const graph_prototype<T, U, T_A, U_A, GRAPH_TYPES> *other);
@@ -194,13 +181,13 @@ class graph : graph_prototype<T, U, T_A, U_A, typename Graph_Implementation::GRA
     const VERTEX *to_vertex,
     U weight);
 
-  EDGE&
+  EDGE*
   get_undirected_edge(
     const VERTEX *vertex1,
     const VERTEX *vertex2,
     U weight);
 
-  EDGE&
+  EDGE*
   get_directed_edge(
     const VERTEX *from_vertex,
     const VERTEX *to_vertex);
@@ -237,7 +224,6 @@ class graph : graph_prototype<T, U, T_A, U_A, typename Graph_Implementation::GRA
 };
 
 
-//TODO: implement forwarding functions
 template<
   typename T,
   typename U,
@@ -247,9 +233,12 @@ template<
 graph<T, U, T_A, U_A, Graph_Implementation>::
 graph(
   size_t reserve_n_vertexes,
-  size_t reserve_n_edges
+  size_t reserve_n_edges,
+  vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>* (*dynamic_vertex_generator_function)(
+    vertex_prototype<T, U, T_A, U_A, GRAPH_TYPES>*, 
+    edge_prototype<T, U, T_A, U_A, GRAPH_TYPES>*)
 ) : wrapping_graph(Graph_Implementation(
-      reserve_n_vertexes, reserve_n_edges)){
+      reserve_n_vertexes, reserve_n_edges, dynamic_vertex_generator_function)){
 }
 
 
@@ -440,7 +429,7 @@ template<
   typename T_A,
   typename U_A,
   typename Graph_Implementation >
-typename graph<T, U, T_A, U_A, Graph_Implementation>::EDGE&
+typename graph<T, U, T_A, U_A, Graph_Implementation>::EDGE*
 graph<T, U, T_A, U_A, Graph_Implementation>::
 get_undirected_edge(
   const VERTEX *vertex1,
@@ -459,7 +448,7 @@ template<
   typename T_A,
   typename U_A,
   typename Graph_Implementation >
-typename graph<T, U, T_A, U_A, Graph_Implementation>::EDGE&
+typename graph<T, U, T_A, U_A, Graph_Implementation>::EDGE*
 graph<T, U, T_A, U_A, Graph_Implementation>::
 get_directed_edge(
   const VERTEX *from_vertex,
