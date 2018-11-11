@@ -27,7 +27,7 @@
 #include <correlation-matrix.hpp>
 #include <timsort.hpp>
 #include <simple-thread-dispatch.hpp>
-#include <statistics.h>
+#include <statistics.hpp>
 #include <upper-diagonal-square-matrix.hpp>
 
 
