@@ -1,3 +1,6 @@
 [submodule "test/googletest"]
 	path = test/googletest
 	url = https://github.com/google/googletest
+[submodule "test/rapidcheck"]
+	path = test/rapidcheck
+	url = https://github.com/emil-e/rapidcheck

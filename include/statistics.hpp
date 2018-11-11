@@ -1,7 +1,7 @@
 /*Copyright 2016-2018 Josh Marshall********************************************/
 
 /***********************************************************************
-    This file is part of TF-Cluster.
+    This file is part of Madlib.
 
     TF-Cluster is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,14 +28,9 @@
 //INCLUDES//////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <short-primatives.h>
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -164,7 +159,3 @@ void inplaceCenterMean(f64 *array, csize_t size);
 ////////////////////////////////////////////////////////////////////////
 //END///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
-#ifdef __cplusplus
-}
-#endif

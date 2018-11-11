@@ -6,24 +6,24 @@ DYNAMIC_LIB=libmadlib.so
 SUBLIBS_OBJECTS=file-parsing.o
 
 
-CPPSOURCES=diagnostics.cpp                                                \
-					 kendall-correlation-matrix.cpp                                 \
-					 pearson-correlation-matrix.cpp                                 \
-					 rank-matrix.cpp                                                \
-					 simple-thread-dispatch.cpp                                     \
-					 spearman-correlation-matrix.cpp
+CPPSOURCES=diagnostics.cpp                                                    \
+           kendall-correlation-matrix.cpp                                     \
+           pearson-correlation-matrix.cpp                                     \
+           rank-matrix.cpp                                                    \
+           simple-thread-dispatch.cpp                                         \
+           spearman-correlation-matrix.cpp                                    \
+           statistics.cpp
 
-CSOURCES=statistics.c                                                   \
-				 sparse-bitpacked-array.c
+CSOURCES=sparse-bitpacked-array.c
 
-OBJECTS= diagnostics.o                                                 \
-				 kendall-correlation-matrix.o                                  \
-				 pearson-correlation-matrix.o                                  \
-				 rank-matrix.o                                                 \
-				 simple-thread-dispatch.o                                      \
-				 spearman-correlation-matrix.o                                 \
-				 statistics.o                                                  \
-				 sparse-bitpacked-array.o
+OBJECTS=diagnostics.o                                                         \
+        kendall-correlation-matrix.o                                          \
+        pearson-correlation-matrix.o                                          \
+        rank-matrix.o                                                         \
+        simple-thread-dispatch.o                                              \
+        spearman-correlation-matrix.o                                         \
+        statistics.o                                                          \
+        sparse-bitpacked-array.o
 
 
 
